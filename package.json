@@ -1,0 +1,16 @@
+{
+  "name": "mattermost-app-opsgenie",
+  "version": "0.0.1",
+  "description": "Plugin to connect with the OpsGenine service through the Mattermost platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/dominion-ancient/mattermost-app-opsgenie.git"
+  },
+  "author": "Santiago Benavides Juan Carlos <santiago.benavides@ancient.mx>",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/dominion-ancient/mattermost-app-opsgenie#readme"
+}
