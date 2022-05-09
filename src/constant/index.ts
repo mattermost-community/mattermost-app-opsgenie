@@ -3,5 +3,5 @@ export * from './apps';
 export * from './locations';
 
 export const OpsGenieIcon = 'opsgenie.png';
-export const CommandTrigger = 'opsgenie';
+export const CommandTrigger = 'genie';
 
