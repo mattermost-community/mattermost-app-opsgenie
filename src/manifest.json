@@ -16,14 +16,10 @@
     "requested_permissions": [
         "act_as_user",
         "act_as_bot",
-        "remote_webhooks",
-        "remote_oauth2"
+        "remote_webhooks"
     ],
     "requested_locations": [
-        "/command",
-        "/channel_header",
-        "/post_menu",
-        "/in_post"
+        "/command"
     ],
     "aws_lambda": {
         "functions": [

@@ -12,7 +12,7 @@ export const newCommandBindings = (bindings: AppBinding[]): AppBinding => {
                 app_id: manifest.app_id,
                 icon: OpsGenieIcon,
                 label: CommandTrigger,
-                description: 'Manage Zendesk tickets',
+                description: 'Manage OpsGenie incidence',
                 hint: '',
                 bindings,
             },
