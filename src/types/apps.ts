@@ -32,7 +32,7 @@ export type AppBinding = {
     // - LocationCommand: the "Hint" line
     hint?: string;
 
-    // Description is the (optional) extended help text, used in modals and autocomplete
+    // Description is the (optional) extended help.ts text, used in modals and autocomplete
     description?: string;
 
     role_id?: string;
