@@ -7,7 +7,7 @@ import {AppCallResponse} from "../types";
 export const getHelp = async (request: Request, response: Response) => {
     const helpText = [
         getHeader(),
-        getCommands(request.body),
+        getCommands(),
         getPostText(),
     ].join('');
     const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
@@ -20,7 +20,7 @@ function getHeader(): string {
     return h4(`OpsGenie [(GitHub Link)](${homepageURL})`);
 }
 
-function getCommands(call: any): string {
+function getCommands(): string {
     let text = getUserCommands();
     return text;
 }

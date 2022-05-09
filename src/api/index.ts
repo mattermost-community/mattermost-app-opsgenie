@@ -11,7 +11,8 @@ router.post(Routes.App.BindingsPath, cBindings.getBindings);
 
 router.post(`${Routes.App.BindingPathHelp}/submit`, cHelp.getHelp);
 
-
-router.use(express.static('static'));
+const staticRouter = express.Router();
+staticRouter.use(express.static('static'));
+router.use('/static', staticRouter);
 
 export default router;
