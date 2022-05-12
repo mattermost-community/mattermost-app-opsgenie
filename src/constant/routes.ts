@@ -3,8 +3,15 @@ const AppPaths = {
     BindingsPath: '/bindings',
     InstallPath: '/install',
 
+    CallPathAlertCreate: '/alert/create',
+    CallPathAlertSubmitOrUpdate: '/alert/submit-or-update',
     BindingPathHelp: '/help'
 }
+
+const OpsGeniePaths = {
+    AlertPathPrefix: '/alerts',
+    APIVersionV2: '/v2',
+};
 
 export const Routes = {
     App: AppPaths
