@@ -1,19 +1,21 @@
-import {AppCallRequest, AppForm} from '../types';
+import {AlertCreate, AppCallRequest, AppForm, ResponseResult} from '../types';
 import {newOpsgenieClient, OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
 import {OpsGenieIcon, Routes} from "../constant";
 
 export async function newCreateAlertForm(call: AppCallRequest): Promise<AppForm> {
+    console.log('call', call);
     const opsgenieOptions: OpsGenieClientOptions = {
         oauth2UserAccessToken: ''
     };
     const opsgenieClient: OpsGenieClient = await newOpsgenieClient(opsgenieOptions);
-    const payload = {
+    const payload: AlertCreate = {
         message: 'Hola se creo alerta desde el comando'
     };
 
-
     return new Promise((resolve, rejects) => {
-        opsgenieClient.alertV2.create(payload, function (error: any) {
+        opsgenieClient.alertV2.create(payload, function (error: any, result: ResponseResult) {
+            console.log('result', result);
+            console.log('error', error);
             if (error) {
                 return rejects(error);
             }

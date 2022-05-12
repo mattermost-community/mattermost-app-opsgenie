@@ -1,7 +1,8 @@
 import {Request, Response} from 'express';
 import {AppCallResponse, AppForm} from '../types';
 import {newErrorCallResponseWithMessage, newFormCallResponse} from '../utils/call-responses';
-import {newCreateAlertForm} from "../forms/create-alert";
+import {newCreateAlertForm} from '../forms/create-alert';
+import {newCreateNoteToAlertForm} from '../forms/create-note';
 
 export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -16,3 +17,18 @@ export const createAlert = async (request: Request, response: Response) => {
         response.json(callResponse);
     }
 };
+
+export const createNoteToAlert = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        const form: AppForm = await newCreateNoteToAlertForm(request.body);
+        callResponse = newFormCallResponse(form);
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unable to open create incident form: ' + error.message);
+        response.json(callResponse);
+    }
+};
+

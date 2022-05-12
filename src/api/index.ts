@@ -4,7 +4,7 @@ import * as cManifest from './manifest';
 import * as cBindings from './bindings';
 import * as cInstall from './install';
 import * as cHelp from './help';
-import * as cIncident from './alert';
+import * as cAlert from './alert';
 
 const router: Router = express.Router();
 
@@ -14,7 +14,8 @@ router.post(Routes.App.InstallPath, cInstall.getInstall);
 
 router.post(`${Routes.App.BindingPathHelp}/submit`, cHelp.getHelp);
 
-router.post(`${Routes.App.CallPathAlertCreate}/submit`, cIncident.createAlert);
+router.post(`${Routes.App.CallPathAlertCreate}/submit`, cAlert.createAlert);
+router.post(`${Routes.App.CallPathNoteToAlertCreate}/submit`, cAlert.createNoteToAlert);
 
 const staticRouter = express.Router();
 staticRouter.use(express.static('static'));

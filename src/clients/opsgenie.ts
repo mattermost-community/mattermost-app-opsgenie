@@ -1,6 +1,7 @@
 // @ts-ignore
 import * as opsgenie from 'opsgenie-sdk';
 import config from '../config';
+import {AlertCreate, NoteToAlertCreate, NoteToAlertIdentifier, ResponseResult} from '../types';
 
 export interface OpsGenieClient {
     version: string;
@@ -15,7 +16,8 @@ export interface OpsGenieClient {
         api_key: string;
     },
     alertV2: {
-        create: Function;
+        create: (data: AlertCreate, handlerResponse: Function) => ResponseResult;
+        addNote: (identifier: NoteToAlertIdentifier, data: NoteToAlertCreate, handlerResponse: Function) => ResponseResult;
     }
 }
 
@@ -41,6 +43,5 @@ export const newOpsgenieClient = async (opsgenieOptions: OpsGenieClientOptions):
     };
 
     opsgenie.configure(options);
-    console.log('opsgenie configure', typeof opsgenie.configure)
     return opsgenie as OpsGenieClient;
 };

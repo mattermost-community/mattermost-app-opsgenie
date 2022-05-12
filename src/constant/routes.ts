@@ -4,6 +4,7 @@ const AppPaths = {
     InstallPath: '/install',
 
     CallPathAlertCreate: '/alert/create',
+    CallPathNoteToAlertCreate: '/alert/note/create',
     CallPathAlertSubmitOrUpdate: '/alert/submit-or-update',
     BindingPathHelp: '/help'
 }
