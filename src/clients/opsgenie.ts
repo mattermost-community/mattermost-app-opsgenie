@@ -1,7 +1,7 @@
 // @ts-ignore
 import * as opsgenie from 'opsgenie-sdk';
 import config from '../config';
-import {AlertCreate, NoteToAlertCreate, NoteToAlertIdentifier, ResponseResult} from '../types';
+import {AlertCreate, NoteToAlertCreate, AlertIdentifier, ResponseResult} from '../types';
 
 export interface OpsGenieClient {
     version: string;
@@ -17,7 +17,8 @@ export interface OpsGenieClient {
     },
     alertV2: {
         create: (data: AlertCreate, handlerResponse: Function) => ResponseResult;
-        addNote: (identifier: NoteToAlertIdentifier, data: NoteToAlertCreate, handlerResponse: Function) => ResponseResult;
+        addNote: (identifier: AlertIdentifier, data: NoteToAlertCreate, handlerResponse: Function) => ResponseResult;
+        snooze: (identifier: AlertIdentifier, data: NoteToAlertCreate, handlerResponse: Function) => ResponseResult;
     }
 }
 

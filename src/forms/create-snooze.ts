@@ -1,25 +1,27 @@
-import {AppCallRequest, AppForm, NoteToAlertCreate, AlertIdentifier, ResponseResult} from '../types';
+import {AppCallRequest, AppForm, AlertIdentifier, ResponseResult, SnoozeAlertCreate} from '../types';
 import {newOpsgenieClient, OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
 import {OpsGenieIcon, Routes} from "../constant";
 
-export async function newCreateNoteToAlertForm(call: AppCallRequest): Promise<AppForm> {
+export async function newCreateSnoozeAlertForm(call: AppCallRequest): Promise<AppForm> {
     console.log('call', call);
     const opsgenieOptions: OpsGenieClientOptions = {
         oauth2UserAccessToken: ''
     };
     const opsgenieClient: OpsGenieClient = await newOpsgenieClient(opsgenieOptions);
     const alertIdentifier: AlertIdentifier = {
-        identifier: '09ee15ab-583f-4db8-a2c2-0b6b32d2a076-1652394212357',
-        identifierType: 'id'
+        identifier: "alert_id",
+        identifierType : "id"
     };
-    const noteToAlertCreate: NoteToAlertCreate = {
-        note: 'Creando una nota desde comando',
-        source: '',
-        user: 'lizeth@ancient.mx'
+
+    const snoozeAlertCreate: SnoozeAlertCreate = {
+        note : "some note for snooze action",
+        user : "lizeth@ancient.mx",
+        source : "source of the snooze request",
+        endTime : "2017-06-09T08:30:50.894Z"
     };
 
     return new Promise((resolve, rejects) => {
-        opsgenieClient.alertV2.addNote(alertIdentifier, noteToAlertCreate, function (error: any, result: ResponseResult) {
+        opsgenieClient.alertV2.snooze(alertIdentifier, snoozeAlertCreate, function (error: any, result: ResponseResult) {
             console.log('error', error);
             console.log('result', result);
             if (error) {
@@ -27,8 +29,8 @@ export async function newCreateNoteToAlertForm(call: AppCallRequest): Promise<Ap
             }
 
             const form: AppForm = {
-                title: 'Create OpsGenie Note to Alert',
-                header: 'Create a OpsGenie note to alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
+                title: 'Create OpsGenie Snooze Alert',
+                header: 'Create a OpsGenie snooze alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
                 icon: OpsGenieIcon,
                 fields: [],
                 call: {

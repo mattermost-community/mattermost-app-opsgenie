@@ -8,7 +8,7 @@ export type AlertCreate = {
     message: string;
 };
 
-export type NoteToAlertIdentifier = {
+export type AlertIdentifier = {
     identifier: string;
     identifierType: string;
 };
@@ -18,3 +18,11 @@ export type NoteToAlertCreate = {
     user: string;
     source: string;
 };
+
+export type SnoozeAlertCreate = {
+    note: string;
+    user: string
+    source: string;
+    endTime: String;
+};
+
