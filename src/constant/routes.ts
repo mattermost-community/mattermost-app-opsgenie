@@ -6,6 +6,7 @@ const AppPaths = {
     CallPathAlertCreate: '/alert/create',
     CallPathNoteToAlertCreate: '/alert/note/create',
     CallPathSnoozeAlertCreate: '/alert/snooze/create',
+    CallPathAssignOwnerAlert: '/alert/assign',
     CallPathAlertSubmitOrUpdate: '/alert/submit-or-update',
     BindingPathHelp: '/help'
 }

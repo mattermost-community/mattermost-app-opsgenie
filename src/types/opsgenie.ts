@@ -26,3 +26,11 @@ export type SnoozeAlertCreate = {
     endTime: String;
 };
 
+export type AssignOwnerToAlertCreate = {
+    note: string;
+    user: string;
+    source: string;
+    owner: {
+        username: string;
+    }
+};

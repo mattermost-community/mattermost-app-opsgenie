@@ -3,7 +3,8 @@ import {AppCallResponse, AppForm} from '../types';
 import {newErrorCallResponseWithMessage, newFormCallResponse} from '../utils/call-responses';
 import {newCreateAlertForm} from '../forms/create-alert';
 import {newCreateNoteToAlertForm} from '../forms/create-note';
-import {newCreateSnoozeAlertForm} from "../forms/create-snooze";
+import {newCreateSnoozeAlertForm} from '../forms/create-snooze';
+import {assignOwnerAlertForm} from '../forms/assign-owner';
 
 export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -51,7 +52,7 @@ export const assignOwnerToAlert = async (request: Request, response: Response) =
     let callResponse: AppCallResponse;
 
     try {
-        const form: AppForm = await newCreateSnoozeAlertForm(request.body);
+        const form: AppForm = await assignOwnerAlertForm(request.body);
         callResponse = newFormCallResponse(form);
 
         response.json(callResponse);

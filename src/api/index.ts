@@ -15,8 +15,9 @@ router.post(Routes.App.InstallPath, cInstall.getInstall);
 router.post(`${Routes.App.BindingPathHelp}/submit`, cHelp.getHelp);
 
 router.post(`${Routes.App.CallPathAlertCreate}/submit`, cAlert.createAlert);
-router.post(`${Routes.App.CallPathNoteToAlertCreate}/submit`, cAlert.createSnoozeAlert);
-router.post(`${Routes.App.CallPathNoteToAlertCreate}/submit`, cAlert.createSnoozeAlert);
+router.post(`${Routes.App.CallPathNoteToAlertCreate}/submit`, cAlert.createNoteToAlert);
+router.post(`${Routes.App.CallPathSnoozeAlertCreate}/submit`, cAlert.createSnoozeAlert);
+router.post(`${Routes.App.CallPathAssignOwnerAlert}/submit`, cAlert.assignOwnerToAlert);
 
 const staticRouter = express.Router();
 staticRouter.use(express.static('static'));
