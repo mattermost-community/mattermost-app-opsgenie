@@ -1,20 +1,37 @@
 import {AppBinding} from '../types';
-import manifest from '../manifest.json';
-import {AppExpandLevels, Locations, OpsGenieIcon, Routes} from '../constant';
+import {AppExpandLevels, Locations, OpsGenieIcon, Routes, Commands} from '../constant';
 
-export const getHelpBinding = (): AppBinding => {
+export const getHelpBinding = (): any => {
     return {
-        app_id: manifest.app_id,
-        location: Locations.Help,
-        label: 'help',
+        label: Commands.HELP,
         description: 'Show OpsGenie Help',
-        icon: OpsGenieIcon,
-        form: {fields: []},
-        call: {
-            path: Routes.App.BindingPathHelp,
-            expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-            },
-        },
+        form: {
+            title: "Show OpsGenie Help Title",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.BindingPathHelp,
+                expand: {
+                    acting_user_access_token: AppExpandLevels.EXPAND_ALL
+                }
+            }
+        }
     };
 };
+
+export const createAlertBinding = (): any => {
+    return {
+        label: Commands.ALERT,
+        description: 'Create Alert in OpsGenie',
+        form: {
+            title: "Show OpsGenie Help Title",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathAlertCreate,
+                expand: {
+                    acting_user_access_token: AppExpandLevels.EXPAND_ALL
+                }
+            }
+        }
+    }
+}
+

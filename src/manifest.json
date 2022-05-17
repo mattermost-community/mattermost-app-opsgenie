@@ -1,10 +1,16 @@
 {
     "app_id": "opsgenie",
-    "version": "0.0.1",
+    "version": "v1.0.0",
     "homepage_url": "https://bitbucket.org/dominion-ancient/mattermost-app-opsgenie",
     "display_name": "OpsGenie",
     "description": "OpsGenie cloud app for Mattermost",
     "icon": "opsgenie.png",
+    "on_install": {
+        "expand": {
+            "app": "all"
+        },
+        "path": "/install"
+    },
     "bindings": {
         "path": "/bindings",
         "expand": {
@@ -14,24 +20,20 @@
         }
     },
     "requested_permissions": [
-        "act_as_user",
         "act_as_bot",
-        "remote_webhooks"
+        "act_as_user"
     ],
     "requested_locations": [
+        "/channel_header",
         "/command"
     ],
-    "aws_lambda": {
-        "functions": [
-            {
-                "path": "/",
-                "name": "js-function",
-                "handler": "index.handler",
-                "runtime": "nodejs14.x"
-            }
-        ]
+    "bindings": {
+        "path": "/bindings",
+        "expand": {
+            "acting_user": "all"
+        }
     },
     "http": {
-        "use_jwt": false
+        "root_url": ""
     }
 }
