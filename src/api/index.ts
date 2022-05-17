@@ -13,8 +13,8 @@ router.post(Routes.App.BindingsPath, cBindings.getBindings);
 router.post(Routes.App.InstallPath, cInstall.getInstall);
 
 router.post(`${Routes.App.BindingPathHelp}`, cHelp.getHelp);
+router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 
-router.post(`${Routes.App.CallPathAlertCreate}/form`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathNoteToAlertCreate}/submit`, cAlert.createNoteToAlert);
 router.post(`${Routes.App.CallPathSnoozeAlertCreate}/submit`, cAlert.createSnoozeAlert);
 router.post(`${Routes.App.CallPathAssignOwnerAlert}/submit`, cAlert.assignOwnerToAlert);

@@ -15,7 +15,7 @@ export const createAlert = async (request: Request, response: Response) => {
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create incident form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
         response.json(callResponse);
     }
 };

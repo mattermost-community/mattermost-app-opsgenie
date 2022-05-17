@@ -5,7 +5,7 @@ import {newOKCallResponseWithMarkdown} from "../utils/call-responses";
 import {AppCallResponse} from "../types";
 
 export const getHelp = async (request: Request, response: Response) => {
-    const helpText = [
+    const helpText: string = [
         getHeader(),
         getCommands()
     ].join('');
@@ -18,11 +18,6 @@ function getHeader(): string {
 }
 
 function getCommands(): string {
-    let text = getUserCommands();
-    return text;
-}
-
-function getUserCommands(): string {
     const homepageUrl: string = manifest.homepage_url;
     return `${joinLines(
         addBulletSlashCommand('help', `Launch the Jira plugin command line help syntax, check out the [documentation](${homepageUrl}).`),

@@ -1,9 +1,10 @@
 import {AppBinding} from '../types';
-import {AppExpandLevels, Locations, OpsGenieIcon, Routes, Commands} from '../constant';
+import {AppExpandLevels, OpsGenieIcon, Routes, Commands} from '../constant';
 
 export const getHelpBinding = (): any => {
     return {
         label: Commands.HELP,
+        icon: OpsGenieIcon,
         description: 'Show OpsGenie Help',
         form: {
             title: "Show OpsGenie Help Title",
@@ -29,9 +30,10 @@ export const getHelpBinding = (): any => {
     };
 };
 
-export const createAlertBinding = (): any => {
+export const createAlertBinding = (): AppBinding => {
     return {
         label: Commands.ALERT,
+        icon: OpsGenieIcon,
         description: 'Create Alert in OpsGenie',
         form: {
             title: "Show OpsGenie Help Title",
@@ -41,7 +43,13 @@ export const createAlertBinding = (): any => {
                 expand: {
                     acting_user_access_token: AppExpandLevels.EXPAND_ALL
                 }
-            }
+            },
+            fields: [
+                {
+                    name: 'message',
+                    type: 'text'
+                }
+            ]
         }
     }
 }

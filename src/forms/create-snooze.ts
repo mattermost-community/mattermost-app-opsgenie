@@ -28,7 +28,7 @@ export async function newCreateSnoozeAlertForm(call: AppCallRequest): Promise<Ap
                 return rejects(error);
             }
 
-            const form: AppForm = {
+            const form: any = {
                 title: 'Create OpsGenie Snooze Alert',
                 header: 'Create a OpsGenie snooze alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
                 icon: OpsGenieIcon,

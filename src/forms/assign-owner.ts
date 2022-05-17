@@ -36,7 +36,7 @@ export async function assignOwnerAlertForm(call: AppCallRequest): Promise<AppFor
                 return rejects(error);
             }
 
-            const form: AppForm = {
+            const form: any = {
                 title: 'Create OpsGenie Assign Owner to Alert',
                 header: 'Create a OpsGenie assign owner to alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
                 icon: OpsGenieIcon,

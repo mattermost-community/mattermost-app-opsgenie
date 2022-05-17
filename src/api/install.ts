@@ -4,14 +4,21 @@ import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
 import manifest from '../manifest.json';
 
 export const getInstall = async (request: Request, response: Response) => {
-    const homepageURL: string = manifest.homepage_url;
-
-    const message: string = `
-        **OpsGenie is now installed!**\n\n
-        To finish configuring the Opsgenie app please read the [Quick Start](${homepageURL}#quick-start) section of the README.\n
-    `;
-    const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(message);
+    const helpText: string = [
+        getCommands()
+    ].join('');
+    const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
 
     response.json(callResponse);
 };
 
+function getCommands(): string {
+    const homepageUrl: string = manifest.homepage_url;
+    return `${joinLines(
+        `To finish configuring the Opsgenie app please read the [Quick Start](${homepageUrl}#quick-start) section of the README`
+    )}\n`;
+}
+
+function joinLines(...lines: string[]): string {
+    return lines.join('\n');
+}

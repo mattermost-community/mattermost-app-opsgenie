@@ -22,10 +22,18 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<AppForm>
                 title: 'Create OpsGenie Alert',
                 header: 'Create a OpsGenie alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
                 icon: OpsGenieIcon,
-                fields: [],
-                call: {
-                    path: Routes.App.CallPathAlertSubmitOrUpdate,
+                submit: {
+                    path: '',
+                    expand: {
+                        acting_user_access_token: 'all'
+                    }
                 },
+                fields: [
+                    {
+                        type: "text",
+                        name: "Hola"
+                    }
+                ]
             };
 
             return resolve(form);

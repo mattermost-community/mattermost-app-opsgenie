@@ -97,24 +97,29 @@ export type AppExpandLevel = string;
 export type AppExpand = {
     app?: AppExpandLevel;
     acting_user?: AppExpandLevel;
+    acting_user_access_token?: AppExpandLevel;
+    admin_access_token?: AppExpandLevel;
     channel?: AppExpandLevel;
-    config?: AppExpandLevel;
-    mentioned?: AppExpandLevel;
-    parent_post?: AppExpandLevel;
     post?: AppExpandLevel;
     root_post?: AppExpandLevel;
     team?: AppExpandLevel;
     user?: AppExpandLevel;
+    oauth2_app?: AppExpandLevel;
+    oauth2_user?: AppExpandLevel;
+    locale?: AppExpandLevel;
 };
+
+export type AppFormSubmit = {
+    path: string;
+    expand: AppExpand;
+}
 
 export type AppForm = {
     title?: string;
     header?: string;
     footer?: string;
     icon?: string;
-    submit_buttons?: string;
-    cancel_button?: boolean;
-    submit_on_cancel?: boolean;
+    submit: AppFormSubmit;
     fields: AppField[];
     call?: AppCall;
     depends_on?: string[];
@@ -133,7 +138,6 @@ export type AppFieldType = string;
 
 // This should go in mattermost-redux
 export type AppField = {
-
     // Name is the name of the JSON field to use.
     name: string;
     type: AppFieldType;
