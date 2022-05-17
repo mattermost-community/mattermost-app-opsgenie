@@ -7,17 +7,14 @@ import {AppCallResponse} from "../types";
 export const getHelp = async (request: Request, response: Response) => {
     const helpText = [
         getHeader(),
-        getCommands(),
-        getPostText(),
+        getCommands()
     ].join('');
     const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
-
     response.json(callResponse);
 };
 
 function getHeader(): string {
-    const homepageURL = manifest.homepage_url;
-    return h4(`OpsGenie [(GitHub Link)](${homepageURL})`);
+    return h5(`Mattermost OpsGenie Plugin - Slash Command Help`);
 }
 
 function getCommands(): string {
@@ -26,17 +23,10 @@ function getCommands(): string {
 }
 
 function getUserCommands(): string {
+    const homepageUrl: string = manifest.homepage_url;
     return `${joinLines(
-        h5('User Commands'),
-        addBulletSlashCommand('help'),
-    )}\n`;
-}
-
-function getPostText(): string {
-    return `${joinLines(
-        h5('Post Menu Options'),
-        textLine('click the (...) on a post'),
-        addBullet('Create OpsGenie Incidence'),
+        addBulletSlashCommand('help', `Launch the Jira plugin command line help syntax, check out the [documentation](${homepageUrl}).`),
+        addBulletSlashCommand('alert', 'Create a new alert.'),
     )}\n`;
 }
 
@@ -44,8 +34,8 @@ function addBullet(text: string): string {
     return `* ${text}`;
 }
 
-function addBulletSlashCommand(text: string): string {
-    return `* \`/${CommandTrigger} ${text}\``;
+function addBulletSlashCommand(text: string, description: string): string {
+    return `* \`/${CommandTrigger} ${text}\` - ${description}`;
 }
 
 function h5(text: string): string {

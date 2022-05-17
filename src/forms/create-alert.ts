@@ -14,8 +14,6 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<AppForm>
 
     return new Promise((resolve, rejects) => {
         opsgenieClient.alertV2.create(payload, function (error: any, result: ResponseResult) {
-            console.log('result', result);
-            console.log('error', error);
             if (error) {
                 return rejects(error);
             }
