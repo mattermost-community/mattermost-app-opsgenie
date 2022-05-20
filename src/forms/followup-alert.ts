@@ -45,7 +45,7 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
         team.data.name
     );
 
-    const result = alert.acknowledged
+    alert.acknowledged
         ? await opsGenieClient.unacknowledgeAlert(identifier)
         : await opsGenieClient.acknowledgeAlert(identifier);
 

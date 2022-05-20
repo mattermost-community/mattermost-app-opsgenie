@@ -2,16 +2,19 @@ const AppPaths = {
     ManifestPath: '/manifest.json',
     BindingsPath: '/bindings',
     InstallPath: '/install',
+    BindingPathHelp: '/help',
 
     CallPathAlertCreate: '/alert/create',
     CallPathAlertClose: '/alert/close',
     CallPathAlertUnacknowledge: '/alert/unacknowledge',
     CallPathAlertAcknowledged: '/alert/Acknowledged',
-    CallPathNoteToAlertModal: '/alert/note/modal',
+    CallPathAlertOtherActions: '/alert/otheractions',
+
+
+    CallPathNoteToAlertModal: '/alert/note',
     CallPathSnoozeAlertCreate: '/alert/snooze/create',
     CallPathAssignOwnerAlert: '/alert/assign',
     CallPathAlertSubmitOrUpdate: '/alert/submit-or-update',
-    BindingPathHelp: '/help',
 
     SubscribeIncomingWebhookPath: '/webhook'
 }
@@ -27,6 +30,7 @@ const OpsGeniePaths = {
 
 const MattermostPaths = {
     PostsPath: '/posts',
+    DialogsOpenPath: '/actions/dialogs/open',
     ApiVersionV4: '/api/v4'
 }
 

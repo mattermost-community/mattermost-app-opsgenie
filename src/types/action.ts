@@ -8,4 +8,5 @@ export type CloseAlertAction = {
     }
     mattermost_site_url: string;
     bot_access_token: string;
+    selected_option?: string;
 }

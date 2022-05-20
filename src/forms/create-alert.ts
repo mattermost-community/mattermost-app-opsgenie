@@ -132,7 +132,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             }
                         },
                         {
-                            id: 'close_alert',
+                            id: 'closealert',
                             name: 'Close',
                             type: 'button',
                             style: 'success',
@@ -151,10 +151,10 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             }
                         },
                         {
-                            id: "action_options",
+                            id: "actionoptions",
                             name: "Other actions...",
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {
                                     action: "do_something",
                                     alert: {

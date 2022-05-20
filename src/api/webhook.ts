@@ -15,8 +15,6 @@ export const incomingWebhook = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        console.log('request', request);
-
         callResponse = newOKCallResponse();
         response.json(callResponse);
     } catch (error: any) {
