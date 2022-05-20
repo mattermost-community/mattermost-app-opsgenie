@@ -15,6 +15,7 @@ router.post(Routes.App.InstallPath, cInstall.getInstall);
 
 router.post(`${Routes.App.BindingPathHelp}`, cHelp.getHelp);
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
+router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);
 
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.showModalNoteToAlert);
 router.post(`${Routes.App.CallPathSnoozeAlertCreate}`, cAlert.createSnoozeAlert);

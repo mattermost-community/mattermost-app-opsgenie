@@ -6,7 +6,7 @@ import {
     PostCreate,
     ResponseResultWithData,
     Team,
-    Identifier
+    Identifier, CloseAlertAction
 } from '../types';
 import {OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
@@ -14,6 +14,11 @@ import {Routes} from '../constant';
 import config from '../config';
 
 export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const mattermostForApiPost: string = `${mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+    const channelId: string = call.context.channel.id;
+    const accessToken: string | undefined = call.context.bot_access_token;
+
     const opsgenieOptions: OpsGenieClientOptions = {
         oauth2UserAccessToken: ''
     };
@@ -21,19 +26,17 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     const opsGenieClient = new OpsGenieClient(opsgenieOptions);
 
     const message: string = call.values?.message;
-    const payload: AlertCreate = {
+    const alertCreate: AlertCreate = {
         message
     };
-
-    /*opsgenieClient.alertV2.create(payload,  function (error: any, result: ResponseResult) {
-        if (error) {
-            return rejects(error);
-        }
-    });*/
+    await opsGenieClient.createAlert(alertCreate);
 
     const alertParams: ListAlertParams = {
+        query: 'status: open',
         limit: 1,
         offset: 0,
+        sort: 'tinyId',
+        order: 'desc'
     };
     const alerts: ResponseResultWithData<Alert[]> = await opsGenieClient.listAlert(alertParams);
     const alert: Alert = alerts.data[0];
@@ -50,8 +53,11 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
         team.data.name
     );
 
-    const mattermostUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
-    const channelId: string = call.context.channel.id;
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: mattermostForApiPost,
+        accessToken: <string>accessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     const postCreate: PostCreate = {
         channel_id: channelId,
@@ -80,13 +86,17 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             type: 'button',
                             style: 'default',
                             integration: {
-                                url: `${config.APP.HOST}:${config.APP.PORT}${Routes.App.BindingPathHelp}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
                                 context: {
                                     action: "do_something",
-                                    token: '',
-                                    cardName: '',
-                                    channel: ''
-                                }
+                                    alert: {
+                                        id: alert.id,
+                                        message: alert.message,
+                                        tinyId: alert.tinyId
+                                    },
+                                    bot_access_token: call.context.bot_access_token,
+                                    mattermost_site_url: mattermostUrl
+                                } as CloseAlertAction
                             }
                         },
                         {
@@ -95,26 +105,34 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             type: 'button',
                             style: 'success',
                             integration: {
-                                url: `${config.APP.HOST}:${config.APP.PORT}${Routes.App.BindingPathHelp}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
                                 context: {
                                     action: "do_something",
-                                    token: '',
-                                    cardName: '',
-                                    channel: ''
-                                }
+                                    alert: {
+                                        id: alert.id,
+                                        message: alert.message,
+                                        tinyId: alert.tinyId
+                                    },
+                                    bot_access_token: call.context.bot_access_token,
+                                    mattermost_site_url: mattermostUrl
+                                } as CloseAlertAction
                             }
                         },
                         {
                             id: "action_options",
                             name: "Other actions...",
                             integration: {
-                                url: `${config.APP.HOST}:${config.APP.PORT}${Routes.App.BindingPathHelp}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
                                 context: {
                                     action: "do_something",
-                                    token: '',
-                                    cardName: '',
-                                    channel: ''
-                                }
+                                    alert: {
+                                        id: alert.id,
+                                        message: alert.message,
+                                        tinyId: alert.tinyId
+                                    },
+                                    bot_access_token: call.context.bot_access_token,
+                                    mattermost_site_url: mattermostUrl
+                                } as CloseAlertAction
                             },
                             type: "select",
                             options: [
@@ -141,11 +159,5 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
             ]
         }
     };
-
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl,
-        accessToken: call.context.bot_access_token
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     await mattermostClient.createPost(postCreate);
 }

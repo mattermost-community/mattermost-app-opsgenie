@@ -75,8 +75,10 @@ export type AssignOwnerToAlertCreate = {
 
 export type ListAlertParams = {
     query?: string;
+    searchIdentifier?: string;
+    searchIdentifierType?: string;
     offset?: number;
     limit?: number;
     sort?: string;
-    oder?: string;
+    order?: string;
 }

@@ -62,6 +62,20 @@ export type AppCallRequest = AppCall & {
     query?: string;
 };
 
+export type AppCallAction<T> = {
+    user_id: string;
+    user_name: string;
+    channel_id: string;
+    channel_name: string;
+    team_id: string;
+    team_domain: string;
+    post_id: string;
+    trigger_id: string;
+    type: string;
+    data_source: string;
+    context: T;
+}
+
 export type AppCallResponseType = string;
 
 export type AppCallResponse<Res = unknown> = {

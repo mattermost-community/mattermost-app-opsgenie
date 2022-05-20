@@ -3,7 +3,7 @@ import {AppCallResponse} from "../types";
 import {newErrorCallResponseWithMessage} from "../utils/call-responses";
 
 export const incomingWebhook = async (request: Request, response: Response) => {
-    console.log('resquest', request.body);
+    console.log('resquest', request);
     let callResponse: AppCallResponse;
 
     try {

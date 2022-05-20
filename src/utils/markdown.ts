@@ -15,3 +15,7 @@ export function joinLines(...lines: string[]): string {
 export function bold(text: string): string {
     return `**${text}**`
 }
+
+export function hyperlink(text: string, url: string): string {
+    return `[${text}](${url})`
+}
