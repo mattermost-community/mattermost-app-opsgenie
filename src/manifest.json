@@ -21,18 +21,13 @@
     },
     "requested_permissions": [
         "act_as_bot",
-        "act_as_user"
+        "act_as_user",
+        "remote_webhooks"
     ],
     "requested_locations": [
         "/channel_header",
         "/command"
     ],
-    "bindings": {
-        "path": "/bindings",
-        "expand": {
-            "acting_user": "all"
-        }
-    },
     "http": {
         "root_url": ""
     }

@@ -9,7 +9,7 @@ export const newCommandBindings = (bindings: AppBinding[]): AppsState => {
                 icon: OpsGenieIcon,
                 label: CommandTrigger,
                 hint: `[${Commands.HELP} | ${Commands.ALERT}]`,
-                description: 'Manage OpsGenie alert',
+                description: 'Manage OpsGenie',
                 bindings,
             },
         ],

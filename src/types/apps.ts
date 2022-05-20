@@ -78,14 +78,53 @@ export type AppCallResponse<Res = unknown> = {
 export type AppContext = {
     app_id: string;
     location?: string;
-    acting_user_id?: string;
-    user_id?: string;
-    channel_id?: string;
-    team_id?: string;
-    post_id?: string;
-    root_id?: string;
-    props?: AppContextProps;
     user_agent?: string;
+    track_as_submit?: boolean;
+    mattermost_site_url?: string;
+    developer_mode?: boolean;
+    app_path?: string;
+    bot_user_id?: string;
+    bot_access_token?: string;
+    channel: {
+        id: string;
+        create_at: number;
+        update_at: number;
+        delete_at: number;
+        team_id: string;
+        type: string;
+        display_name: string;
+        name: string;
+        header: string;
+        purpose: string;
+        last_post_at: number;
+        total_msg_count: number;
+        extra_update_at: number;
+        creator_id: string;
+        scheme_id: string;
+        props: any;
+        group_constrained: boolean;
+        shared: any;
+        total_msg_count_root: number;
+        policy_id: any;
+        last_root_post_at: number;
+    }
+    acting_user?: {
+        id?: string;
+        delete_at?: number;
+        username?: string;
+        auth_service?: string;
+        email?: string;
+        nickname?: string;
+        first_name?: string;
+        last_name?: string;
+        position?: string;
+        roles?: string;
+        locale?: string;
+        timezone?: string;
+        disable_welcome_email?: string;
+    };
+    acting_user_access_token?: string;
+    oauth2: any;
 };
 
 export type AppContextProps = {

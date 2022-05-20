@@ -1,4 +1,4 @@
-import {AppCallRequest, AppForm, AlertIdentifier, ResponseResult, SnoozeAlertCreate} from '../types';
+import {AppCallRequest, AppForm, Identifier, ResponseResult, SnoozeAlertCreate} from '../types';
 import {newOpsgenieClient, OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
 import {OpsGenieIcon, Routes} from "../constant";
 
@@ -8,7 +8,7 @@ export async function newCreateSnoozeAlertForm(call: AppCallRequest): Promise<Ap
         oauth2UserAccessToken: ''
     };
     const opsgenieClient: OpsGenieClient = await newOpsgenieClient(opsgenieOptions);
-    const alertIdentifier: AlertIdentifier = {
+    const alertIdentifier: Identifier = {
         identifier: "55487914-e2c5-43cf-80d3-a6d9cba5ded8-1652463057998",
         identifierType : "id"
     };

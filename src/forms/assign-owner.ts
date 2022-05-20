@@ -1,7 +1,7 @@
 import {
     AppCallRequest,
     AppForm,
-    AlertIdentifier,
+    Identifier,
     ResponseResult,
     AssignOwnerToAlertCreate
 } from '../types';
@@ -14,7 +14,7 @@ export async function assignOwnerAlertForm(call: AppCallRequest): Promise<AppFor
         oauth2UserAccessToken: ''
     };
     const opsgenieClient: OpsGenieClient = await newOpsgenieClient(opsgenieOptions);
-    const alertIdentifier: AlertIdentifier = {
+    const alertIdentifier: Identifier = {
         identifier: "55487914-e2c5-43cf-80d3-a6d9cba5ded8-1652463057998",
         identifierType : "id"
     };

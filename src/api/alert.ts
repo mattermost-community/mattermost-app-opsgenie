@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import {AppCallResponse, AppForm} from '../types';
-import {newErrorCallResponseWithMessage, newFormCallResponse} from '../utils/call-responses';
+import {newErrorCallResponseWithMessage, newFormCallResponse, newOKCallResponse} from '../utils/call-responses';
 import {newCreateAlertForm} from '../forms/create-alert';
 import {newCreateNoteToAlertForm} from '../forms/create-note';
 import {newCreateSnoozeAlertForm} from '../forms/create-snooze';
@@ -10,8 +10,8 @@ export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form: AppForm = await newCreateAlertForm(request.body);
-        callResponse = newFormCallResponse(form);
+        await newCreateAlertForm(request.body);
+        callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {

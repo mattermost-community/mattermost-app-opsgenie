@@ -1,4 +1,4 @@
-import {AppCallRequest, AppForm, NoteToAlertCreate, AlertIdentifier, ResponseResult} from '../types';
+import {AppCallRequest, AppForm, NoteToAlertCreate, Identifier, ResponseResult} from '../types';
 import {newOpsgenieClient, OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
 import {OpsGenieIcon, Routes} from "../constant";
 
@@ -8,7 +8,7 @@ export async function newCreateNoteToAlertForm(call: AppCallRequest): Promise<Ap
         oauth2UserAccessToken: ''
     };
     const opsgenieClient: OpsGenieClient = await newOpsgenieClient(opsgenieOptions);
-    const alertIdentifier: AlertIdentifier = {
+    const alertIdentifier: Identifier = {
         identifier: '09ee15ab-583f-4db8-a2c2-0b6b32d2a076-1652394212357',
         identifierType: 'id'
     };

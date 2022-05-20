@@ -41,7 +41,7 @@ export const createAlertBinding = (): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertCreate,
                 expand: {
-                    acting_user_access_token: AppExpandLevels.EXPAND_ALL
+                    channel: AppExpandLevels.EXPAND_ALL
                 }
             },
             fields: [
