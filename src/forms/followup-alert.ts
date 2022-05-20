@@ -49,8 +49,6 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
         ? await opsGenieClient.unacknowledgeAlert(identifier)
         : await opsGenieClient.acknowledgeAlert(identifier);
 
-    console.log('result', result);
-
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
         accessToken
