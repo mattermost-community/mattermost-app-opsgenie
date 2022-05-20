@@ -1,14 +1,23 @@
 import {Request, Response} from "express";
-import {AppCallResponse} from "../types";
-import {newErrorCallResponseWithMessage} from "../utils/call-responses";
+import {AppCallResponse, WebhookRequest} from "../types";
+import {newErrorCallResponseWithMessage, newOKCallResponse} from "../utils/call-responses";
+
+async function notifyAlertCreated(request: WebhookRequest) {
+
+}
+
+const WEBHOOKS_ACTIONS: any = {
+    Create: notifyAlertCreated
+};
 
 export const incomingWebhook = async (request: Request, response: Response) => {
-    console.log('resquest', request);
+    const data: WebhookRequest = request.body;
     let callResponse: AppCallResponse;
 
     try {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ');
+        console.log('request', request);
 
+        callResponse = newOKCallResponse();
         response.json(callResponse);
     } catch (error: any) {
         callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);

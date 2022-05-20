@@ -22,7 +22,6 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     const opsgenieOptions: OpsGenieClientOptions = {
         oauth2UserAccessToken: ''
     };
-
     const opsGenieClient = new OpsGenieClient(opsgenieOptions);
 
     const message: string = call.values?.message;

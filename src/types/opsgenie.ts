@@ -82,3 +82,36 @@ export type ListAlertParams = {
     sort?: string;
     order?: string;
 }
+
+export type AlertWebhook = {
+    alertId: string;
+    message: string;
+    tags: any[];
+    tinyId: string;
+    entity: string;
+    alias: string;
+    createdAt: Date;
+    updatedAt: Date;
+    username: string;
+    description: string;
+    team: string;
+    responders: any[];
+    teams: any[];
+    actions: any[];
+    details: any;
+    priority: string;
+    source: string;
+}
+
+export type WebhookRequest = {
+    action: string;
+    alert: AlertWebhook;
+    source: {
+        name: string;
+        type: string;
+    };
+    integrationName: string;
+    integrationId: string;
+    integrationType: string;
+}
+
