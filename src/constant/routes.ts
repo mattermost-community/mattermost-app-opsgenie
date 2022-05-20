@@ -9,7 +9,7 @@ const AppPaths = {
     CallPathAlertUnacknowledge: '/alert/unacknowledge',
     CallPathAlertAcknowledged: '/alert/Acknowledged',
     CallPathAlertOtherActions: '/alert/otheractions',
-
+    CallPathCloseOptions: '/alert/closeoptions',
 
     CallPathNoteToAlertModal: '/alert/note',
     CallPathSnoozeAlertCreate: '/alert/snooze/create',
@@ -30,6 +30,7 @@ const OpsGeniePaths = {
 
 const MattermostPaths = {
     PostsPath: '/posts',
+    PostPath: '/posts/:IDENTIFIER',
     DialogsOpenPath: '/actions/dialogs/open',
     ApiVersionV4: '/api/v4'
 }

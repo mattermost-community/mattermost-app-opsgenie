@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {DialogProps, PostCreate, PostUpdate} from '../types';
 import {Routes} from '../constant';
+import {replace} from "../utils/utils";
 
 export interface MattermostOptions {
     mattermostUrl: string;
@@ -26,6 +27,15 @@ export class MattermostClient {
 
     public updatePost(postId: string, post: PostUpdate): Promise<any> {
         return axios.put(`${this.config.mattermostUrl}/${postId}`, post, {
+            headers: {
+                Authorization: `Bearer ${this.config.accessToken}`
+            }
+        });
+    }
+
+    public deletePost(postId: string): Promise<any> {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
+        return axios.delete(replace(url, ':IDENTIFIER', postId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }

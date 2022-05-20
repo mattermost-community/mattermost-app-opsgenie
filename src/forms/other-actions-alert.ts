@@ -39,12 +39,13 @@ async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Prom
 }
 
 async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promise<void> {
-    const mattermostUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+    const mattermostUrl: string = call.context.mattermost_site_url;
+    const mattermostUrlByUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
 
     const mattermostOptions: MattermostOptions = {
-        mattermostUrl: mattermostUrl,
+        mattermostUrl: mattermostUrlByUrl,
         accessToken: <string>accessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
@@ -77,7 +78,7 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                             type: 'button',
                             style: 'default',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
                                 context: {
                                     action: "do_something",
                                     bot_access_token: call.context.bot_access_token,
@@ -94,12 +95,13 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
 }
 
 async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<void> {
-    const mattermostUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+    const mattermostUrl: string = call.context.mattermost_site_url;
+    const mattermostUrlByApi: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
 
     const mattermostOptions: MattermostOptions = {
-        mattermostUrl: mattermostUrl,
+        mattermostUrl: mattermostUrlByApi,
         accessToken: <string>accessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
@@ -165,7 +167,7 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                             type: 'button',
                             style: 'default',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
                                 context: {
                                     action: "do_something",
                                     bot_access_token: call.context.bot_access_token,

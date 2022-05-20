@@ -19,6 +19,8 @@ router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.followupAlert);
 router.post(`${Routes.App.CallPathAlertAcknowledged}`, cAlert.followupAlert);
 router.post(`${Routes.App.CallPathAlertOtherActions}`, cAlert.otherActionsAlert);
+router.post(`${Routes.App.CallPathCloseOptions}`, cAlert.closeActionsAlert);
+
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.showModalNoteToAlert);
 
 router.post(`${Routes.App.CallPathSnoozeAlertCreate}`, cAlert.createSnoozeAlert);
