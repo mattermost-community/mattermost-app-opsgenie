@@ -25,8 +25,10 @@
         "remote_webhooks"
     ],
     "requested_locations": [
+        "/command",
         "/channel_header",
-        "/command"
+        "/post_menu",
+        "/in_post"
     ],
     "http": {
         "root_url": ""

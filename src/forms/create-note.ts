@@ -1,6 +1,20 @@
 import {AppCallRequest, AppForm, NoteToAlertCreate, Identifier, ResponseResult} from '../types';
 import {newOpsgenieClient, OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
-import {OpsGenieIcon, Routes} from "../constant";
+import {OpsGenieIcon, Routes} from '../constant';
+
+export function newModalNoteToAlert(call: AppCallRequest): any {
+    const form: any = {
+        title: 'Create OpsGenie Note to Alert',
+        header: 'Create a OpsGenie note to alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
+        icon: OpsGenieIcon,
+        fields: [],
+        call: {
+            path: Routes.App.CallPathAlertSubmitOrUpdate,
+        },
+    };
+
+    return form;
+}
 
 export async function newCreateNoteToAlertForm(call: AppCallRequest): Promise<AppForm> {
     console.log('call', call);

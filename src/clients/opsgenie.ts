@@ -97,18 +97,6 @@ export class OpsGenieClient {
         });
     }
 
-    public getAlert(identifier: Identifier): Promise<ResponseResultWithData<Alert>> {
-        return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AlertPathPrefix}/${identifier.identifier}`, {
-            headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
-            },
-            params: {
-                identifierType: identifier.identifierType
-            },
-            responseType: 'json'
-        }).then((response) => response.data);
-    }
-
     public getTeam(identifier: Identifier): Promise<ResponseResultWithData<Team>> {
         return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`, {
             headers: {

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
     Alert,
     AlertCreate,
@@ -10,6 +9,7 @@ import {
     Identifier
 } from '../types';
 import {OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
+import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {Routes} from '../constant';
 import config from '../config';
 
@@ -17,7 +17,6 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     const opsgenieOptions: OpsGenieClientOptions = {
         oauth2UserAccessToken: ''
     };
-    console.log('context', call.context);
 
     const opsGenieClient = new OpsGenieClient(opsgenieOptions);
 
@@ -143,9 +142,10 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
         }
     };
 
-    await axios.post(mattermostUrl, postCreate, {
-        headers: {
-            Authorization: `Bearer ${call.context.bot_access_token}`
-        }
-    });
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl,
+        accessToken: call.context.bot_access_token
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    await mattermostClient.createPost(postCreate);
 }
