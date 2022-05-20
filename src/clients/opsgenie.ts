@@ -134,6 +134,34 @@ export class OpsGenieClient {
         }).then((response) => response.data);
     }
 
+    public unacknowledgeAlert(identifier: Identifier): Promise<ResponseResult> {
+        const path: string = `${replace(Routes.OpsGenie.UnacknowledgeAlertPathPrefix, ':IDENTIFIER', identifier.identifier)}`;
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
+        return axios.post(url, {}, {
+            headers: {
+                Authorization: `GenieKey ${this.options.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public acknowledgeAlert(identifier: Identifier): Promise<ResponseResult> {
+        const path: string = `${replace(Routes.OpsGenie.AcknowledgeAlertPathPrefix, ':IDENTIFIER', identifier.identifier)}`;
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
+        return axios.post(url, {}, {
+            headers: {
+                Authorization: `GenieKey ${this.options.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
     public getTeam(identifier: Identifier): Promise<ResponseResultWithData<Team>> {
         return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`, {
             headers: {

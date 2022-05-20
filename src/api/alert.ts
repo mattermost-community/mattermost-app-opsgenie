@@ -6,6 +6,7 @@ import {newCreateNoteToAlertForm, newModalNoteToAlert} from '../forms/create-not
 import {newCreateSnoozeAlertForm} from '../forms/create-snooze';
 import {assignOwnerAlertForm} from '../forms/assign-owner';
 import {closeAlertCall} from '../forms/close-alert';
+import {followupAlertCall} from "../forms/followup-alert";
 
 export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -34,6 +35,21 @@ export const closeAlert = async (request: Request, response: Response) => {
         response.json(callResponse);
     }
 };
+
+export const followupAlert = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await followupAlertCall(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        response.json(callResponse);
+    }
+};
+
 
 export const showModalNoteToAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;

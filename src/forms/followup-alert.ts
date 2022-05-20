@@ -1,44 +1,37 @@
 import {
     Alert,
-    AlertCreate,
-    AppCallRequest,
-    ListAlertParams,
+    AppCallAction,
+    CloseAlertAction,
+    Identifier,
     PostCreate,
+    PostUpdate,
     ResponseResultWithData,
-    Team,
-    Identifier, CloseAlertAction
+    Team
 } from '../types';
-import {OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
-import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {Routes} from '../constant';
-import config from '../config';
+import {OpsGenieClient, OpsGenieClientOptions} from "../clients/opsgenie";
+import {hyperlink} from "../utils/markdown";
+import {MattermostClient, MattermostOptions} from "../clients/mattermost";
+import config from "../config";
 
-export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const mattermostForApiPost: string = `${mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
-    const channelId: string = call.context.channel.id;
-    const accessToken: string | undefined = call.context.bot_access_token;
+export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
+    const mattermostUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+    const channelId: string = call.channel_id;
+    const accessToken: string = call.context.bot_access_token;
+    const postId: string = call.post_id;
 
     const opsgenieOptions: OpsGenieClientOptions = {
         oauth2UserAccessToken: ''
     };
     const opsGenieClient = new OpsGenieClient(opsgenieOptions);
 
-    const message: string = call.values?.message;
-    const alertCreate: AlertCreate = {
-        message
-    };
-    await opsGenieClient.createAlert(alertCreate);
-
-    const alertParams: ListAlertParams = {
-        query: 'status: open',
-        limit: 1,
-        offset: 0,
-        sort: 'tinyId',
-        order: 'desc'
-    };
-    const alerts: ResponseResultWithData<Alert[]> = await opsGenieClient.listAlert(alertParams);
-    const alert: Alert = alerts.data[0];
+    const alertTinyId: string = call.context.alert.tinyId;
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: 'tiny'
+    }
+    const response: ResponseResultWithData<Alert> = await opsGenieClient.getAlert(identifier);
+    const alert: Alert = response.data;
 
     const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((team) => {
         const teamParams: Identifier = {
@@ -52,22 +45,44 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
         team.data.name
     );
 
+    const result = alert.acknowledged
+        ? await opsGenieClient.unacknowledgeAlert(identifier)
+        : await opsGenieClient.acknowledgeAlert(identifier);
+
+    console.log('result', result);
+
     const mattermostOptions: MattermostOptions = {
-        mattermostUrl: mattermostForApiPost,
-        accessToken: <string>accessToken
+        mattermostUrl,
+        accessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const actionId: string = alert.acknowledged
+    const message: string = !alert.acknowledged
+        ? `${alert.source} acknowledged alert ${hyperlink(`#${alert.tinyId}`, `https://testancient.app.opsgenie.com/alert/detail/${alert.id}`)}: "${alert.message}"`
+        : `${alert.source} un-acknowledged alert ${hyperlink(`#${alert.tinyId}`, `https://testancient.app.opsgenie.com/alert/detail/${alert.id}`)}: "${alert.message}"`;
+    const postCreate: PostCreate = {
+        channel_id: channelId,
+        message: '',
+        props: {
+            attachments: [
+                {
+                    text: message
+                }
+            ]
+        }
+    };
+    await mattermostClient.createPost(postCreate);
+
+    const actionId: string = !alert.acknowledged
         ? 'unacknowledge'
         : 'acknowledged';
-    const actionName: string = alert.acknowledged
+    const actionName: string = !alert.acknowledged
         ? 'Unacknowledge'
         : 'Acknowledged';
-    const actionUrl: string = alert.acknowledged
+    const actionUrl: string = !alert.acknowledged
         ? `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`
         : `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`;
-    const action: string = alert.acknowledged
+    const action: string = !alert.acknowledged
         ? 'unacknowledge'
         : 'acknowledged';
     const options: any[] = [
@@ -91,9 +106,8 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
         });
     }
 
-    const postCreate: PostCreate = {
-        channel_id: channelId,
-        message: '',
+    const postUpdate: PostUpdate = {
+        id: postId,
         props: {
             attachments: [
                 {
@@ -132,7 +146,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             }
                         },
                         {
-                            id: 'close_alert',
+                            id: 'closealert',
                             name: 'Close',
                             type: 'button',
                             style: 'success',
@@ -151,7 +165,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             }
                         },
                         {
-                            id: "action_options",
+                            id: "actionoptions",
                             name: "Other actions...",
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
@@ -174,5 +188,5 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
             ]
         }
     };
-    await mattermostClient.createPost(postCreate);
+    await mattermostClient.updatePost(postId, postUpdate);
 }
