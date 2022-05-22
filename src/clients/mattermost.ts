@@ -5,7 +5,7 @@ import {replace} from "../utils/utils";
 
 export interface MattermostOptions {
     mattermostUrl: string;
-    accessToken: string;
+    accessToken: string | null | undefined;
 }
 
 export class MattermostClient {
@@ -51,5 +51,9 @@ export class MattermostClient {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
         });
+    }
+
+    public incomingWebhook(data: {[key: string]: any}): Promise<any> {
+        return axios.post(this.config.mattermostUrl, data);
     }
 }

@@ -1,5 +1,9 @@
 import {AppCallResponseType, AppCallType, AppExpandLevel, AppFieldType} from '../types';
 
+export const AppMattermostConfig = {
+    WEBHOOK: 'mattermost_webhook'
+}
+
 export const AppBindingLocations = {
     POST_MENU_ITEM: '/post_menu',
     CHANNEL_HEADER_ICON: '/channel_header',
