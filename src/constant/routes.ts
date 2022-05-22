@@ -1,3 +1,7 @@
+const PathsVariable = {
+    Identifier: ':IDENTIFIER'
+}
+
 const AppPaths = {
     ManifestPath: '/manifest.json',
     BindingsPath: '/bindings',
@@ -21,21 +25,22 @@ const AppPaths = {
 
 const OpsGeniePaths = {
     AlertPathPrefix: '/alerts',
-    CloseAlertPathPrefix: '/alerts/:IDENTIFIER/close',
-    UnacknowledgeAlertPathPrefix: '/alerts/:IDENTIFIER/unacknowledge',
-    AcknowledgeAlertPathPrefix: '/alerts/:IDENTIFIER/acknowledge',
+    CloseAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/close`,
+    UnacknowledgeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/unacknowledge`,
+    AcknowledgeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/acknowledge`,
     TeamPathPrefix: '/teams',
     APIVersionV2: '/v2',
 };
 
 const MattermostPaths = {
     PostsPath: '/posts',
-    PostPath: '/posts/:IDENTIFIER',
+    PostPath: `/posts/${PathsVariable.Identifier}`,
     DialogsOpenPath: '/actions/dialogs/open',
     ApiVersionV4: '/api/v4'
 }
 
 export const Routes = {
+    PathsVariable,
     App: AppPaths,
     Mattermost: MattermostPaths,
     OpsGenie: OpsGeniePaths

@@ -1,10 +1,40 @@
+export type AttachmentOption = {
+    text: string;
+    value: string;
+};
+
+export type AttachmentAction = {
+    id: string;
+    name: string;
+    type: string;
+    style?: string;
+    data_source?: string;
+    integration: {
+        url: string;
+        context: any;
+    };
+    options?: AttachmentOption[];
+}
+
+export type Attachment = {
+    text?: string;
+    title?: string;
+    title_link?: string;
+    fields?: {
+        short: boolean;
+        title: string;
+        value: string;
+    }[];
+    actions?: AttachmentAction[]
+};
+
 export type PostCreate = {
     channel_id: string;
     message: string;
     root_id?: string;
     file_ids?: string[];
     props?: {
-        attachments: any[];
+        attachments: Attachment[];
     }
 }
 
@@ -14,7 +44,7 @@ export type PostUpdate = {
     message?: string;
     has_reactions?: boolean;
     props?: {
-        attachments: any[];
+        attachments: Attachment[];
     }
 }
 

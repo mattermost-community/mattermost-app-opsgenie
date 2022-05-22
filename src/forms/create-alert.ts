@@ -6,25 +6,24 @@ import {
     PostCreate,
     ResponseResultWithData,
     Team,
-    Identifier, CloseAlertAction
+    Identifier,
+    CloseAlertAction,
+    AttachmentAction,
+    AttachmentOption, IdentifierType
 } from '../types';
-import {OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
+import {OpsGenieClient} from '../clients/opsgenie';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {Routes} from '../constant';
+import {Actions, options_alert, Routes} from '../constant';
 import config from '../config';
 
 export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const mattermostForApiPost: string = `${mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
     const channelId: string = call.context.channel.id;
     const accessToken: string | undefined = call.context.bot_access_token;
-
-    const opsgenieOptions: OpsGenieClientOptions = {
-        oauth2UserAccessToken: ''
-    };
-    const opsGenieClient = new OpsGenieClient(opsgenieOptions);
-
     const message: string = call.values?.message;
+
+    const opsGenieClient = new OpsGenieClient();
+
     const alertCreate: AlertCreate = {
         message
     };
@@ -43,7 +42,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((team) => {
         const teamParams: Identifier = {
             identifier: team.id,
-            identifierType: 'id'
+            identifierType: IdentifierType.ID
         };
         return opsGenieClient.getTeam(teamParams);
     });
@@ -53,43 +52,54 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     );
 
     const mattermostOptions: MattermostOptions = {
-        mattermostUrl: mattermostForApiPost,
+        mattermostUrl: <string>mattermostUrl,
         accessToken: <string>accessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const actionId: string = alert.acknowledged
-        ? 'unacknowledge'
-        : 'acknowledged';
-    const actionName: string = alert.acknowledged
-        ? 'Unacknowledge'
-        : 'Acknowledged';
-    const actionUrl: string = alert.acknowledged
-        ? `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`
-        : `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`;
-    const action: string = alert.acknowledged
-        ? 'unacknowledge'
-        : 'acknowledged';
-    const options: any[] = [
-        {
-            text: "Assign",
-            value: "assign"
-        },
-        {
-            text: "Snooze",
-            value: "snooze"
-        },
-        {
-            text: "Add note",
-            value: "add_note"
-        }
-    ]
-    if (!alert.acknowledged) {
-        options.push({
-            text: "Take Ownership",
-            value: "take_ownership"
-        });
-    }
+    const followupAlertAction: AttachmentAction = alert.acknowledged
+        ? {
+                id: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+                name: 'Unacknowledge',
+                type: 'button',
+                style: 'default',
+                integration: {
+                    url: `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`,
+                    context: {
+                        action: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+                        alert: {
+                            id: alert.id,
+                            message: alert.message,
+                            tinyId: alert.tinyId
+                        },
+                        bot_access_token: call.context.bot_access_token,
+                        mattermost_site_url: mattermostUrl
+                    } as CloseAlertAction
+                }
+            }
+        : {
+            id: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            name: 'Acknowledged',
+            type: 'button',
+            style: 'default',
+            integration: {
+                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
+                context: {
+                    action: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+                    alert: {
+                        id: alert.id,
+                        message: alert.message,
+                        tinyId: alert.tinyId
+                    },
+                    bot_access_token: call.context.bot_access_token,
+                    mattermost_site_url: mattermostUrl
+                } as CloseAlertAction
+            }
+        };
+
+    const optionsFollowup: AttachmentOption[] = options_alert.filter((opt: AttachmentOption) =>
+        alert.acknowledged && opt.value !== 'take_ownership'
+    );
 
     const postCreate: PostCreate = {
         channel_id: channelId,
@@ -112,34 +122,16 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                         }
                     ],
                     actions: [
+                        followupAlertAction,
                         {
-                            id: actionId,
-                            name: actionName,
-                            type: 'button',
-                            style: 'default',
-                            integration: {
-                                url: actionUrl,
-                                context: {
-                                    action,
-                                    alert: {
-                                        id: alert.id,
-                                        message: alert.message,
-                                        tinyId: alert.tinyId
-                                    },
-                                    bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
-                            }
-                        },
-                        {
-                            id: 'closealert',
+                            id: Actions.CLOSE_ALERT_BUTTON_EVENT,
                             name: 'Close',
                             type: 'button',
                             style: 'success',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
                                 context: {
-                                    action: "do_something",
+                                    action: Actions.CLOSE_ALERT_BUTTON_EVENT,
                                     alert: {
                                         id: alert.id,
                                         message: alert.message,
@@ -151,12 +143,12 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                             }
                         },
                         {
-                            id: "actionoptions",
+                            id: Actions.OTHER_OPTIONS_SELECT_EVENT,
                             name: "Other actions...",
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {
-                                    action: "do_something",
+                                    action: Actions.OTHER_OPTIONS_SELECT_EVENT,
                                     alert: {
                                         id: alert.id,
                                         message: alert.message,
@@ -167,7 +159,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                                 } as CloseAlertAction
                             },
                             type: "select",
-                            options
+                            options: optionsFollowup
                         }
                     ]
                 }

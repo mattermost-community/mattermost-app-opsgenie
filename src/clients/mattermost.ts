@@ -18,7 +18,8 @@ export class MattermostClient {
     }
 
     public createPost(post: PostCreate): Promise<any> {
-        return axios.post(this.config.mattermostUrl, post, {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+        return axios.post(url, post, {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
@@ -26,7 +27,8 @@ export class MattermostClient {
     }
 
     public updatePost(postId: string, post: PostUpdate): Promise<any> {
-        return axios.put(`${this.config.mattermostUrl}/${postId}`, post, {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
+        return axios.put(replace(url, Routes.PathsVariable.Identifier, postId), post, {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
@@ -35,7 +37,7 @@ export class MattermostClient {
 
     public deletePost(postId: string): Promise<any> {
         const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
-        return axios.delete(replace(url, ':IDENTIFIER', postId), {
+        return axios.delete(replace(url, Routes.PathsVariable.Identifier, postId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }

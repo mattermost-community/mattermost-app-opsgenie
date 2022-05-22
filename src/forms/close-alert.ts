@@ -3,31 +3,28 @@ import {
     AppCallAction,
     CloseAlertAction,
     Identifier,
+    IdentifierType,
     PostCreate,
     PostUpdate,
     ResponseResultWithData,
     Team
 } from '../types';
-import {OpsGenieClient, OpsGenieClientOptions} from '../clients/opsgenie';
+import {OpsGenieClient} from '../clients/opsgenie';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {Routes} from '../constant';
 import {hyperlink} from '../utils/markdown';
 
 export async function closeAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
-    const mattermostUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+    const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const postId: string = call.post_id;
-
-    const opsgenieOptions: OpsGenieClientOptions = {
-        oauth2UserAccessToken: ''
-    };
-    const opsGenieClient = new OpsGenieClient(opsgenieOptions);
-
     const alertTinyId: string = call.context.alert.tinyId;
+
+    const opsGenieClient = new OpsGenieClient();
+
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: 'tiny'
+        identifierType: IdentifierType.TINY
     }
     const response: ResponseResultWithData<Alert> = await opsGenieClient.getAlert(identifier);
     const alert: Alert = response.data;
@@ -35,7 +32,7 @@ export async function closeAlertCall(call: AppCallAction<CloseAlertAction>): Pro
     const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((team) => {
         const teamParams: Identifier = {
             identifier: team.id,
-            identifierType: 'id'
+            identifierType: IdentifierType.ID
         };
         return opsGenieClient.getTeam(teamParams);
     });

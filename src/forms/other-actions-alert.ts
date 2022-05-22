@@ -4,7 +4,7 @@ import {
     DialogProps, PostCreate,
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {Routes} from '../constant';
+import {Actions, options_times, Routes} from '../constant';
 import config from '../config';
 
 async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Promise<void> {
@@ -59,12 +59,12 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                     title: `Choose a user to assign the alert to`,
                     actions: [
                         {
-                            id: "actionoptions",
+                            id: Actions.USER_SELECT_EVENT,
                             name: "Choose a user",
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {
-                                    action: "do_something",
+                                    action: Actions.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -73,14 +73,14 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                             data_source: 'users'
                         },
                         {
-                            id: 'canceluser',
+                            id: Actions.CANCEL_BUTTON_EVENT,
                             name: 'Close',
                             type: 'button',
                             style: 'default',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
                                 context: {
-                                    action: "do_something",
+                                    action: Actions.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -115,8 +115,9 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                     title: `For how long do you want to snooze notifications for this alert`,
                     actions: [
                         {
-                            id: "actionoptions",
+                            id: Actions.TIME_SELECT_EVENT,
                             name: "Choose snooze time",
+                            type: "select",
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {
@@ -125,51 +126,17 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
                             },
-                            type: "select",
-                            options: [
-                                {
-                                    text: "5 min.",
-                                    value: "5m"
-                                },
-                                {
-                                    text: "10 min.",
-                                    value: "10m"
-                                },
-                                {
-                                    text: "15 min.",
-                                    value: "15m"
-                                },
-                                {
-                                    text: "30 min.",
-                                    value: "30m"
-                                },
-                                {
-                                    text: "1 hour.",
-                                    value: "1h"
-                                },
-                                {
-                                    text: "2 hours.",
-                                    value: "2h"
-                                },
-                                {
-                                    text: "6 hours.",
-                                    value: "6h"
-                                },
-                                {
-                                    text: "1 day.",
-                                    value: "1d"
-                                }
-                            ]
+                            options: options_times
                         },
                         {
-                            id: 'canceluser',
+                            id: Actions.CANCEL_BUTTON_EVENT,
                             name: 'Close',
                             type: 'button',
                             style: 'default',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
                                 context: {
-                                    action: "do_something",
+                                    action: Actions.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction

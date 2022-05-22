@@ -1,34 +1,34 @@
 import {
     Alert,
     AppCallAction,
+    AttachmentAction,
+    AttachmentOption,
     CloseAlertAction,
     Identifier,
+    IdentifierType,
     PostCreate,
     PostUpdate,
     ResponseResultWithData,
     Team
 } from '../types';
-import {Routes} from '../constant';
-import {OpsGenieClient, OpsGenieClientOptions} from "../clients/opsgenie";
-import {hyperlink} from "../utils/markdown";
-import {MattermostClient, MattermostOptions} from "../clients/mattermost";
-import config from "../config";
+import {Actions, options_alert, Routes} from '../constant';
+import {OpsGenieClient} from '../clients/opsgenie';
+import {hyperlink} from '../utils/markdown';
+import {MattermostClient, MattermostOptions} from '../clients/mattermost';
+import config from '../config';
 
 export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
-    const mattermostUrl: string = `${call.context.mattermost_site_url}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+    const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const postId: string = call.post_id;
 
-    const opsgenieOptions: OpsGenieClientOptions = {
-        oauth2UserAccessToken: ''
-    };
-    const opsGenieClient = new OpsGenieClient(opsgenieOptions);
+    const opsGenieClient = new OpsGenieClient();
 
     const alertTinyId: string = call.context.alert.tinyId;
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: 'tiny'
+        identifierType: IdentifierType.TINY
     }
     const response: ResponseResultWithData<Alert> = await opsGenieClient.getAlert(identifier);
     const alert: Alert = response.data;
@@ -36,7 +36,7 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
     const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((team) => {
         const teamParams: Identifier = {
             identifier: team.id,
-            identifierType: 'id'
+            identifierType: IdentifierType.ID
         };
         return opsGenieClient.getTeam(teamParams);
     });
@@ -71,38 +71,49 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
     };
     await mattermostClient.createPost(postCreate);
 
-    const actionId: string = !alert.acknowledged
-        ? 'unacknowledge'
-        : 'acknowledged';
-    const actionName: string = !alert.acknowledged
-        ? 'Unacknowledge'
-        : 'Acknowledged';
-    const actionUrl: string = !alert.acknowledged
-        ? `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`
-        : `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`;
-    const action: string = !alert.acknowledged
-        ? 'unacknowledge'
-        : 'acknowledged';
-    const options: any[] = [
-        {
-            text: "Assign",
-            value: "assign"
-        },
-        {
-            text: "Snooze",
-            value: "snooze"
-        },
-        {
-            text: "Add note",
-            value: "add_note"
+    const followupAlertAction: AttachmentAction = alert.acknowledged
+        ? {
+            id: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+            name: 'Unacknowledge',
+            type: 'button',
+            style: 'default',
+            integration: {
+                url: `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`,
+                context: {
+                    action: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+                    alert: {
+                        id: alert.id,
+                        message: alert.message,
+                        tinyId: alert.tinyId
+                    },
+                    bot_access_token: call.context.bot_access_token,
+                    mattermost_site_url: mattermostUrl
+                } as CloseAlertAction
+            }
         }
-    ]
-    if (!alert.acknowledged) {
-        options.push({
-            text: "Take Ownership",
-            value: "take_ownership"
-        });
-    }
+        : {
+            id: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            name: 'Acknowledged',
+            type: 'button',
+            style: 'default',
+            integration: {
+                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
+                context: {
+                    action: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+                    alert: {
+                        id: alert.id,
+                        message: alert.message,
+                        tinyId: alert.tinyId
+                    },
+                    bot_access_token: call.context.bot_access_token,
+                    mattermost_site_url: mattermostUrl
+                } as CloseAlertAction
+            }
+        };
+
+    const optionsFollowup: AttachmentOption[] = options_alert.filter((opt: AttachmentOption) =>
+        alert.acknowledged && opt.value !== 'take_ownership'
+    );
 
     const postUpdate: PostUpdate = {
         id: postId,
@@ -124,25 +135,7 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
                         }
                     ],
                     actions: [
-                        {
-                            id: actionId,
-                            name: actionName,
-                            type: 'button',
-                            style: 'default',
-                            integration: {
-                                url: actionUrl,
-                                context: {
-                                    action,
-                                    alert: {
-                                        id: alert.id,
-                                        message: alert.message,
-                                        tinyId: alert.tinyId
-                                    },
-                                    bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
-                            }
-                        },
+                        followupAlertAction,
                         {
                             id: 'closealert',
                             name: 'Close',
@@ -179,7 +172,7 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
                                 } as CloseAlertAction
                             },
                             type: "select",
-                            options
+                            options: optionsFollowup
                         }
                     ]
                 }

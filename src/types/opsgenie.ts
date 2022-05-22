@@ -1,3 +1,8 @@
+export enum IdentifierType {
+    ID = 'id',
+    TINY = 'tiny'
+}
+
 export type ResponseResult = {
     result: string;
     took: number;
@@ -73,6 +78,8 @@ export type AssignOwnerToAlertCreate = {
     }
 };
 
+export type AlertOrder = 'desc' | 'asc';
+
 export type ListAlertParams = {
     query?: string;
     searchIdentifier?: string;
@@ -80,7 +87,7 @@ export type ListAlertParams = {
     offset?: number;
     limit?: number;
     sort?: string;
-    order?: string;
+    order?: AlertOrder;
 }
 
 export type AlertWebhook = {
@@ -114,4 +121,3 @@ export type WebhookRequest = {
     integrationId: string;
     integrationType: string;
 }
-

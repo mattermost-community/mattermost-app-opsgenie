@@ -12,11 +12,7 @@ import {
     Identifier
 } from '../types';
 import {Routes} from '../constant';
-import {replace} from "../utils/utils";
-
-export type OpsGenieClientOptions = {
-    oauth2UserAccessToken: string;
-}
+import {replace} from '../utils/utils';
 
 export type ClientOptions = {
     api_key: string;
@@ -27,7 +23,7 @@ export class OpsGenieClient {
     private opsgenieclient: any = opsgenie;
     private options: ClientOptions;
 
-    constructor(opsgenieOptions: OpsGenieClientOptions) {
+    constructor() {
         const token = config.OPSGENIE.API_KEY;
         if (!token) {
             throw new Error('Failed to get oauth2 user access_token');
@@ -78,7 +74,7 @@ export class OpsGenieClient {
     }
 
     public closeAlert(identifier: Identifier): Promise<ResponseResult> {
-        const path: string = `${replace(Routes.OpsGenie.CloseAlertPathPrefix, ':IDENTIFIER', identifier.identifier)}`;
+        const path: string = `${replace(Routes.OpsGenie.CloseAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
             headers: {
@@ -92,7 +88,7 @@ export class OpsGenieClient {
     }
 
     public unacknowledgeAlert(identifier: Identifier): Promise<ResponseResult> {
-        const path: string = `${replace(Routes.OpsGenie.UnacknowledgeAlertPathPrefix, ':IDENTIFIER', identifier.identifier)}`;
+        const path: string = `${replace(Routes.OpsGenie.UnacknowledgeAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
             headers: {
@@ -106,7 +102,7 @@ export class OpsGenieClient {
     }
 
     public acknowledgeAlert(identifier: Identifier): Promise<ResponseResult> {
-        const path: string = `${replace(Routes.OpsGenie.AcknowledgeAlertPathPrefix, ':IDENTIFIER', identifier.identifier)}`;
+        const path: string = `${replace(Routes.OpsGenie.AcknowledgeAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
             headers: {
