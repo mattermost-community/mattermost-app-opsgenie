@@ -16,7 +16,6 @@ const AppPaths = {
     CallPathCloseOptions: '/alert/closeoptions',
     CallPathAssignOwnerAlert: '/alert/assign',
     CallPathSnoozeAlertCreate: '/alert/snooze',
-
     CallPathNoteToAlertModal: '/alert/note',
 
     SubscribeIncomingWebhookPath: '/webhook'
@@ -24,6 +23,7 @@ const AppPaths = {
 
 const OpsGeniePaths = {
     AlertPathPrefix: '/alerts',
+    NoteToAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/notes`,
     CloseAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/close`,
     UnacknowledgeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/unacknowledge`,
     AcknowledgeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/acknowledge`,

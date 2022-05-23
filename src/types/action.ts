@@ -1,6 +1,5 @@
 export type CloseAlertAction = {
     action: string;
-    alert_id: string;
     alert: {
         id: string;
         message: string;

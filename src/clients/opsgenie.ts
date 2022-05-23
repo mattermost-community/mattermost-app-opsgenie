@@ -12,7 +12,7 @@ import {
     Identifier,
     AlertAssign,
     OpsUser,
-    AlertSnooze
+    AlertSnooze, AlertNote
 } from '../types';
 import {Routes} from '../constant';
 import {replace} from '../utils/utils';
@@ -47,6 +47,19 @@ export class OpsGenieClient {
         return axios.post(url, alert,{
             headers: {
                 Authorization: `GenieKey ${this.options.api_key}`
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public addNoteToAlert(identifier: Identifier, data: AlertNote): Promise<ResponseResult> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.NoteToAlertPathPrefix}`;
+        return axios.post(replace(url, Routes.PathsVariable.Identifier, identifier.identifier), data,{
+            headers: {
+                Authorization: `GenieKey ${this.options.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
             },
             responseType: 'json'
         }).then((response) => response.data);

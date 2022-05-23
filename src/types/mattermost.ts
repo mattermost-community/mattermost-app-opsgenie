@@ -139,13 +139,17 @@ export type DialogProps = {
     url: string;
     dialog: {
         callback_id?: string;
-        title: string;
-        introduction_text?: string;
-        elements: (DialogElementText | DialogElementTextarea | DialogElementSelect | DialogElementCheckbox | DialogElementRadio)[];
-        icon_url?: string;
-        submit_label?: string;
-        notify_on_cancel?: boolean;
-        state?: string;
+        title: string; // Title of the dialog. Maximum 24 characters.
+        introduction_text?: string; // Markdown-formatted introduction text which is displayed above the dialog elements.
+        elements: (DialogElementText | DialogElementTextarea | DialogElementSelect | DialogElementCheckbox | DialogElementRadio)[]; // Up to 5 elements allowed per dialog. See below for more details on elements. If none are supplied the dialog box acts as a simple confirmation.
+        url?: string; // The URL to send the submitted dialog payload to.
+        icon_url?: string; // (Optional) The URL of the icon used for your dialog. If none specified, no icon is displayed.
+        submit_label?: string; // (Optional) Label of the button to complete the dialog. Default is Submit.
+        notify_on_cancel?: boolean; // (Optional) When true, sends an event back to the integration whenever there’s a user-induced dialog cancellation. No other data is sent back with the event. Default is false.
+        state?: string; // (Optional) String provided by the integration that will be echoed back with dialog submission. Default is the empty string.
     }
 }
 
+export type AddNoteDialogForm = {
+    note: string;
+}

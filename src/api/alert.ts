@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
-import {AppCallResponse, AppForm} from '../types';
-import {newErrorCallResponseWithMessage, newFormCallResponse, newOKCallResponse} from '../utils/call-responses';
+import {AppCallResponse} from '../types';
+import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
 import {newCreateAlertForm} from '../forms/create-alert';
-import {newCreateNoteToAlertForm, newModalNoteToAlert} from '../forms/create-note';
+import {newModalNoteToAlert} from '../forms/create-note';
 import {newCreateSnoozeAlertCall} from '../forms/create-snooze';
 import {assignOwnerAlertCall} from '../forms/assign-owner';
 import {closeAlertCall} from '../forms/close-alert';
@@ -84,8 +84,8 @@ export const showModalNoteToAlert = async (request: Request, response: Response)
     let callResponse: AppCallResponse;
 
     try {
-        const form: AppForm = await newModalNoteToAlert(request.body);
-        callResponse = newFormCallResponse(form);
+        await newModalNoteToAlert(request.body);
+        callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {
@@ -93,20 +93,6 @@ export const showModalNoteToAlert = async (request: Request, response: Response)
         response.json(callResponse);
     }
 }
-
-export const createNoteToAlert = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
-
-    try {
-        const form: AppForm = await newCreateNoteToAlertForm(request.body);
-        callResponse = newFormCallResponse(form);
-
-        response.json(callResponse);
-    } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create incident form: ' + error.message);
-        response.json(callResponse);
-    }
-};
 
 export const assignOwnerToAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;

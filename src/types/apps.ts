@@ -62,6 +62,16 @@ export type AppCallRequest = AppCall & {
     query?: string;
 };
 
+export type AppCallDialog<T> = {
+    callback_id: string;
+    state: string;
+    user_id: string;
+    channel_id: string;
+    team_id: string;
+    submission: T;
+    cancelled: boolean;
+}
+
 export type AppCallAction<T> = {
     user_id: string;
     user_name: string;

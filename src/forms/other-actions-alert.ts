@@ -18,12 +18,13 @@ import {
     Routes
 } from '../constant';
 import config from '../config';
-import {OpsGenieClient} from "../clients/opsgenie";
+import {OpsGenieClient} from '../clients/opsgenie';
 
 async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const triggerId: string = call.trigger_id;
     const accessToken: string = call.context.bot_access_token;
+    const alertTinyId: string = call.context.alert.tinyId;
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -31,12 +32,14 @@ async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Prom
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const url: string = `${config.APP.HOST}${Routes.App.CallPathNoteToAlertModal}`;
     const dialogProps: DialogProps = {
         trigger_id: triggerId,
-        url,
+        url: `${config.APP.HOST}${Routes.App.CallPathNoteToAlertModal}`,
         dialog: {
             title: 'Add Note',
+            icon_url: `${config.APP.HOST}/static/opsgenie.png`,
+            submit_label: 'Add',
+            state: alertTinyId,
             elements: [
                 {
                     display_name: 'Note',

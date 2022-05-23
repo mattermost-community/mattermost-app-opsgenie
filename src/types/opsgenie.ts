@@ -83,6 +83,12 @@ export type AlertAssign = {
     note?: string;
 }
 
+export type AlertNote = {
+    note: string;
+    user?: string;
+    source?: string;
+};
+
 export type AlertSnooze = {
     note?: string;
     user?: string
@@ -93,12 +99,6 @@ export type AlertSnooze = {
 export type Identifier = {
     identifier: string;
     identifierType: string;
-};
-
-export type NoteToAlertCreate = {
-    note: string;
-    user: string;
-    source: string;
 };
 
 export type AlertOrder = 'desc' | 'asc';
