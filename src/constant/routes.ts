@@ -18,7 +18,7 @@ const AppPaths = {
     CallPathSnoozeAlertCreate: '/alert/snooze',
     CallPathNoteToAlertModal: '/alert/note',
 
-    SubscribeIncomingWebhookPath: '/webhook'
+    CallPathIncomingWebhookPath: '/webhook'
 }
 
 const OpsGeniePaths = {

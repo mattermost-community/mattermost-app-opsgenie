@@ -24,7 +24,7 @@ router.post(`${Routes.App.CallPathAssignOwnerAlert}`, cAlert.assignOwnerToAlert)
 router.post(`${Routes.App.CallPathSnoozeAlertCreate}`, cAlert.createSnoozeAlert);
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.showModalNoteToAlert);
 
-router.post(`${Routes.App.SubscribeIncomingWebhookPath}`, cWebhook.incomingWebhook);
+router.post(`${Routes.App.CallPathIncomingWebhookPath}`, cWebhook.incomingWebhook);
 
 const staticRouter = express.Router();
 staticRouter.use(express.static('static'));

@@ -62,7 +62,7 @@ export class MattermostClient {
         }).then((response: AxiosResponse<any>) => response.data);
     }
 
-    public incomingWebhook(data: {[key: string]: any}): Promise<any> {
+    public incomingWebhook(data: {[key: string]: any}): Promise<string> {
         return axios.post(this.config.mattermostUrl, data)
             .then((response: AxiosResponse<any>) => response.data);
     }

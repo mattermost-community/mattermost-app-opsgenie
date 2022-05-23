@@ -1,63 +1,170 @@
 import {Request, Response} from 'express';
-import {AlertWebhook, AppCallResponse, CloseAlertAction, PostCreate, WebhookRequest} from '../types';
+import {
+    Alert,
+    AlertWebhook,
+    AppCallResponse,
+    AttachmentAction,
+    AttachmentOption,
+    CloseAlertAction,
+    Identifier,
+    IdentifierType,
+    ResponseResultWithData,
+    Team,
+    WebhookRequest
+} from '../types';
 import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
-import {Actions, AppMattermostConfig, Routes} from '../constant';
+import {
+    Actions,
+    AppMattermostConfig,
+    option_alert_take_ownership,
+    options_alert,
+    Routes
+} from '../constant';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import config from "../config";
+import {OpsGenieClient} from '../clients/opsgenie';
+import config from '../config';
 
 async function notifyAlertCreated(request: WebhookRequest, headers: { [key: string]: any }) {
     const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
-    const alert: AlertWebhook = request.alert;
+    const alertWebhook: AlertWebhook = request.alert;
+
+    const opsGenieClient = new OpsGenieClient();
+
+    const identifier: Identifier = {
+        identifier: alertWebhook.alertId,
+        identifierType: IdentifierType.ID
+    };
+    const responseAlert: ResponseResultWithData<Alert> = await opsGenieClient.getAlert(identifier);
+    const alert: Alert = responseAlert.data;
+
+    const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((team) => {
+        const teamParams: Identifier = {
+            identifier: team.id,
+            identifierType: IdentifierType.ID
+        };
+        return opsGenieClient.getTeam(teamParams);
+    });
+    const teams: ResponseResultWithData<Team>[] = await Promise.all(teamsPromise);
+    const teamsName: string[] = teams.map((team: ResponseResultWithData<Team>) =>
+        team.data.name
+    );
+
+    const followupAlertAction: AttachmentAction = alert.acknowledged
+        ? {
+            id: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+            name: 'Unacknowledge',
+            type: 'button',
+            style: 'default',
+            integration: {
+                url: `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`,
+                context: {
+                    action: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+                    alert: {
+                        id: alert.id,
+                        message: alert.message,
+                        tinyId: alert.tinyId
+                    },
+                    bot_access_token: '',
+                    mattermost_site_url: ''
+                } as CloseAlertAction
+            }
+        }
+        : {
+            id: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            name: 'Acknowledged',
+            type: 'button',
+            style: 'default',
+            integration: {
+                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
+                context: {
+                    action: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+                    alert: {
+                        id: alert.id,
+                        message: alert.message,
+                        tinyId: alert.tinyId
+                    },
+                    bot_access_token: '',
+                    mattermost_site_url: ''
+                } as CloseAlertAction
+            }
+        };
+
+    const optionsFollowup: AttachmentOption[] = alert.acknowledged
+        ? options_alert
+        : options_alert.filter((opt: AttachmentOption) =>
+            opt.value !== option_alert_take_ownership
+        );
+    const payload = {
+        text: '',
+        username: 'opsgenie',
+        icon_url: `${config.APP.HOST}/static/opsgenie.png`,
+        attachments: [
+            {
+                title: `#${alert.tinyId}: ${alert.message}`,
+                title_link: `https://testancient.app.opsgenie.com/alert/detail/${alert.id}`,
+                fields: [
+                    {
+                        short: true,
+                        title: 'Priority',
+                        value: alert.priority
+                    },
+                    {
+                        short: true,
+                        title: 'Routed Teams',
+                        value: teamsName.join(', ')
+                    }
+                ],
+                actions: [
+                    followupAlertAction,
+                    {
+                        id: Actions.CLOSE_ALERT_BUTTON_EVENT,
+                        name: 'Close',
+                        type: 'button',
+                        style: 'success',
+                        integration: {
+                            url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
+                            context: {
+                                action: Actions.CLOSE_ALERT_BUTTON_EVENT,
+                                alert: {
+                                    id: alert.id,
+                                    message: alert.message,
+                                    tinyId: alert.tinyId
+                                },
+                                bot_access_token: '',
+                                mattermost_site_url: ''
+                            } as CloseAlertAction
+                        }
+                    },
+                    {
+                        id: Actions.OTHER_OPTIONS_SELECT_EVENT,
+                        name: 'Other actions...',
+                        integration: {
+                            url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
+                            context: {
+                                action: Actions.OTHER_OPTIONS_SELECT_EVENT,
+                                alert: {
+                                    id: alert.id,
+                                    message: alert.message,
+                                    tinyId: alert.tinyId
+                                },
+                                bot_access_token: '',
+                                mattermost_site_url: ''
+                            } as CloseAlertAction
+                        },
+                        type: 'select',
+                        options: optionsFollowup
+                    }
+                ]
+            }
+        ]
+    };
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: mattermostWebhookUrl,
         accessToken: null
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-
-    const payload = {
-        text: 'Hola',
-        props: {
-            attachments: [
-                {
-                    title: `#${alert.tinyId}: ${alert.message}`,
-                    title_link: `https://testancient.app.opsgenie.com/alert/detail/${alert.alertId}`,
-                    fields: [
-                        {
-                            short: true,
-                            title: 'Priority',
-                            value: alert.priority
-                        },
-                        {
-                            short: true,
-                            title: 'Routed Teams',
-                            value: 'mattermost'
-                        }
-                    ],
-                    actions: [
-                        {
-                            id: Actions.CLOSE_ALERT_BUTTON_EVENT,
-                            name: 'Close',
-                            type: 'button',
-                            style: 'success',
-                            integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
-                                context: {
-                                    action: Actions.CLOSE_ALERT_BUTTON_EVENT
-                                } as CloseAlertAction
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    };
-    try {
-        const data = await mattermostClient.incomingWebhook(payload);
-        console.log('data webhook', data);
-    } catch (error) {
-        console.log('error webhook', error);
-    }
+    await mattermostClient.incomingWebhook(payload);
 }
 
 const WEBHOOKS_ACTIONS: { [key: string]: Function } = {

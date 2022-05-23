@@ -5,7 +5,8 @@ import {
     User,
     IdentifierType,
     ResponseResultWithData,
-    OpsUser, AlertAssign
+    OpsUser,
+    AlertAssign
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient} from "../clients/opsgenie";
