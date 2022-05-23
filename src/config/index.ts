@@ -1,7 +1,7 @@
 export default {
     APP: {
         PORT: 3000,
-        HOST: 'https://dfa8-201-160-204-161.ngrok.io'
+        HOST: 'https://e54b-201-160-204-161.ngrok.io'
     },
     OPSGENIE: {
         URL: 'https://api.opsgenie.com',

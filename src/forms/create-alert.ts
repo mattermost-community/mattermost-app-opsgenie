@@ -9,11 +9,12 @@ import {
     Identifier,
     CloseAlertAction,
     AttachmentAction,
-    AttachmentOption, IdentifierType
+    AttachmentOption,
+    IdentifierType
 } from '../types';
 import {OpsGenieClient} from '../clients/opsgenie';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {Actions, options_alert, Routes} from '../constant';
+import {Actions, option_alert_take_ownership, options_alert, Routes} from '../constant';
 import config from '../config';
 
 export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
@@ -97,9 +98,11 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
             }
         };
 
-    const optionsFollowup: AttachmentOption[] = options_alert.filter((opt: AttachmentOption) =>
-        alert.acknowledged && opt.value !== 'take_ownership'
-    );
+    const optionsFollowup: AttachmentOption[] = alert.acknowledged
+        ? options_alert
+        : options_alert.filter((opt: AttachmentOption) =>
+            opt.value !== option_alert_take_ownership
+        );
 
     const postCreate: PostCreate = {
         channel_id: channelId,
@@ -144,7 +147,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                         },
                         {
                             id: Actions.OTHER_OPTIONS_SELECT_EVENT,
-                            name: "Other actions...",
+                            name: 'Other actions...',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {
@@ -158,7 +161,7 @@ export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
                             },
-                            type: "select",
+                            type: 'select',
                             options: optionsFollowup
                         }
                     ]

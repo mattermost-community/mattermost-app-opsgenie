@@ -72,7 +72,7 @@ export const incomingWebhook = async (request: Request, response: Response) => {
     try {
         const action: Function = WEBHOOKS_ACTIONS[data.action];
         if (action) {
-            action(data, headers);
+            await action(data, headers);
         }
         callResponse = newOKCallResponse();
         response.json(callResponse);

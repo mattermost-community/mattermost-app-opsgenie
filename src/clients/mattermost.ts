@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {DialogProps, PostCreate, PostUpdate} from '../types';
 import {Routes} from '../constant';
 import {replace} from "../utils/utils";
@@ -23,7 +23,7 @@ export class MattermostClient {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
-        });
+        }).then((response: AxiosResponse<any>) => response.data);
     }
 
     public updatePost(postId: string, post: PostUpdate): Promise<any> {
@@ -32,7 +32,7 @@ export class MattermostClient {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
-        });
+        }).then((response: AxiosResponse<any>) => response.data);
     }
 
     public deletePost(postId: string): Promise<any> {
@@ -41,7 +41,7 @@ export class MattermostClient {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
-        });
+        }).then((response: AxiosResponse<any>) => response.data);
     }
 
     public showDialog(dialog: DialogProps): Promise<any> {
@@ -50,10 +50,11 @@ export class MattermostClient {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
-        });
+        }).then((response: AxiosResponse<any>) => response.data);
     }
 
     public incomingWebhook(data: {[key: string]: any}): Promise<any> {
-        return axios.post(this.config.mattermostUrl, data);
+        return axios.post(this.config.mattermostUrl, data)
+            .then((response: AxiosResponse<any>) => response.data);
     }
 }
