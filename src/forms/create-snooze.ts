@@ -1,31 +1,33 @@
-import {AppCallRequest, AppForm, Identifier, SnoozeAlertCreate} from '../types';
-import {OpsGenieIcon, Routes} from "../constant";
+import {addHours, addMinutes, addDays} from 'date-fns';
+import {
+    AppCallAction,
+    CloseAlertAction
+} from '../types';
+import {
+    option_time_10m,
+    option_time_15m,
+    option_time_1d,
+    option_time_1h,
+    option_time_2h,
+    option_time_30m,
+    option_time_5m,
+    option_time_6h
+} from '../constant';
 
-export async function newCreateSnoozeAlertForm(call: AppCallRequest): Promise<AppForm> {
-    console.log('call', call);
-    const alertIdentifier: Identifier = {
-        identifier: "55487914-e2c5-43cf-80d3-a6d9cba5ded8-1652463057998",
-        identifierType : "id"
+export async function newCreateSnoozeAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
+    const selectedOption: string|undefined = call.context.selected_option;
+
+    const currentDate: Date = new Date();
+    const date: { [key: string]: Date } = {
+        [option_time_5m]: addMinutes(currentDate, 5),
+        [option_time_10m]: addMinutes(currentDate, 10),
+        [option_time_15m]: addMinutes(currentDate, 15),
+        [option_time_30m]: addMinutes(currentDate, 30),
+        [option_time_1h]: addHours(currentDate, 1),
+        [option_time_2h]: addHours(currentDate, 2),
+        [option_time_6h]: addHours(currentDate, 6),
+        [option_time_1d]: addDays(currentDate, 1),
     };
 
-    const snoozeAlertCreate: SnoozeAlertCreate = {
-        note : "some note for snooze action",
-        user : "lizeth@ancient.mx",
-        source : "source of the snooze request",
-        endTime : "2017-06-09T08:30:50.894Z"
-    };
-
-    return new Promise((resolve, rejects) => {
-        const form: any = {
-            title: 'Create OpsGenie Snooze Alert',
-            header: 'Create a OpsGenie snooze alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
-            icon: OpsGenieIcon,
-            fields: [],
-            call: {
-                path: Routes.App.CallPathAlertSubmitOrUpdate,
-            },
-        };
-
-        return resolve(form);
-    });
+    console.log('endTime', date[<string>selectedOption].toString());
 }

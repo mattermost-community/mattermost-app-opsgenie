@@ -1,3 +1,29 @@
+export type User = {
+    id: string;
+    create_at: number;
+    update_at: number;
+    delete_at: number;
+    username: string;
+    auth_data: string;
+    auth_service: string;
+    email: string;
+    nickname: string;
+    first_name: string;
+    last_name: string;
+    position: string;
+    roles: string;
+    last_picture_update: number;
+    locale: string;
+    timezone: {
+        automaticTimezone: string;
+        manualTimezone: string;
+        useAutomaticTimezone: string;
+    };
+    is_bot: boolean;
+    bot_description: string;
+    disable_welcome_email: false;
+};
+
 export type AttachmentOption = {
     text: string;
     value: string;

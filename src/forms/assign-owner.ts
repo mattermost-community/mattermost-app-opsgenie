@@ -1,38 +1,43 @@
 import {
-    AppCallRequest,
-    AppForm,
     Identifier,
-    AssignOwnerToAlertCreate
+    AppCallAction,
+    CloseAlertAction,
+    User,
+    IdentifierType,
+    ResponseResultWithData,
+    OpsUser, AlertAssign
 } from '../types';
-import {OpsGenieIcon, Routes} from "../constant";
+import {MattermostClient, MattermostOptions} from '../clients/mattermost';
+import {OpsGenieClient} from "../clients/opsgenie";
 
-export async function assignOwnerAlertForm(call: AppCallRequest): Promise<AppForm> {
-    console.log('call', call);
-    const alertIdentifier: Identifier = {
-        identifier: "55487914-e2c5-43cf-80d3-a6d9cba5ded8-1652463057998",
-        identifierType : "id"
+export async function assignOwnerAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
+    const mattermostUrl: string|undefined = call.context.mattermost_site_url;
+    const accessToken: string|undefined = call.context.bot_access_token;
+    const userId: string|undefined = call.context.selected_option;
+    const alertTinyId: string = call.context.alert.tinyId;
+
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>accessToken
     };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    const opsGenieClient = new OpsGenieClient();
 
-    const assignOwnerToAlertCreate: AssignOwnerToAlertCreate = {
-        note : "some note for snooze action",
-        user : "lizeth@ancient.mx",
-        source : "source of the snooze request",
+    const mattermostUser: User = await mattermostClient.getUser(<string>userId);
+    const identifierUser: Identifier = {
+        identifier: mattermostUser.email,
+        identifierType: IdentifierType.USERNAME
+    }
+    const opsgenieUser: ResponseResultWithData<OpsUser> = await opsGenieClient.getUser(identifierUser);
+
+    const identifierAlert: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY
+    }
+    const data: AlertAssign = {
         owner: {
-            username: 'lizeth@ancient.mx'
+            id: opsgenieUser.data.id
         }
     };
-
-    return new Promise((resolve, rejects) => {
-        const form: any = {
-            title: 'Create OpsGenie Assign Owner to Alert',
-            header: 'Create a OpsGenie assign owner to alert from Mattermost by filling out and submitting this form. Additional text can be added in the `Optional Message` field.',
-            icon: OpsGenieIcon,
-            fields: [],
-            call: {
-                path: Routes.App.CallPathAlertSubmitOrUpdate,
-            },
-        };
-
-        return resolve(form);
-    });
+    await opsGenieClient.assignAlert(identifierAlert, data);
 }

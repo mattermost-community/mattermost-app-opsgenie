@@ -1,7 +1,10 @@
 import {
+    AlertAssign,
     AppCallAction,
     CloseAlertAction,
     DialogProps,
+    Identifier,
+    IdentifierType,
     PostCreate,
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
@@ -15,6 +18,7 @@ import {
     Routes
 } from '../constant';
 import config from '../config';
+import {OpsGenieClient} from "../clients/opsgenie";
 
 async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
@@ -70,14 +74,14 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                             id: Actions.USER_SELECT_EVENT,
                             name: "Choose a user",
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAssignOwnerAlert}`,
                                 context: {
                                     action: Actions.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
                             },
-                            type: "select",
+                            type: 'select',
                             data_source: 'users'
                         },
                         {
@@ -124,11 +128,11 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                         {
                             id: Actions.TIME_SELECT_EVENT,
                             name: "Choose snooze time",
-                            type: "select",
+                            type: 'select',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlertCreate}`,
                                 context: {
-                                    action: "do_something",
+                                    action: Actions.TIME_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -157,6 +161,23 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
     await mattermostClient.createPost(postCreate);
 }
 
+async function showPostTakeOwnership(call: AppCallAction<CloseAlertAction>): Promise<void> {
+    const alertTinyId: string = call.context.alert.tinyId;
+
+    const opsGenieClient = new OpsGenieClient();
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY
+    }
+    const data: AlertAssign = {
+        owner: {
+            id: ''
+        }
+    }
+    await opsGenieClient.assignAlert(identifier, data);
+}
+
 const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
     [Actions.OTHER_OPTIONS_SELECT_EVENT]: {
         [option_alert_assign]: showPostOfListUsers,
@@ -165,10 +186,6 @@ const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
         [option_alert_snooze]: showPostOfTimes,
     }
 };
-
-async function showPostTakeOwnership(call: AppCallAction<CloseAlertAction>): Promise<void> {
-    console.log('showPostTakeOwnership', call);
-}
 
 export async function otherActionsAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
     const action: string = call.context.action;

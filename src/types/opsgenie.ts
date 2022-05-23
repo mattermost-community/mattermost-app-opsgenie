@@ -1,6 +1,7 @@
 export enum IdentifierType {
     ID = 'id',
-    TINY = 'tiny'
+    TINY = 'tiny',
+    USERNAME = 'username'
 }
 
 export type ResponseResult = {
@@ -13,6 +14,28 @@ export type ResponseResultWithData<T> = {
     took: number;
     requestId: string;
     data: T
+}
+
+export type OpsUser = {
+    blocked: boolean;
+    verified: boolean;
+    id: string;
+    username: string;
+    fullName: string;
+    role: {
+        id: string;
+        name: string;
+    };
+    timeZone: string;
+    locale: string;
+    userAddress: {
+        country: string;
+        state: string;
+        city: string;
+        line: string;
+        zipCode: string;
+    };
+    createdAt: string;
 }
 
 export type Alert = {
@@ -51,6 +74,22 @@ export type AlertCreate = {
     message: string;
 };
 
+export type AlertAssign = {
+    owner: {
+        id: string;
+    };
+    user?: string;
+    source?: string;
+    note?: string;
+}
+
+export type AlertSnooze = {
+    note?: string;
+    user?: string
+    source?: string;
+    endTime: string;
+};
+
 export type Identifier = {
     identifier: string;
     identifierType: string;
@@ -60,22 +99,6 @@ export type NoteToAlertCreate = {
     note: string;
     user: string;
     source: string;
-};
-
-export type SnoozeAlertCreate = {
-    note: string;
-    user: string
-    source: string;
-    endTime: String;
-};
-
-export type AssignOwnerToAlertCreate = {
-    note: string;
-    user: string;
-    source: string;
-    owner: {
-        username: string;
-    }
 };
 
 export type AlertOrder = 'desc' | 'asc';

@@ -22,10 +22,10 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const postId: string = call.post_id;
+    const alertTinyId: string = call.context.alert.tinyId;
 
     const opsGenieClient = new OpsGenieClient();
 
-    const alertTinyId: string = call.context.alert.tinyId;
     const identifier: Identifier = {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY

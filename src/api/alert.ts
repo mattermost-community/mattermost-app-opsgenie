@@ -3,12 +3,12 @@ import {AppCallResponse, AppForm} from '../types';
 import {newErrorCallResponseWithMessage, newFormCallResponse, newOKCallResponse} from '../utils/call-responses';
 import {newCreateAlertForm} from '../forms/create-alert';
 import {newCreateNoteToAlertForm, newModalNoteToAlert} from '../forms/create-note';
-import {newCreateSnoozeAlertForm} from '../forms/create-snooze';
-import {assignOwnerAlertForm} from '../forms/assign-owner';
+import {newCreateSnoozeAlertCall} from '../forms/create-snooze';
+import {assignOwnerAlertCall} from '../forms/assign-owner';
 import {closeAlertCall} from '../forms/close-alert';
-import {followupAlertCall} from "../forms/followup-alert";
-import {otherActionsAlertCall} from "../forms/other-actions-alert";
-import {closeActionsAlertCall} from "../forms/close-actions-alert";
+import {followupAlertCall} from '../forms/followup-alert';
+import {otherActionsAlertCall} from '../forms/other-actions-alert';
+import {closeActionsAlertCall} from '../forms/close-actions-alert';
 
 export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -108,12 +108,12 @@ export const createNoteToAlert = async (request: Request, response: Response) =>
     }
 };
 
-export const createSnoozeAlert = async (request: Request, response: Response) => {
+export const assignOwnerToAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form: AppForm = await newCreateSnoozeAlertForm(request.body);
-        callResponse = newFormCallResponse(form);
+        await assignOwnerAlertCall(request.body);
+        callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {
@@ -122,12 +122,12 @@ export const createSnoozeAlert = async (request: Request, response: Response) =>
     }
 };
 
-export const assignOwnerToAlert = async (request: Request, response: Response) => {
+export const createSnoozeAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form: AppForm = await assignOwnerAlertForm(request.body);
-        callResponse = newFormCallResponse(form);
+        await newCreateSnoozeAlertCall(request.body);
+        callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {

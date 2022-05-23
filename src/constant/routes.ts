@@ -14,11 +14,10 @@ const AppPaths = {
     CallPathAlertAcknowledged: '/alert/Acknowledged',
     CallPathAlertOtherActions: '/alert/otheractions',
     CallPathCloseOptions: '/alert/closeoptions',
+    CallPathAssignOwnerAlert: '/alert/assign',
+    CallPathSnoozeAlertCreate: '/alert/snooze',
 
     CallPathNoteToAlertModal: '/alert/note',
-    CallPathSnoozeAlertCreate: '/alert/snooze/create',
-    CallPathAssignOwnerAlert: '/alert/assign',
-    CallPathAlertSubmitOrUpdate: '/alert/submit-or-update',
 
     SubscribeIncomingWebhookPath: '/webhook'
 }
@@ -28,6 +27,9 @@ const OpsGeniePaths = {
     CloseAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/close`,
     UnacknowledgeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/unacknowledge`,
     AcknowledgeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/acknowledge`,
+    AssignAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/assign`,
+    SnoozeAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/snooze`,
+    UserPathPrefix: `/users/${PathsVariable.Identifier}`,
     TeamPathPrefix: '/teams',
     APIVersionV2: '/v2',
 };
@@ -35,6 +37,7 @@ const OpsGeniePaths = {
 const MattermostPaths = {
     PostsPath: '/posts',
     PostPath: `/posts/${PathsVariable.Identifier}`,
+    UserPath: `/users/${PathsVariable.Identifier}`,
     DialogsOpenPath: '/actions/dialogs/open',
     ApiVersionV4: '/api/v4'
 }

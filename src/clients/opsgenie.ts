@@ -9,7 +9,10 @@ import {
     ResponseResultWithData,
     Alert,
     Team,
-    Identifier
+    Identifier,
+    AlertAssign,
+    OpsUser,
+    AlertSnooze
 } from '../types';
 import {Routes} from '../constant';
 import {replace} from '../utils/utils';
@@ -105,6 +108,48 @@ export class OpsGenieClient {
         const path: string = `${replace(Routes.OpsGenie.AcknowledgeAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
+            headers: {
+                Authorization: `GenieKey ${this.options.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public snoozeAlert(identifier: Identifier, data: AlertSnooze): Promise<ResponseResult> {
+        const path: string = `${replace(Routes.OpsGenie.SnoozeAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
+        return axios.post(url, data, {
+            headers: {
+                Authorization: `GenieKey ${this.options.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public assignAlert(identifier: Identifier, data: AlertAssign): Promise<ResponseResult> {
+        const path: string = `${replace(Routes.OpsGenie.AssignAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
+        return axios.post(url, data, {
+            headers: {
+                Authorization: `GenieKey ${this.options.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public getUser(identifier: Identifier): Promise<ResponseResultWithData<OpsUser>> {
+        const path: string = `${replace(Routes.OpsGenie.UserPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
+        return axios.get(url, {
             headers: {
                 Authorization: `GenieKey ${this.options.api_key}`
             },

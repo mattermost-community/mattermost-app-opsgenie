@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from 'axios';
-import {DialogProps, PostCreate, PostUpdate} from '../types';
+import {DialogProps, PostCreate, PostUpdate, User} from '../types';
 import {Routes} from '../constant';
 import {replace} from "../utils/utils";
 
@@ -38,6 +38,15 @@ export class MattermostClient {
     public deletePost(postId: string): Promise<any> {
         const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
         return axios.delete(replace(url, Routes.PathsVariable.Identifier, postId), {
+            headers: {
+                Authorization: `Bearer ${this.config.accessToken}`
+            }
+        }).then((response: AxiosResponse<any>) => response.data);
+    }
+
+    public getUser(userId: string): Promise<User> {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.UserPath}`;
+        return axios.get(replace(url, Routes.PathsVariable.Identifier, userId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }
