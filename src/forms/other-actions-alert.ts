@@ -9,7 +9,7 @@ import {
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {
-    Actions,
+    ActionsEvents,
     option_alert_assign,
     option_alert_add_note,
     option_alert_take_ownership,
@@ -74,12 +74,12 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                     title: `Choose a user to assign the alert to`,
                     actions: [
                         {
-                            id: Actions.USER_SELECT_EVENT,
+                            id: ActionsEvents.USER_SELECT_EVENT,
                             name: "Choose a user",
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAssignOwnerAlert}`,
                                 context: {
-                                    action: Actions.USER_SELECT_EVENT,
+                                    action: ActionsEvents.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -88,14 +88,14 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                             data_source: 'users'
                         },
                         {
-                            id: Actions.CANCEL_BUTTON_EVENT,
+                            id: ActionsEvents.CANCEL_BUTTON_EVENT,
                             name: 'Close',
                             type: 'button',
                             style: 'default',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
                                 context: {
-                                    action: Actions.CANCEL_BUTTON_EVENT,
+                                    action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -129,13 +129,13 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                     title: `For how long do you want to snooze notifications for this alert`,
                     actions: [
                         {
-                            id: Actions.TIME_SELECT_EVENT,
+                            id: ActionsEvents.TIME_SELECT_EVENT,
                             name: "Choose snooze time",
                             type: 'select',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlertCreate}`,
                                 context: {
-                                    action: Actions.TIME_SELECT_EVENT,
+                                    action: ActionsEvents.TIME_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -143,14 +143,14 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                             options: options_times
                         },
                         {
-                            id: Actions.CANCEL_BUTTON_EVENT,
+                            id: ActionsEvents.CANCEL_BUTTON_EVENT,
                             name: 'Close',
                             type: 'button',
                             style: 'default',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
                                 context: {
-                                    action: Actions.CANCEL_BUTTON_EVENT,
+                                    action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
                                 } as CloseAlertAction
@@ -182,7 +182,7 @@ async function showPostTakeOwnership(call: AppCallAction<CloseAlertAction>): Pro
 }
 
 const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
-    [Actions.OTHER_OPTIONS_SELECT_EVENT]: {
+    [ActionsEvents.OTHER_OPTIONS_SELECT_EVENT]: {
         [option_alert_assign]: showPostOfListUsers,
         [option_alert_add_note]: showModalNoteToAlert,
         [option_alert_take_ownership]: showPostTakeOwnership,

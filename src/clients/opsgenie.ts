@@ -12,7 +12,8 @@ import {
     Identifier,
     AlertAssign,
     OpsUser,
-    AlertSnooze, AlertNote
+    AlertSnooze,
+    AlertNote
 } from '../types';
 import {Routes} from '../constant';
 import {replace} from '../utils/utils';

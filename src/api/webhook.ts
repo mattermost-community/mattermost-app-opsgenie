@@ -14,7 +14,7 @@ import {
 } from '../types';
 import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
 import {
-    Actions,
+    ActionsEvents,
     AppMattermostConfig,
     option_alert_take_ownership,
     options_alert,
@@ -51,14 +51,14 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
 
     const followupAlertAction: AttachmentAction = alert.acknowledged
         ? {
-            id: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+            id: ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
             name: 'Unacknowledge',
             type: 'button',
             style: 'default',
             integration: {
                 url: `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`,
                 context: {
-                    action: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+                    action: ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
                     alert: {
                         id: alert.id,
                         message: alert.message,
@@ -70,14 +70,14 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
             }
         }
         : {
-            id: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            id: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
             name: 'Acknowledged',
             type: 'button',
             style: 'default',
             integration: {
                 url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
                 context: {
-                    action: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+                    action: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
                     alert: {
                         id: alert.id,
                         message: alert.message,
@@ -97,7 +97,7 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
     const payload = {
         text: '',
         username: 'opsgenie',
-        icon_url: `${config.APP.HOST}/static/opsgenie.png`,
+        icon_url: `${config.APP.HOST}/static/opsgenie_picture.png`,
         attachments: [
             {
                 title: `#${alert.tinyId}: ${alert.message}`,
@@ -117,14 +117,14 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
                 actions: [
                     followupAlertAction,
                     {
-                        id: Actions.CLOSE_ALERT_BUTTON_EVENT,
+                        id: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
                         name: 'Close',
                         type: 'button',
                         style: 'success',
                         integration: {
                             url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
                             context: {
-                                action: Actions.CLOSE_ALERT_BUTTON_EVENT,
+                                action: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
                                 alert: {
                                     id: alert.id,
                                     message: alert.message,
@@ -136,12 +136,12 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
                         }
                     },
                     {
-                        id: Actions.OTHER_OPTIONS_SELECT_EVENT,
+                        id: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
                         name: 'Other actions...',
                         integration: {
                             url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                             context: {
-                                action: Actions.OTHER_OPTIONS_SELECT_EVENT,
+                                action: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
                                 alert: {
                                     id: alert.id,
                                     message: alert.message,
@@ -174,6 +174,7 @@ const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
 export const incomingWebhook = async (request: Request, response: Response) => {
     const data: WebhookRequest = request.body;
     const headers = request.headers;
+    console.log('webhook', data);
 
     let callResponse: AppCallResponse;
     try {

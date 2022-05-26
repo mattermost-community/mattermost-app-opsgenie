@@ -3,6 +3,7 @@ import {
     AppCallRequest
 } from '../types';
 import {OpsGenieClient} from '../clients/opsgenie';
+
 export async function newCreateAlertForm(call: AppCallRequest): Promise<void> {
     const message: string = call.values?.message;
 

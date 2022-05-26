@@ -11,7 +11,7 @@ import {
     ResponseResultWithData,
     Team
 } from '../types';
-import {Actions, options_alert, Routes} from '../constant';
+import {ActionsEvents, options_alert, Routes} from '../constant';
 import {OpsGenieClient} from '../clients/opsgenie';
 import {hyperlink} from '../utils/markdown';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
@@ -73,14 +73,14 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
 
     const followupAlertAction: AttachmentAction = alert.acknowledged
         ? {
-            id: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+            id: ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
             name: 'Unacknowledge',
             type: 'button',
             style: 'default',
             integration: {
                 url: `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledge}`,
                 context: {
-                    action: Actions.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
+                    action: ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
                     alert: {
                         id: alert.id,
                         message: alert.message,
@@ -92,14 +92,14 @@ export async function followupAlertCall(call: AppCallAction<CloseAlertAction>): 
             }
         }
         : {
-            id: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            id: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
             name: 'Acknowledged',
             type: 'button',
             style: 'default',
             integration: {
                 url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
                 context: {
-                    action: Actions.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+                    action: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
                     alert: {
                         id: alert.id,
                         message: alert.message,

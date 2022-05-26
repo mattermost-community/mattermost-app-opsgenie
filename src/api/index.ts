@@ -3,6 +3,7 @@ import {Routes} from '../constant';
 import * as cManifest from './manifest';
 import * as cBindings from './bindings';
 import * as cInstall from './install';
+import * as cConfigure from './configure';
 import * as cHelp from './help';
 import * as cAlert from './alert';
 import * as cWebhook from './webhook';
@@ -13,7 +14,9 @@ router.get(Routes.App.ManifestPath, cManifest.getManifest);
 router.post(Routes.App.BindingsPath, cBindings.getBindings);
 router.post(Routes.App.InstallPath, cInstall.getInstall);
 
-router.post(`${Routes.App.BindingPathHelp}`, cHelp.getHelp);
+router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
+router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccount);
+
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.followupAlert);

@@ -1,3 +1,5 @@
+export const AppsPluginName = 'com.mattermost.apps';
+
 const PathsVariable = {
     Identifier: ':IDENTIFIER'
 }
@@ -6,7 +8,10 @@ const AppPaths = {
     ManifestPath: '/manifest.json',
     BindingsPath: '/bindings',
     InstallPath: '/install',
-    BindingPathHelp: '/help',
+
+    CallPathHelp: '/help',
+    CallPathConfigForm: '/config/form',
+    CallPathConfigSubmit: '/config/form/submit',
 
     CallPathAlertCreate: '/alert/create',
     CallPathAlertClose: '/alert/close',
@@ -35,11 +40,13 @@ const OpsGeniePaths = {
 };
 
 const MattermostPaths = {
+    PathKV: '/kv',
     PostsPath: '/posts',
     PostPath: `/posts/${PathsVariable.Identifier}`,
     UserPath: `/users/${PathsVariable.Identifier}`,
     DialogsOpenPath: '/actions/dialogs/open',
-    ApiVersionV4: '/api/v4'
+    ApiVersionV4: '/api/v4',
+    ApiVersionV1: '/api/v1',
 }
 
 export const Routes = {

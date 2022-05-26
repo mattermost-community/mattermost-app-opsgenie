@@ -22,7 +22,8 @@
     "requested_permissions": [
         "act_as_bot",
         "act_as_user",
-        "remote_webhooks"
+        "remote_webhooks",
+        "remote_oauth2"
     ],
     "requested_locations": [
         "/command",

@@ -1,5 +1,10 @@
 import {AppBinding} from '../types';
-import {AppExpandLevels, OpsGenieIcon, Routes, Commands} from '../constant';
+import {
+    AppExpandLevels,
+    OpsGenieIcon,
+    Routes,
+    Commands
+} from '../constant';
 
 export const getHelpBinding = (): any => {
     return {
@@ -10,7 +15,7 @@ export const getHelpBinding = (): any => {
             title: "Show OpsGenie Help Title",
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.BindingPathHelp,
+                path: Routes.App.CallPathHelp,
                 expand: {}
             }
         }
@@ -42,4 +47,20 @@ export const createAlertBinding = (): AppBinding => {
         }
     }
 }
+
+export const getConfigureBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.CONFIGURE,
+        description: 'Setup Opsgenie Admin Account',
+        form: {
+            title: "Show Trello Help Title",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathConfigForm,
+                expand: {}
+            }
+        }
+    }
+};
 

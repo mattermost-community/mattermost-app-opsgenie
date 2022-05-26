@@ -1,4 +1,4 @@
-export const Actions = {
+export const ActionsEvents = {
     TIME_SELECT_EVENT: 'timeselectevent',
     USER_SELECT_EVENT: 'userselectevent',
     CANCEL_BUTTON_EVENT: 'cancelbuttonevent',

@@ -16,10 +16,9 @@ export const createAlert = async (request: Request, response: Response) => {
     try {
         await newCreateAlertForm(request.body);
         callResponse = newOKCallResponse();
-
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('OpsGenie error: ' + error.message);
         response.json(callResponse);
     }
 };

@@ -1,4 +1,5 @@
 export const Commands = {
     HELP: 'help',
-    ALERT: 'alert'
+    ALERT: 'alert',
+    CONFIGURE: 'configure'
 }
