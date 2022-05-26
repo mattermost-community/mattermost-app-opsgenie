@@ -11,7 +11,7 @@ export interface ConfigStoreProps {
     opsgenie_apikey: string;
 }
 
-export class KVStore {
+export class KVStoreClient {
     private readonly config: KVStoreOptions;
 
     constructor(

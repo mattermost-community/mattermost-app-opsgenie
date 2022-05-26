@@ -1,6 +1,20 @@
-import {AppCallRequest, AppForm} from '../types';
-import {AppFieldTypes, ConfigureForm, OpsGenieIcon, Routes, StoreKeys} from '../constant';
-import {ConfigStoreProps, KVStore, KVStoreOptions} from '../clients/kvstore';
+import {
+    AppCallRequest, AppCallResponse,
+    AppCallValues,
+    AppForm, Integration,
+    IntegrationType,
+    ListIntegrationsParams,
+    ResponseResultWithData
+} from '../types';
+import {
+    AppFieldTypes,
+    ConfigureForm,
+    OpsGenieIcon,
+    Routes,
+    StoreKeys
+} from '../constant';
+import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
+import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -10,7 +24,7 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
         mattermostUrl: <string>mattermostUrl,
         accessToken: <string>botAccessToken,
     };
-    const kvStoreClient = new KVStore(options);
+    const kvStoreClient = new KVStoreClient(options);
 
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
@@ -35,3 +49,36 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
     };
     return form;
 }
+
+export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> {
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const values: AppCallValues = <any>call.values;
+
+    const opsGenieApiKey: string = values[ConfigureForm.API_KEY];
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: opsGenieApiKey
+    };
+    const opsgenieClient: OpsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const params: ListIntegrationsParams = {
+        type: IntegrationType.API
+    }
+    const integrations: ResponseResultWithData<Integration[]> = await opsgenieClient.listIntegrations(params);
+    if (!integrations.data.length) {
+        throw new Error('Your opsgenie setup has no api integration')
+    }
+
+    const options: KVStoreOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken,
+    };
+    const kvStoreClient = new KVStoreClient(options);
+
+    const config: ConfigStoreProps = {
+        opsgenie_apikey: opsGenieApiKey,
+    };
+    await kvStoreClient.kvSet(StoreKeys.config, config);
+}
+

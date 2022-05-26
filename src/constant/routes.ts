@@ -27,6 +27,7 @@ const AppPaths = {
 }
 
 const OpsGeniePaths = {
+    IntegrationPathPrefix: '/integrations',
     AlertPathPrefix: '/alerts',
     NoteToAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/notes`,
     CloseAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/close`,

@@ -4,6 +4,13 @@ export enum IdentifierType {
     USERNAME = 'username'
 }
 
+export enum IntegrationType {
+    API = 'API',
+    MATTERMOST = 'Mattermost',
+    SLACKAPP = 'SlackApp',
+    WEBHOOK = 'Webhook'
+}
+
 export type ResponseResult = {
     result: string;
     took: number;
@@ -62,6 +69,15 @@ export type Alert = {
     ownerTeamId: string;
 }
 
+export type Integration = {
+    id: string;
+    name: string;
+    enabled: boolean;
+    type: string;
+    teamId: string;
+    version: string;
+}
+
 export type Team = {
     id: string;
     name: string;
@@ -111,6 +127,12 @@ export type ListAlertParams = {
     limit?: number;
     sort?: string;
     order?: AlertOrder;
+}
+
+export type ListIntegrationsParams = {
+    type?: string;
+    teamId?: string;
+    teamName?: string;
 }
 
 export type AlertWebhook = {

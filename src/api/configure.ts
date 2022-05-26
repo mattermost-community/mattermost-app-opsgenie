@@ -1,8 +1,13 @@
-import {CallResponseHandler, newErrorCallResponseWithMessage, newFormCallResponse} from '../utils/call-responses';
+import {
+    CallResponseHandler,
+    newErrorCallResponseWithMessage,
+    newFormCallResponse,
+    newOKCallResponseWithMarkdown
+} from '../utils/call-responses';
 import {AppCallResponse} from '../types';
-import {opsGenieConfigForm} from '../forms/configure-admin-account';
+import {opsGenieConfigForm, opsGenieConfigSubmit} from '../forms/configure-admin-account';
 
-export const configureAdminAccount: CallResponseHandler = async (req, res) => {
+export const configureAdminAccountForm: CallResponseHandler = async (req, res) => {
     let callResponse: AppCallResponse;
 
     try {
@@ -14,3 +19,17 @@ export const configureAdminAccount: CallResponseHandler = async (req, res) => {
         res.json(callResponse);
     }
 };
+
+export const configureAdminAccountSubmit: CallResponseHandler = async (req, res) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await opsGenieConfigSubmit(req.body);
+        callResponse = newOKCallResponseWithMarkdown('Successfully updated OpsGenie configuration');
+        res.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unable to submit configuration form: ' + error.message);
+        res.json(callResponse);
+    }
+};
+

@@ -15,7 +15,8 @@ router.post(Routes.App.BindingsPath, cBindings.getBindings);
 router.post(Routes.App.InstallPath, cInstall.getInstall);
 
 router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
-router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccount);
+router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccountForm);
+router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);

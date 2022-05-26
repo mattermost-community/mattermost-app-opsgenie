@@ -13,41 +13,44 @@ import {
     AlertAssign,
     OpsUser,
     AlertSnooze,
-    AlertNote
+    AlertNote,
+    ListIntegrationsParams,
+    Integration
 } from '../types';
 import {Routes} from '../constant';
-import {replace} from '../utils/utils';
+import {replace, tryPromiseOpsgenieWithMessage} from '../utils/utils';
 
-export type ClientOptions = {
+export type OpsGenieOptions = {
     api_key: string;
-    host: string;
 }
 
 export class OpsGenieClient {
-    private opsgenieclient: any = opsgenie;
-    private options: ClientOptions;
+    private readonly options: OpsGenieOptions | undefined;
 
-    constructor() {
-        const token = config.OPSGENIE.API_KEY;
-        if (!token) {
-            throw new Error('Failed to get oauth2 user access_token');
-        }
-
-        const host: string = config.OPSGENIE.URL;
-        const options: ClientOptions = {
-            api_key: token,
-            host
-        };
+    constructor(
+        options?: OpsGenieOptions
+    ) {
         this.options = options;
+    }
 
-        this.opsgenieclient.configure(options);
+    public listIntegrations(params?: ListIntegrationsParams): Promise<ResponseResultWithData<Integration[]>> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.IntegrationPathPrefix}`;
+        const promise: Promise<any> = axios.get(url,{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
+            params,
+            responseType: 'json'
+        }).then((response) => response.data);
+
+        return tryPromiseOpsgenieWithMessage(promise, 'OpsGenie failed');
     }
 
     public createAlert(alert: AlertCreate): Promise<ResponseResult> {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AlertPathPrefix}`;
         return axios.post(url, alert,{
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             responseType: 'json'
         }).then((response) => response.data);
@@ -57,7 +60,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.NoteToAlertPathPrefix}`;
         return axios.post(replace(url, Routes.PathsVariable.Identifier, identifier.identifier), data,{
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -71,7 +74,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AlertPathPrefix}`;
         return axios.get(url, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params,
             responseType: 'json'
@@ -81,7 +84,7 @@ export class OpsGenieClient {
     public getAlert(identifier: Identifier): Promise<ResponseResultWithData<Alert>> {
         return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AlertPathPrefix}/${identifier.identifier}`, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -95,7 +98,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -109,7 +112,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -123,7 +126,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, {}, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -137,7 +140,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, data, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -151,7 +154,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.post(url, data, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -165,7 +168,7 @@ export class OpsGenieClient {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
         return axios.get(url, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
@@ -177,7 +180,7 @@ export class OpsGenieClient {
     public getTeam(identifier: Identifier): Promise<ResponseResultWithData<Team>> {
         return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`, {
             headers: {
-                Authorization: `GenieKey ${this.options.api_key}`
+                Authorization: `GenieKey ${this.options?.api_key}`
             },
             params: {
                 identifierType: identifier.identifierType
