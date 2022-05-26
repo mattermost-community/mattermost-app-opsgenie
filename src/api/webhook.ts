@@ -18,17 +18,20 @@ import {
     AppMattermostConfig,
     option_alert_take_ownership,
     options_alert,
-    Routes
+    Routes, StoreKeys
 } from '../constant';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {OpsGenieClient} from '../clients/opsgenie';
+import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import config from '../config';
 
 async function notifyAlertCreated(request: WebhookRequest, headers: { [key: string]: any }) {
     const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
     const alertWebhook: AlertWebhook = request.alert;
 
-    const opsGenieClient = new OpsGenieClient();
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.OPSGENIE.API_KEY
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const identifier: Identifier = {
         identifier: alertWebhook.alertId,
@@ -185,7 +188,7 @@ export const incomingWebhook = async (request: Request, response: Response) => {
         callResponse = newOKCallResponse();
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Error webhook: ' + error.message);
         response.json(callResponse);
     }
 };

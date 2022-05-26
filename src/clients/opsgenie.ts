@@ -48,12 +48,14 @@ export class OpsGenieClient {
 
     public createAlert(alert: AlertCreate): Promise<ResponseResult> {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AlertPathPrefix}`;
-        return axios.post(url, alert,{
+        const promise: Promise<any> =  axios.post(url, alert,{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             responseType: 'json'
         }).then((response) => response.data);
+
+        return tryPromiseOpsgenieWithMessage(promise, 'Opsgenie failed');
     }
 
     public addNoteToAlert(identifier: Identifier, data: AlertNote): Promise<ResponseResult> {
