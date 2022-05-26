@@ -12,7 +12,6 @@ export const getHelpBinding = (): any => {
         icon: OpsGenieIcon,
         description: 'Show OpsGenie Help',
         form: {
-            title: "Show OpsGenie Help Title",
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathHelp,
@@ -28,7 +27,7 @@ export const createAlertBinding = (): AppBinding => {
         icon: OpsGenieIcon,
         description: 'Create Alert in OpsGenie',
         form: {
-            title: "Show OpsGenie Help Title",
+            title: "Alert create",
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertCreate,
@@ -63,4 +62,3 @@ export const getConfigureBinding = (): any => {
         }
     }
 };
-

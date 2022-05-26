@@ -1,5 +1,5 @@
 import {
-    AppCallRequest, AppCallResponse,
+    AppCallRequest,
     AppCallValues,
     AppForm, Integration,
     IntegrationType,

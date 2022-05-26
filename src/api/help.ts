@@ -20,7 +20,8 @@ function getHeader(): string {
 function getCommands(): string {
     const homepageUrl: string = manifest.homepage_url;
     return `${joinLines(
-        addBulletSlashCommand('help', `Launch the Jira plugin command line help syntax, check out the [documentation](${homepageUrl}).`),
+        addBulletSlashCommand('help', `Launch the OpsGenie plugin command line help syntax, check out the [documentation](${homepageUrl}).`),
+        addBulletSlashCommand('configure', `Configure OpsGenie.`),
         addBulletSlashCommand('alert', 'Create a new alert.'),
     )}\n`;
 }

@@ -14,7 +14,7 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
             {
                 icon: OpsGenieIcon,
                 label: CommandTrigger,
-                hint: `[${Commands.HELP} | ${Commands.ALERT}]`,
+                hint: `[${Commands.HELP} | ${Commands.CONFIGURE} | ${Commands.ALERT}]`,
                 description: 'Manage OpsGenie',
                 bindings,
             },
