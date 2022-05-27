@@ -21,6 +21,27 @@ export const getHelpBinding = (): any => {
     };
 };
 
+export const getConfigureBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.CONFIGURE,
+        description: 'Setup Opsgenie Admin Account',
+        form: {
+            title: "Show Trello Help Title",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathConfigForm,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_SUMMARY,
+                    acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
+                }
+            }
+        }
+    }
+};
+
 export const createAlertBinding = (): AppBinding => {
     return {
         label: Commands.ALERT,
@@ -31,9 +52,7 @@ export const createAlertBinding = (): AppBinding => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertCreate,
-                expand: {
-                    channel: AppExpandLevels.EXPAND_ALL
-                }
+                expand: { }
             },
             fields: [
                 {
@@ -46,19 +65,3 @@ export const createAlertBinding = (): AppBinding => {
         }
     }
 }
-
-export const getConfigureBinding = (): any => {
-    return {
-        icon: OpsGenieIcon,
-        label: Commands.CONFIGURE,
-        description: 'Setup Opsgenie Admin Account',
-        form: {
-            title: "Show Trello Help Title",
-            icon: OpsGenieIcon,
-            submit: {
-                path: Routes.App.CallPathConfigForm,
-                expand: {}
-            }
-        }
-    }
-};

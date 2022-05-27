@@ -1,8 +1,10 @@
-export const AppsPluginName = 'com.mattermost.apps';
-
 const PathsVariable = {
-    Identifier: ':IDENTIFIER'
+    Identifier: ':IDENTIFIER',
+    Account: ':ACCOUNT'
 }
+
+export const AppsPluginName = 'com.mattermost.apps';
+export const AppsOpsGenie = `https://${PathsVariable.Account}.app.opsgenie.com`;
 
 const AppPaths = {
     ManifestPath: '/manifest.json',
@@ -26,8 +28,13 @@ const AppPaths = {
     CallPathIncomingWebhookPath: '/webhook'
 }
 
+const OpsGenieWebPaths = {
+    AlertDetailPathPrefix: `/alert/detail/${PathsVariable.Identifier}`
+};
+
 const OpsGeniePaths = {
     IntegrationPathPrefix: '/integrations',
+    AccountPathPrefix: '/account',
     AlertPathPrefix: '/alerts',
     NoteToAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/notes`,
     CloseAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/close`,
@@ -54,5 +61,6 @@ export const Routes = {
     PathsVariable,
     App: AppPaths,
     Mattermost: MattermostPaths,
-    OpsGenie: OpsGeniePaths
+    OpsGenie: OpsGeniePaths,
+    OpsGenieWeb: OpsGenieWebPaths
 };

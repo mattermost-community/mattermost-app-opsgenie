@@ -78,6 +78,16 @@ export type Integration = {
     version: string;
 }
 
+export type Account = {
+    name: string;
+    userCount: number;
+    plan: {
+        maxUserCount: number;
+        name: string;
+        isYearly: boolean;
+    }
+}
+
 export type Team = {
     id: string;
     name: string;

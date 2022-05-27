@@ -1,10 +1,10 @@
 export default {
     APP: {
         PORT: 3000,
-        HOST: 'https://8a89-189-203-193-1.ngrok.io'
+        HOST: 'https://dd90-189-203-193-1.ngrok.io'
     },
     OPSGENIE: {
         URL: 'https://api.opsgenie.com',
-        API_KEY: '163618c3-5a98-4f30-9e8d-1bb90a157fd4'
+        API_KEY: 'be61cf79-0b10-4695-a23b-3465aa890d84'
     }
 }

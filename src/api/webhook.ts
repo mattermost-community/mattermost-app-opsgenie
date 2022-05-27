@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 import {
+    Account,
     Alert,
     AlertWebhook,
     AppCallResponse,
@@ -15,14 +16,15 @@ import {
 import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
 import {
     ActionsEvents,
-    AppMattermostConfig,
+    AppMattermostConfig, AppsOpsGenie,
     option_alert_take_ownership,
     options_alert,
-    Routes, StoreKeys
+    Routes
 } from '../constant';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import config from '../config';
+import {replace} from '../utils/utils';
 
 async function notifyAlertCreated(request: WebhookRequest, headers: { [key: string]: any }) {
     const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
@@ -51,6 +53,8 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
     const teamsName: string[] = teams.map((team: ResponseResultWithData<Team>) =>
         team.data.name
     );
+
+    const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
 
     const followupAlertAction: AttachmentAction = alert.acknowledged
         ? {
@@ -97,6 +101,17 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
         : options_alert.filter((opt: AttachmentOption) =>
             opt.value !== option_alert_take_ownership
         );
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+    const alertDetailUrl: string = replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            account.data.name
+        ),
+        Routes.PathsVariable.Identifier,
+        alert.id
+    );
+
     const payload = {
         text: '',
         username: 'opsgenie',
@@ -104,7 +119,7 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
         attachments: [
             {
                 title: `#${alert.tinyId}: ${alert.message}`,
-                title_link: `https://testancient.app.opsgenie.com/alert/detail/${alert.id}`,
+                title_link: alertDetailUrl,
                 fields: [
                     {
                         short: true,

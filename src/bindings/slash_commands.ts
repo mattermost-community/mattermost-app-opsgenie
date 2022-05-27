@@ -1,4 +1,4 @@
-import {AppBinding, AppsState} from '../types';
+import {AppBinding, AppsState, BindingOptions} from '../types';
 
 import {
     createAlertBinding,
@@ -22,8 +22,16 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
     };
 };
 
-export const getCommandBindings = (): AppsState => {
+export const getCommandBindings = (options: BindingOptions): AppsState => {
     const bindings: AppBinding[] = [];
+    console.log('options bindings', options);
+    if (!options.isConfigured) {
+        if (options.isSystemAdmin) {
+            bindings.push(getHelpBinding());
+            bindings.push(createAlertBinding());
+            bindings.push(getConfigureBinding())
+            return newCommandBindings(bindings);        }
+    }
 
     bindings.push(getHelpBinding());
     bindings.push(createAlertBinding());

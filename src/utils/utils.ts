@@ -1,3 +1,6 @@
+import GeneralConstants from '../constant/general';
+import {UserProfile} from '../types';
+
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
 }
@@ -23,4 +26,16 @@ export async function tryPromiseOpsgenieWithMessage(p: Promise<any>, message: st
         console.log('error', error);
         throw new Error(errorOpsgenieWithMessage(error.response, message));
     });
+}
+
+export function isConfigured(oauth2: any): boolean {
+    return Boolean(oauth2.client_id && oauth2.client_secret);
+}
+
+export function isUserSystemAdmin(actingUser: UserProfile): boolean {
+    return Boolean(actingUser.roles && actingUser.roles.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
+}
+
+export function isConnected(oauth2user: any): boolean {
+    return !!oauth2user?.token?.access_token;
 }
