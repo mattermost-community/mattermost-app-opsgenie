@@ -1,17 +1,18 @@
 import {
     AlertCreate,
-    AppCallRequest
+    AppCallRequest, AppCallValues
 } from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {option_alert_priority_p3, StoreKeys} from '../constant';
+import {AlertCreateForm, option_alert_priority_p3, StoreKeys} from '../constant';
 
 export async function newCreateAlertCall(call: AppCallRequest): Promise<void> {
-    console.log('call', call);
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const message: string = call.values?.message;
-    const priority: string = call.values?.priority?.value || option_alert_priority_p3;
+    const values: AppCallValues | undefined = call.values;
+
+    const message: string = values?.[AlertCreateForm.ALERT_MESSAGE];
+    const priority: string = values?.[AlertCreateForm.ALERT_PRIORITY]?.value || option_alert_priority_p3;
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,

@@ -6,7 +6,7 @@ import {
     Commands,
     AppFieldTypes,
     options_alert_priority,
-    option_alert_priority_p3
+    option_alert_priority_p3, AlertCreateForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -60,7 +60,7 @@ export const createAlertBinding = (): AppBinding => {
             fields: [
                 {
                     modal_label: 'Alert message',
-                    name: 'message',
+                    name: AlertCreateForm.ALERT_MESSAGE,
                     subtype: 'textarea',
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -69,7 +69,7 @@ export const createAlertBinding = (): AppBinding => {
                 },
                 {
                     modal_label: 'Priority',
-                    name: 'priority',
+                    name: AlertCreateForm.ALERT_PRIORITY,
                     type: AppFieldTypes.STATIC_SELECT,
                     is_required: false,
                     position: 2,
