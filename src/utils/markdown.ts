@@ -8,6 +8,10 @@ export function h5(text: string): string {
     return `##### ${text}\n`;
 }
 
+export function h6(text: string): string {
+    return `###### ${text}\n`;
+}
+
 export function joinLines(...lines: string[]): string {
     return lines.join('\n');
 }

@@ -88,6 +88,12 @@ export type Account = {
     }
 }
 
+export type Teams = {
+    id: string;
+    name: string;
+    description: string;
+};
+
 export type Team = {
     id: string;
     name: string;

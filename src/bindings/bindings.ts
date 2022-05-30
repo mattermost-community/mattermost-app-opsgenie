@@ -28,9 +28,9 @@ export const getConfigureBinding = (): any => {
     return {
         icon: OpsGenieIcon,
         label: Commands.CONFIGURE,
-        description: 'Setup Opsgenie Admin Account',
+        description: 'Setup OpsGenie Admin Account',
         form: {
-            title: "Show Trello Help Title",
+            title: "Setup OpsGenie",
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathConfigForm,
@@ -80,3 +80,20 @@ export const createAlertBinding = (): AppBinding => {
         }
     }
 }
+
+export const getAllTeamsBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.TEAM,
+        description: 'List users teams',
+        form: {
+            title: "",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathTeamsListSubmit,
+                expand: { }
+            }
+        }
+    }
+};
+

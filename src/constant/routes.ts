@@ -15,6 +15,8 @@ const AppPaths = {
     CallPathConfigForm: '/config/form',
     CallPathConfigSubmit: '/config/form/submit',
 
+    CallPathTeamsListSubmit: '/team/list',
+
     CallPathAlertCreate: '/alert/create',
     CallPathAlertClose: '/alert/close',
     CallPathAlertUnacknowledge: '/alert/unacknowledge',

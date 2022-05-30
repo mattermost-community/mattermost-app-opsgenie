@@ -6,6 +6,7 @@ import * as cInstall from './install';
 import * as cConfigure from './configure';
 import * as cHelp from './help';
 import * as cAlert from './alert';
+import * as cTeam from './team';
 import * as cWebhook from './webhook';
 
 const router: Router = express.Router();
@@ -17,6 +18,8 @@ router.post(Routes.App.InstallPath, cInstall.getInstall);
 router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
 router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
+
+router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeams);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);

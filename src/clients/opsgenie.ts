@@ -16,7 +16,8 @@ import {
     AlertNote,
     ListIntegrationsParams,
     Integration,
-    Account
+    Account,
+    Teams
 } from '../types';
 import {Routes} from '../constant';
 import {replace, tryPromiseOpsgenieWithMessage} from '../utils/utils';
@@ -202,5 +203,17 @@ export class OpsGenieClient {
             },
             responseType: 'json'
         }).then((response) => response.data);
+    }
+
+    public getAllTeams(): Promise<ResponseResultWithData<Teams[]>> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}`;
+        const promise: Promise<any> = axios.get(url,{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+
+        return tryPromiseOpsgenieWithMessage(promise, 'OpsGenie failed');
     }
 }
