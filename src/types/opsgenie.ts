@@ -98,6 +98,7 @@ export type Team = {
 
 export type AlertCreate = {
     message: string;
+    priority?: string
 };
 
 export type AlertAssign = {

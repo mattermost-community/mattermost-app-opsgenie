@@ -28,6 +28,7 @@ import {replace} from '../utils/utils';
 
 async function notifyAlertCreated(request: WebhookRequest, headers: { [key: string]: any }) {
     const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
+    const mattermostUrl: string = 'http://127.0.0.1:8066';
     const alertWebhook: AlertWebhook = request.alert;
 
     const optionsOpsgenie: OpsGenieOptions = {
@@ -72,7 +73,7 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
                         tinyId: alert.tinyId
                     },
                     bot_access_token: '',
-                    mattermost_site_url: ''
+                    mattermost_site_url: mattermostUrl
                 } as CloseAlertAction
             }
         }
@@ -91,7 +92,7 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
                         tinyId: alert.tinyId
                     },
                     bot_access_token: '',
-                    mattermost_site_url: ''
+                    mattermost_site_url: mattermostUrl
                 } as CloseAlertAction
             }
         };
@@ -149,7 +150,7 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
                                     tinyId: alert.tinyId
                                 },
                                 bot_access_token: '',
-                                mattermost_site_url: ''
+                                mattermost_site_url: mattermostUrl
                             } as CloseAlertAction
                         }
                     },
@@ -166,7 +167,7 @@ async function notifyAlertCreated(request: WebhookRequest, headers: { [key: stri
                                     tinyId: alert.tinyId
                                 },
                                 bot_access_token: '',
-                                mattermost_site_url: ''
+                                mattermost_site_url: mattermostUrl
                             } as CloseAlertAction
                         },
                         type: 'select',

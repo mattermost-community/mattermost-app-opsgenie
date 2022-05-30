@@ -3,7 +3,10 @@ import {
     AppExpandLevels,
     OpsGenieIcon,
     Routes,
-    Commands
+    Commands,
+    AppFieldTypes,
+    options_alert_priority,
+    option_alert_priority_p3
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -48,7 +51,7 @@ export const createAlertBinding = (): AppBinding => {
         icon: OpsGenieIcon,
         description: 'Create Alert in OpsGenie',
         form: {
-            title: "Alert create",
+            title: "Create alert",
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertCreate,
@@ -56,11 +59,23 @@ export const createAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
+                    modal_label: 'Alert message',
                     name: 'message',
-                    type: 'text',
+                    subtype: 'textarea',
+                    type: AppFieldTypes.TEXT,
                     is_required: true,
-                    position: 1
-                }
+                    position: 1,
+                    max_length: 130
+                },
+                {
+                    modal_label: 'Priority',
+                    name: 'priority',
+                    type: AppFieldTypes.STATIC_SELECT,
+                    is_required: false,
+                    position: 2,
+                    options: options_alert_priority,
+                    value: options_alert_priority.find(value => value.value === option_alert_priority_p3)
+                },
             ]
         }
     }

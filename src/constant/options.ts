@@ -1,4 +1,4 @@
-import {AttachmentOption} from '../types';
+import {AppSelectOption, AttachmentOption} from '../types';
 
 export const option_time_5m = '5m';
 export const option_time_10m = '10m';
@@ -68,3 +68,31 @@ export const options_alert: AttachmentOption[] = [
     }
 ];
 
+export const option_alert_priority_p1 = 'P1';
+export const option_alert_priority_p2 = 'P2';
+export const option_alert_priority_p3 = 'P3';
+export const option_alert_priority_p4 = 'P4';
+export const option_alert_priority_p5 = 'P5';
+
+export const options_alert_priority: AppSelectOption[] = [
+    {
+        label: 'P1-Critical',
+        value: option_alert_priority_p1
+    },
+    {
+        label: 'P2-High',
+        value: option_alert_priority_p2
+    },
+    {
+        label: 'P3-Moderate',
+        value: option_alert_priority_p3
+    },
+    {
+        label: 'P4-Low',
+        value: option_alert_priority_p4
+    },
+    {
+        label: 'P5-Informational',
+        value: option_alert_priority_p5
+    }
+];
