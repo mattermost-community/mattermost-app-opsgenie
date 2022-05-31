@@ -1,6 +1,10 @@
 import {Request, Response} from 'express';
-import {AppCallResponse} from '../types';
-import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
+import {Alert, AlertStatus, AppCallResponse} from '../types';
+import {
+    newErrorCallResponseWithMessage,
+    newOKCallResponse,
+    newOKCallResponseWithMarkdown
+} from '../utils/call-responses';
 import {newCreateAlertCall} from '../forms/create-alert';
 import {addNoteToAlertCall} from '../forms/create-note';
 import {createSnoozeAlertCall} from '../forms/create-snooze';
@@ -10,6 +14,46 @@ import {ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
 import {unackAlertCall} from '../forms/unack-alert';
+import {getAllAlertCall} from '../forms/list-alert';
+import {h6, hyperlink, joinLines} from '../utils/markdown';
+import {AppsOpsGenie, Routes} from '../constant';
+import {replace} from '../utils/utils';
+
+export const listAlertsSubmit = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        const [alerts, account] = await getAllAlertCall(request.body);
+
+        const alertsWithStatusOpen: number = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN).length;
+        const alertsUnacked: number = alerts.filter((alert: Alert) => !alert.acknowledged).length;
+        const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+
+        const teamsText: string = [
+            h6(`Alert List: Found ${alertsUnacked} unacked alerts out of ${alertsWithStatusOpen} open alerts.`),
+            `${joinLines(
+                alerts.map((alert: Alert) => {
+                    const alertDetailUrl: string = replace(
+                        replace(
+                            url,
+                            Routes.PathsVariable.Account,
+                            account.name
+                        ),
+                        Routes.PathsVariable.Identifier,
+                        alert.id
+                    );
+                    const status: string = alert.acknowledged ? 'acked' : 'unacked';
+                    return `- #${alert.tinyId}: "${alert.message}" [${status}] - ${hyperlink('View details', alertDetailUrl)}.`;
+                }).join('\n')
+            )}\n`
+        ].join('');
+        callResponse = newOKCallResponseWithMarkdown(teamsText);
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('OpsGenie error: ' + error.message);
+        response.json(callResponse);
+    }
+};
 
 export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;

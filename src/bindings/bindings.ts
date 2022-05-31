@@ -240,9 +240,10 @@ export const snoozeAlertBinding = (): AppBinding => {
     }
 }
 
-export const getAllTeamsBinding = (): any => {
+export const getAllBinding = (): any => {
     const commands: string[] = [
-        Commands.TEAM
+        Commands.TEAM,
+        Commands.ALERT
     ];
 
     return {
@@ -260,6 +261,19 @@ export const getAllTeamsBinding = (): any => {
                     icon: OpsGenieIcon,
                     submit: {
                         path: Routes.App.CallPathTeamsListSubmit,
+                        expand: { }
+                    }
+                }
+            },
+            {
+                icon: OpsGenieIcon,
+                label: Commands.ALERT,
+                description: 'List alerts',
+                form: {
+                    title: "",
+                    icon: OpsGenieIcon,
+                    submit: {
+                        path: Routes.App.CallPathAlertsListSubmit,
                         expand: { }
                     }
                 }

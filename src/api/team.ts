@@ -30,7 +30,7 @@ function getHeader(teamsLength: number): string {
 
 function getTeams(teams: Teams[]): string {
     return `${joinLines(
-        teams.map((team) => `- ${team.name}`).join('\n')
+        teams.map((team: Teams) => `- ${team.name}`).join('\n')
     )}\n`;
 }
 

@@ -20,6 +20,7 @@ router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccount
 router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
 
 router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
+router.post(`${Routes.App.CallPathAlertsListSubmit}`, cAlert.listAlertsSubmit);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmit);

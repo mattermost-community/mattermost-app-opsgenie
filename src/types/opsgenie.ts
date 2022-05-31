@@ -1,5 +1,6 @@
 export enum AlertStatus {
-    CLOSED = 'closed'
+    CLOSED = 'closed',
+    OPEN = 'open'
 }
 
 export enum IdentifierType {
