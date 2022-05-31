@@ -1,5 +1,5 @@
 import {
-    Alert,
+    Alert, AlertUnack,
     AppCallRequest,
     AppCallValues,
     Identifier,
@@ -14,6 +14,7 @@ import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 export async function unackAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
 
     const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
@@ -41,5 +42,8 @@ export async function unackAlertCall(call: AppCallRequest): Promise<void> {
         throw new Error(`Unacknowledge request will be processed for #${alert.tinyId}`);
     }
 
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.unacknowledgeAlert(identifier), 'OpsGenie failed');
+    const data: AlertUnack = {
+        user: username
+    };
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.unacknowledgeAlert(identifier, data), 'OpsGenie failed');
 }

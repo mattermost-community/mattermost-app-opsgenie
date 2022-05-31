@@ -126,6 +126,18 @@ export type AlertNote = {
     source?: string;
 };
 
+export type AlertUnack = {
+    note?: string;
+    user?: string;
+    source?: string;
+};
+
+export type AlertAck = {
+    note?: string;
+    user?: string;
+    source?: string;
+};
+
 export type AlertSnooze = {
     note?: string;
     user?: string

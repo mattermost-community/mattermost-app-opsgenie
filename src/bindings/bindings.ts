@@ -155,7 +155,9 @@ export const ackAlertBinding = (): AppBinding => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertAcknowledged,
-                expand: { }
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             },
             fields: [
                 {
@@ -180,7 +182,9 @@ export const unackAlertBinding = (): AppBinding => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertUnacknowledge,
-                expand: { }
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             },
             fields: [
                 {

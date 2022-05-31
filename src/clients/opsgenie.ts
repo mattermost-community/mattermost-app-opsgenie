@@ -17,7 +17,7 @@ import {
     ListIntegrationsParams,
     Integration,
     Account,
-    Teams
+    Teams, AlertUnack, AlertAck
 } from '../types';
 import {Routes} from '../constant';
 import {replace, tryPromiseOpsgenieWithMessage} from '../utils/utils';
@@ -123,10 +123,10 @@ export class OpsGenieClient {
         }).then((response) => response.data);
     }
 
-    public unacknowledgeAlert(identifier: Identifier): Promise<ResponseResult> {
+    public unacknowledgeAlert(identifier: Identifier, data?: AlertUnack): Promise<ResponseResult> {
         const path: string = `${replace(Routes.OpsGenie.UnacknowledgeAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
-        return axios.post(url, {}, {
+        return axios.post(url, data, {
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
@@ -137,10 +137,10 @@ export class OpsGenieClient {
         }).then((response) => response.data);
     }
 
-    public acknowledgeAlert(identifier: Identifier): Promise<ResponseResult> {
+    public acknowledgeAlert(identifier: Identifier, data?: AlertAck): Promise<ResponseResult> {
         const path: string = `${replace(Routes.OpsGenie.AcknowledgeAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
-        return axios.post(url, {}, {
+        return axios.post(url, data, {
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },

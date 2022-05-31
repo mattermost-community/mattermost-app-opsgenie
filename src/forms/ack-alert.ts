@@ -1,5 +1,5 @@
 import {
-    Alert,
+    Alert, AlertAck,
     AppCallRequest,
     AppCallValues,
     Identifier,
@@ -14,6 +14,7 @@ import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 export async function ackAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
 
     const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
@@ -41,5 +42,8 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
         throw new Error(`You have acknowledged #${alert.tinyId}`);
     }
 
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.acknowledgeAlert(identifier), 'OpsGenie failed');
+    const data: AlertAck = {
+        user: username
+    };
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.acknowledgeAlert(identifier, data), 'OpsGenie failed');
 }
