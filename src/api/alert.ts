@@ -79,7 +79,7 @@ export const closeActionsAlert = async (request: Request, response: Response) =>
     }
 };
 
-export const showModalNoteToAlert = async (request: Request, response: Response) => {
+export const showModalNoteToAlertCall = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {

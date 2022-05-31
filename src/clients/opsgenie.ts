@@ -207,13 +207,11 @@ export class OpsGenieClient {
 
     public getAllTeams(): Promise<ResponseResultWithData<Teams[]>> {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}`;
-        const promise: Promise<any> = axios.get(url,{
+        return axios.get(url,{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             responseType: 'json'
         }).then((response) => response.data);
-
-        return tryPromiseOpsgenieWithMessage(promise, 'OpsGenie failed');
     }
 }

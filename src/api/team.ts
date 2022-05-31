@@ -7,7 +7,7 @@ import {
 } from '../utils/call-responses';
 import {h6, joinLines} from "../utils/markdown";
 
-export const listTeams = async (request: Request, response: Response) => {
+export const listTeamsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {

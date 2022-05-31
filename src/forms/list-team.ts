@@ -6,6 +6,7 @@ import {
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {StoreKeys} from '../constant';
+import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 
 export async function getAllTeamsCall(call: AppCallRequest): Promise<Teams[]> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -24,6 +25,6 @@ export async function getAllTeamsCall(call: AppCallRequest): Promise<Teams[]> {
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
-    const teams: ResponseResultWithData<Teams[]> = await opsGenieClient.getAllTeams();
+    const teams: ResponseResultWithData<Teams[]> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAllTeams(), 'OpsGenie failed');
     return teams.data;
 }

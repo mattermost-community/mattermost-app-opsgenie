@@ -8,6 +8,8 @@ import * as cHelp from './help';
 import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cWebhook from './webhook';
+import {listTeamsSubmit} from "./team";
+import {showModalNoteToAlertCall} from "./alert";
 
 const router: Router = express.Router();
 
@@ -19,9 +21,11 @@ router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
 router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
 
-router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeams);
+router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
+router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.showModalNoteToAlertCall);
+
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.followupAlert);
 router.post(`${Routes.App.CallPathAlertAcknowledged}`, cAlert.followupAlert);
@@ -29,7 +33,6 @@ router.post(`${Routes.App.CallPathAlertOtherActions}`, cAlert.otherActionsAlert)
 router.post(`${Routes.App.CallPathCloseOptions}`, cAlert.closeActionsAlert);
 router.post(`${Routes.App.CallPathAssignOwnerAlert}`, cAlert.assignOwnerToAlert);
 router.post(`${Routes.App.CallPathSnoozeAlertCreate}`, cAlert.createSnoozeAlert);
-router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.showModalNoteToAlert);
 
 router.post(`${Routes.App.CallPathIncomingWebhookPath}`, cWebhook.incomingWebhook);
 

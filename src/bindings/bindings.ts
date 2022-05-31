@@ -6,7 +6,7 @@ import {
     Commands,
     AppFieldTypes,
     options_alert_priority,
-    option_alert_priority_p3, AlertCreateForm
+    option_alert_priority_p3, AlertCreateForm, NoteCreateForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -81,19 +81,65 @@ export const createAlertBinding = (): AppBinding => {
     }
 }
 
-export const getAllTeamsBinding = (): any => {
+export const addNoteToAlertBinding = (): AppBinding => {
     return {
+        label: Commands.NOTE,
         icon: OpsGenieIcon,
-        label: Commands.TEAM,
-        description: 'List users teams',
+        description: 'Add note to Alert in OpsGenie',
         form: {
-            title: "",
+            title: "Add Note To Alert",
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathTeamsListSubmit,
+                path: Routes.App.CallPathNoteToAlertModal,
                 expand: { }
-            }
+            },
+            fields: [
+                {
+                    modal_label: 'Note message',
+                    name: NoteCreateForm.NOTE_MESSAGE,
+                    subtype: 'textarea',
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                    max_length: 25000
+                },
+                {
+                    modal_label: 'Tiny ID',
+                    name: NoteCreateForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 2,
+                },
+            ]
         }
+    }
+}
+
+export const getAllTeamsBinding = (): any => {
+    const commands: string[] = [
+        Commands.TEAM
+    ];
+
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.LIST,
+        description: 'Show info of OpsGenie',
+        hint: `[${commands.join(' | ')}]`,
+        bindings: [
+            {
+                icon: OpsGenieIcon,
+                label: Commands.TEAM,
+                description: 'List teams',
+                form: {
+                    title: "",
+                    icon: OpsGenieIcon,
+                    submit: {
+                        path: Routes.App.CallPathTeamsListSubmit,
+                        expand: { }
+                    }
+                }
+            }
+        ]
     }
 };
 
