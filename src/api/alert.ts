@@ -9,6 +9,7 @@ import {closeAlertCall} from '../forms/close-alert';
 import {ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
+import {unackAlertCall} from '../forms/unack-alert';
 
 export const createAlert = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -42,6 +43,20 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
 
     try {
         await ackAlertCall(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+
+export const unackAlertSubmit = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await unackAlertCall(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);

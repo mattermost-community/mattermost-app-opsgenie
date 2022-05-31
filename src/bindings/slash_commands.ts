@@ -6,7 +6,9 @@ import {
     getConfigureBinding,
     getAllTeamsBinding,
     addNoteToAlertBinding,
-    closeAlertBinding, ackAlertBinding
+    closeAlertBinding,
+    ackAlertBinding,
+    unackAlertBinding
 } from './bindings';
 import {
     AppBindingLocations,
@@ -51,6 +53,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
             bindings.push(addNoteToAlertBinding());
             bindings.push(closeAlertBinding());
             bindings.push(ackAlertBinding());
+            bindings.push(unackAlertBinding());
             return newCommandBindings(bindings);
         }
     }
@@ -62,6 +65,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     bindings.push(addNoteToAlertBinding());
     bindings.push(closeAlertBinding());
     bindings.push(ackAlertBinding());
+    bindings.push(unackAlertBinding());
     return newCommandBindings(bindings);
 };
 

@@ -10,7 +10,8 @@ import {
     AlertCreateForm,
     NoteCreateForm,
     CloseAlertForm,
-    AckAlertForm
+    AckAlertForm,
+    UnackAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -160,6 +161,31 @@ export const ackAlertBinding = (): AppBinding => {
                 {
                     modal_label: 'Tiny ID',
                     name: AckAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                },
+            ]
+        }
+    }
+}
+
+export const unackAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.UNACK,
+        icon: OpsGenieIcon,
+        description: 'UnAcknowledge alert in OpsGenie',
+        form: {
+            title: 'UnAcknowledge the alerts',
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathAlertUnacknowledge,
+                expand: { }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: UnackAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,

@@ -25,6 +25,7 @@ router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmit);
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlertSubmit);
 router.post(`${Routes.App.CallPathAlertAcknowledged}`, cAlert.ackAlertSubmit);
+router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.unackAlertSubmit);
 
 router.post(`${Routes.App.CallPathAlertOtherActions}`, cAlert.otherActionsAlert);
 router.post(`${Routes.App.CallPathCloseOptions}`, cAlert.closeActionsAlert);
