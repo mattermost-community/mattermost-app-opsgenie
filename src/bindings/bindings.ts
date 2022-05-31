@@ -77,11 +77,19 @@ export const createAlertBinding = (): AppBinding => {
                     max_length: 130
                 },
                 {
+                    modal_label: 'Team name',
+                    name: AlertCreateForm.TEAM_NAME,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 2,
+                    max_length: 100
+                },
+                {
                     modal_label: 'Priority',
                     name: AlertCreateForm.ALERT_PRIORITY,
                     type: AppFieldTypes.STATIC_SELECT,
                     is_required: false,
-                    position: 2,
+                    position: 3,
                     options: options_alert_priority,
                     value: options_alert_priority.find(value => value.value === option_alert_priority_p3)
                 },

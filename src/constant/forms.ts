@@ -4,7 +4,8 @@ export const ConfigureForm = {
 
 export const AlertCreateForm = {
     ALERT_MESSAGE: 'alert_message',
-    ALERT_PRIORITY: 'alert_priority'
+    ALERT_PRIORITY: 'alert_priority',
+    TEAM_NAME: 'team_name'
 }
 
 export const NoteCreateForm = {

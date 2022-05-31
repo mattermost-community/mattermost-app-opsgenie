@@ -6,7 +6,15 @@ export enum AlertStatus {
 export enum IdentifierType {
     ID = 'id',
     TINY = 'tiny',
-    USERNAME = 'username'
+    USERNAME = 'username',
+    NAME = 'name'
+}
+
+export enum AlertResponderType {
+    TEAM = 'team',
+    USER = 'user',
+    ESCALATION = 'escalation',
+    SCHEDULE = 'schedule'
 }
 
 export enum IntegrationType {
@@ -109,7 +117,13 @@ export type Team = {
 
 export type AlertCreate = {
     message: string;
-    priority?: string
+    priority?: string;
+    responders?: {
+        type?: string;
+        id?: string;
+        username?: string;
+        name?: string;
+    }[];
 };
 
 export type AlertAssign = {

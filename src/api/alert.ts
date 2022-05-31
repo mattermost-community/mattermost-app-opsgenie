@@ -5,7 +5,7 @@ import {
     newOKCallResponse,
     newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
-import {newCreateAlertCall} from '../forms/create-alert';
+import {createAlertCall} from '../forms/create-alert';
 import {addNoteToAlertCall} from '../forms/create-note';
 import {createSnoozeAlertCall} from '../forms/create-snooze';
 import {assignAlertCall} from '../forms/assign-alert';
@@ -56,11 +56,11 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
     }
 };
 
-export const createAlert = async (request: Request, response: Response) => {
+export const createAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await newCreateAlertCall(request.body);
+        await createAlertCall(request.body);
         callResponse = newOKCallResponse();
         response.json(callResponse);
     } catch (error: any) {
