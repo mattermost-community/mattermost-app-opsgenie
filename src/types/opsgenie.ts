@@ -172,9 +172,30 @@ export type AlertWebhook = {
     source: string;
 }
 
-export type WebhookRequest = {
+export type NoteWebhook = {
+    alertId: string;
+    message: string;
+    tags: any[];
+    tinyId: string;
+    entity: string;
+    alias: string;
+    createdAt: Date;
+    updatedAt: Date;
+    username: string;
+    note: string;
+    description: string;
+    responders: any[];
+    teams: any[];
+    actions: any[];
+    details: any;
+    priority: string;
+    oldPriority: string;
+    source: string;
+}
+
+export type WebhookRequest<T> = {
     action: string;
-    alert: AlertWebhook;
+    alert: T;
     source: {
         name: string;
         type: string;
