@@ -4,5 +4,6 @@ export const Commands = {
     NOTE: 'note',
     CONFIGURE: 'configure',
     TEAM: 'team',
-    LIST: 'list'
+    LIST: 'list',
+    CLOSE: 'close',
 }

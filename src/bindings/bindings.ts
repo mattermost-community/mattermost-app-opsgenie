@@ -6,7 +6,9 @@ import {
     Commands,
     AppFieldTypes,
     options_alert_priority,
-    option_alert_priority_p3, AlertCreateForm, NoteCreateForm
+    option_alert_priority_p3,
+    AlertCreateForm,
+    NoteCreateForm, CloseAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -109,6 +111,31 @@ export const addNoteToAlertBinding = (): AppBinding => {
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 2,
+                },
+            ]
+        }
+    }
+}
+
+export const closeAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.CLOSE,
+        icon: OpsGenieIcon,
+        description: 'Close Alert in OpsGenie',
+        form: {
+            title: "Close Alert",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathAlertClose,
+                expand: { }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: CloseAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
                 },
             ]
         }

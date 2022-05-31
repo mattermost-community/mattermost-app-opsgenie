@@ -4,7 +4,9 @@ import {
     createAlertBinding,
     getHelpBinding,
     getConfigureBinding,
-    getAllTeamsBinding, addNoteToAlertBinding
+    getAllTeamsBinding,
+    addNoteToAlertBinding,
+    closeAlertBinding
 } from './bindings';
 import {
     AppBindingLocations,
@@ -19,7 +21,8 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
         Commands.CONFIGURE,
         Commands.ALERT,
         Commands.NOTE,
-        Commands.TEAM
+        Commands.TEAM,
+        Commands.CLOSE
     ];
 
     return {
@@ -45,6 +48,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
             bindings.push(getConfigureBinding());
             bindings.push(getAllTeamsBinding());
             bindings.push(addNoteToAlertBinding());
+            bindings.push(closeAlertBinding());
             return newCommandBindings(bindings);
         }
     }
@@ -54,6 +58,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     bindings.push(getConfigureBinding());
     bindings.push(getAllTeamsBinding());
     bindings.push(addNoteToAlertBinding());
+    bindings.push(closeAlertBinding());
     return newCommandBindings(bindings);
 };
 

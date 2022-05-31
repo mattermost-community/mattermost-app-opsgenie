@@ -23,7 +23,7 @@ export const createAlert = async (request: Request, response: Response) => {
     }
 };
 
-export const closeAlert = async (request: Request, response: Response) => {
+export const closeAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
@@ -32,7 +32,7 @@ export const closeAlert = async (request: Request, response: Response) => {
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -88,7 +88,7 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 }

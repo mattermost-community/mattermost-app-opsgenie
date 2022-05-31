@@ -39,6 +39,6 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<void> {
 
     const data: AlertNote = {
         note: alertMessage
-    }
+    };
     await tryPromiseOpsgenieWithMessage(opsGenieClient.addNoteToAlert(identifier, data), 'OpsGenie failed');
 }

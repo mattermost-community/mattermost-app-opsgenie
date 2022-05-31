@@ -24,8 +24,8 @@ router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmit);
+router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlertSubmit);
 
-router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.followupAlert);
 router.post(`${Routes.App.CallPathAlertAcknowledged}`, cAlert.followupAlert);
 router.post(`${Routes.App.CallPathAlertOtherActions}`, cAlert.otherActionsAlert);

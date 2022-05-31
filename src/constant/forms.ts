@@ -11,3 +11,7 @@ export const NoteCreateForm = {
     NOTE_MESSAGE: 'alert_message',
     NOTE_TINY_ID: 'note_tiny_id'
 }
+
+export const CloseAlertForm = {
+    NOTE_TINY_ID: 'note_tiny_id'
+}
