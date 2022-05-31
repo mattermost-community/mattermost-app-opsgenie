@@ -1,5 +1,3 @@
-// @ts-ignore
-import * as opsgenie from 'opsgenie-sdk';
 import axios from 'axios';
 import config from '../config';
 import {
@@ -17,7 +15,10 @@ import {
     ListIntegrationsParams,
     Integration,
     Account,
-    Teams, AlertUnack, AlertAck
+    Teams,
+    AlertUnack,
+    AlertAck,
+    AlertClose
 } from '../types';
 import {Routes} from '../constant';
 import {replace, tryPromiseOpsgenieWithMessage} from '../utils/utils';
@@ -109,10 +110,10 @@ export class OpsGenieClient {
         }).then((response) => response.data);
     }
 
-    public closeAlert(identifier: Identifier): Promise<ResponseResult> {
+    public closeAlert(identifier: Identifier, data?: AlertClose): Promise<ResponseResult> {
         const path: string = `${replace(Routes.OpsGenie.CloseAlertPathPrefix, Routes.PathsVariable.Identifier, identifier.identifier)}`;
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${path}`;
-        return axios.post(url, {}, {
+        return axios.post(url, data, {
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },

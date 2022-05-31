@@ -132,6 +132,12 @@ export type AlertUnack = {
     source?: string;
 };
 
+export type AlertClose = {
+    note?: string;
+    user?: string;
+    source?: string;
+};
+
 export type AlertAck = {
     note?: string;
     user?: string;

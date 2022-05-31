@@ -1,5 +1,7 @@
 import {
-    Alert, AlertStatus,
+    Alert,
+    AlertClose,
+    AlertStatus,
     AppCallRequest,
     AppCallValues,
     Identifier,
@@ -14,6 +16,7 @@ import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 export async function closeAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
 
     const alertTinyId: string = values?.[CloseAlertForm.NOTE_TINY_ID];
@@ -42,5 +45,8 @@ export async function closeAlertCall(call: AppCallRequest): Promise<void> {
         throw new Error(`You have closed #${alert.tinyId}`);
     }
 
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.closeAlert(identifier), 'OpsGenie failed');
+    const data: AlertClose = {
+        user: username
+    };
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.closeAlert(identifier, data), 'OpsGenie failed');
 }

@@ -13,6 +13,7 @@ import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstor
 export async function addNoteToAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
 
     const alertMessage: string = values?.[NoteCreateForm.NOTE_MESSAGE];
@@ -38,7 +39,8 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<void> {
     await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
 
     const data: AlertNote = {
-        note: alertMessage
+        note: alertMessage,
+        user: username
     };
     await tryPromiseOpsgenieWithMessage(opsGenieClient.addNoteToAlert(identifier, data), 'OpsGenie failed');
 }

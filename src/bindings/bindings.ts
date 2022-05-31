@@ -96,7 +96,9 @@ export const addNoteToAlertBinding = (): AppBinding => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathNoteToAlertModal,
-                expand: { }
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             },
             fields: [
                 {
@@ -130,7 +132,9 @@ export const closeAlertBinding = (): AppBinding => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertClose,
-                expand: { }
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             },
             fields: [
                 {
