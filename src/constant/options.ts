@@ -44,6 +44,41 @@ export const options_times: AttachmentOption[] = [
     }
 ];
 
+export const options_alert_time: AppSelectOption[] = [
+    {
+        label: '5 min.',
+        value: option_time_5m
+    },
+    {
+        label: '10 min.',
+        value: option_time_10m
+    },
+    {
+        label: '15 min.',
+        value: option_time_15m
+    },
+    {
+        label: '30 min.',
+        value: option_time_30m
+    },
+    {
+        label: '1 hour.',
+        value: option_time_1h
+    },
+    {
+        label: '2 hours.',
+        value: option_time_2h
+    },
+    {
+        label: '6 hours.',
+        value: option_time_6h
+    },
+    {
+        label: '1 day.',
+        value: option_time_1d
+    }
+];
+
 export const option_alert_assign = 'assign';
 export const option_alert_snooze = 'snooze';
 export const option_alert_add_note = 'add_note';

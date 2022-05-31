@@ -19,7 +19,12 @@ export const CloseAlertForm = {
 export const AckAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id'
 }
+
 export const UnackAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id'
+}
 
+export const SnoozeAlertForm = {
+    NOTE_TINY_ID: 'note_tiny_id',
+    TIME_AMOUNT: 'time_amount'
 }

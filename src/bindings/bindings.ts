@@ -11,7 +11,9 @@ import {
     NoteCreateForm,
     CloseAlertForm,
     AckAlertForm,
-    UnackAlertForm
+    UnackAlertForm,
+    SnoozeAlertForm,
+    options_alert_time
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -197,6 +199,41 @@ export const unackAlertBinding = (): AppBinding => {
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,
+                },
+            ]
+        }
+    }
+}
+
+export const snoozeAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.SNOOZE,
+        icon: OpsGenieIcon,
+        description: 'Snooze alert in OpsGenie',
+        form: {
+            title: 'Snooze the alerts',
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathSnoozeAlert,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: SnoozeAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                },
+                {
+                    modal_label: 'Time Amount',
+                    name: SnoozeAlertForm.TIME_AMOUNT,
+                    type: AppFieldTypes.STATIC_SELECT,
+                    is_required: true,
+                    position: 2,
+                    options: options_alert_time
                 },
             ]
         }

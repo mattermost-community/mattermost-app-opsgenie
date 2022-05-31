@@ -26,11 +26,11 @@ router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmi
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlertSubmit);
 router.post(`${Routes.App.CallPathAlertAcknowledged}`, cAlert.ackAlertSubmit);
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.unackAlertSubmit);
+router.post(`${Routes.App.CallPathSnoozeAlert}`, cAlert.snoozeAlertSubmit);
 
 router.post(`${Routes.App.CallPathAlertOtherActions}`, cAlert.otherActionsAlert);
 router.post(`${Routes.App.CallPathCloseOptions}`, cAlert.closeActionsAlert);
 router.post(`${Routes.App.CallPathAssignOwnerAlert}`, cAlert.assignOwnerToAlert);
-router.post(`${Routes.App.CallPathSnoozeAlertCreate}`, cAlert.createSnoozeAlert);
 
 router.post(`${Routes.App.CallPathIncomingWebhookPath}`, cWebhook.incomingWebhook);
 

@@ -10,7 +10,7 @@ import {
     Identifier,
     IdentifierType,
     NoteWebhook,
-    ResponseResultWithData,
+    ResponseResultWithData, SnoozeWebhook,
     Team,
     WebhookRequest
 } from '../types';
@@ -352,13 +352,96 @@ async function notifyUnackAlert(request: WebhookRequest<AlertWebhook>, headers: 
     await mattermostClient.incomingWebhook(payload);
 }
 
+async function notifySnoozeAlert(request: WebhookRequest<SnoozeWebhook>, headers: { [key: string]: any }) {
+    const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
+    const mattermostUrl: string = 'http://127.0.0.1:8066';
+    const alert: SnoozeWebhook = request.alert;
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.OPSGENIE.API_KEY
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+    const alertDetailUrl: string = replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            account.data.name
+        ),
+        Routes.PathsVariable.Identifier,
+        alert.alertId
+    );
+    const payload = {
+        text: '',
+        username: 'opsgenie',
+        icon_url: `${config.APP.HOST}/static/opsgenie_picture.png`,
+        attachments: [
+            {
+                text: `${alert.username} snoozed alert ${hyperlink(`#${alert.tinyId}`, alertDetailUrl)} "${alert.message}" until ${alert.snoozeEndDate}`,
+            }
+        ]
+    };
+
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: mattermostWebhookUrl,
+        accessToken: null
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    await mattermostClient.incomingWebhook(payload);
+}
+
+async function notifySnoozeEndedAlert(request: WebhookRequest<AlertWebhook>, headers: { [key: string]: any }) {
+    const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
+    const mattermostUrl: string = 'http://127.0.0.1:8066';
+    const alert: AlertWebhook = request.alert;
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.OPSGENIE.API_KEY
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+    const alertDetailUrl: string = replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            account.data.name
+        ),
+        Routes.PathsVariable.Identifier,
+        alert.alertId
+    );
+    const payload = {
+        text: '',
+        username: 'opsgenie',
+        icon_url: `${config.APP.HOST}/static/opsgenie_picture.png`,
+        attachments: [
+            {
+                text: `Snooze expired for the alert ${hyperlink(`#${alert.tinyId}`, alertDetailUrl)} "${alert.message}"`,
+            }
+        ]
+    };
+
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: mattermostWebhookUrl,
+        accessToken: null
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    await mattermostClient.incomingWebhook(payload);
+}
 
 const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
     Create: notifyAlertCreated,
     AddNote: notifyNoteCreated,
     Close: notifyCloseAlert,
     Acknowledge: notifyAckAlert,
-    UnAcknowledge: notifyUnackAlert
+    UnAcknowledge: notifyUnackAlert,
+    Snooze: notifySnoozeAlert,
+    SnoozeEnded: notifySnoozeEndedAlert
 };
 
 export const incomingWebhook = async (request: Request, response: Response) => {

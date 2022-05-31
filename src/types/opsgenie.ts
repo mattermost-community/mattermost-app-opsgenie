@@ -215,6 +215,29 @@ export type NoteWebhook = {
     source: string;
 }
 
+export type SnoozeWebhook = {
+    alertId: string;
+    message: string;
+    tags: any[];
+    tinyId: string;
+    entity: string;
+    alias: string;
+    createdAt: Date;
+    updatedAt: Date;
+    username: string;
+    userId: string;
+    description: string;
+    responders: any[];
+    teams: any[];
+    actions: any[];
+    snoozeEndDate: string;
+    snoozedUntil: string;
+    details: any;
+    priority: string;
+    oldPriority: string;
+    source: string;
+}
+
 export type WebhookRequest<T> = {
     action: string;
     alert: T;

@@ -133,7 +133,7 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                             name: "Choose snooze time",
                             type: 'select',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlertCreate}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlert}`,
                                 context: {
                                     action: ActionsEvents.TIME_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,

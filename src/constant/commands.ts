@@ -7,5 +7,6 @@ export const Commands = {
     LIST: 'list',
     CLOSE: 'close',
     ACK: 'ack',
-    UNACK: 'unack'
+    UNACK: 'unack',
+    SNOOZE: 'snooze'
 }

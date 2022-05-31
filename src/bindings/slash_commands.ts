@@ -8,7 +8,8 @@ import {
     addNoteToAlertBinding,
     closeAlertBinding,
     ackAlertBinding,
-    unackAlertBinding
+    unackAlertBinding,
+    snoozeAlertBinding
 } from './bindings';
 import {
     AppBindingLocations,
@@ -25,7 +26,9 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
         Commands.NOTE,
         Commands.TEAM,
         Commands.CLOSE,
-        Commands.ACK
+        Commands.ACK,
+        Commands.UNACK,
+        Commands.SNOOZE
     ];
 
     return {
@@ -54,6 +57,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
             bindings.push(closeAlertBinding());
             bindings.push(ackAlertBinding());
             bindings.push(unackAlertBinding());
+            bindings.push(snoozeAlertBinding());
             return newCommandBindings(bindings);
         }
     }
@@ -66,6 +70,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     bindings.push(closeAlertBinding());
     bindings.push(ackAlertBinding());
     bindings.push(unackAlertBinding());
+    bindings.push(snoozeAlertBinding());
     return newCommandBindings(bindings);
 };
 
