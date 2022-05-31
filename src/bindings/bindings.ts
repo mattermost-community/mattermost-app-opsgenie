@@ -8,7 +8,9 @@ import {
     options_alert_priority,
     option_alert_priority_p3,
     AlertCreateForm,
-    NoteCreateForm, CloseAlertForm
+    NoteCreateForm,
+    CloseAlertForm,
+    AckAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -133,6 +135,31 @@ export const closeAlertBinding = (): AppBinding => {
                 {
                     modal_label: 'Tiny ID',
                     name: CloseAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                },
+            ]
+        }
+    }
+}
+
+export const ackAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.ACK,
+        icon: OpsGenieIcon,
+        description: 'Acknowledge alert in OpsGenie',
+        form: {
+            title: 'Acknowledge the alerts',
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathAlertAcknowledged,
+                expand: { }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: AckAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,

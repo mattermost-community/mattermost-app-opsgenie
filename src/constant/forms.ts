@@ -15,3 +15,7 @@ export const NoteCreateForm = {
 export const CloseAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id'
 }
+
+export const AckAlertForm = {
+    NOTE_TINY_ID: 'note_tiny_id'
+}

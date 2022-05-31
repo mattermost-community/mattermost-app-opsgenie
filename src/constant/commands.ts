@@ -6,4 +6,5 @@ export const Commands = {
     TEAM: 'team',
     LIST: 'list',
     CLOSE: 'close',
+    ACK: 'ack'
 }

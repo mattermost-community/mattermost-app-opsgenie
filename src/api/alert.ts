@@ -6,7 +6,7 @@ import {addNoteToAlertCall} from '../forms/create-note';
 import {newCreateSnoozeAlertCall} from '../forms/create-snooze';
 import {assignOwnerAlertCall} from '../forms/assign-owner';
 import {closeAlertCall} from '../forms/close-alert';
-import {followupAlertCall} from '../forms/followup-alert';
+import {ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
 
@@ -37,16 +37,16 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
     }
 };
 
-export const followupAlert = async (request: Request, response: Response) => {
+export const ackAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await followupAlertCall(request.body);
+        await ackAlertCall(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
