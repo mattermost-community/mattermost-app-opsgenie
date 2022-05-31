@@ -28,8 +28,17 @@ function getUserCommands(): string {
     const homepageUrl: string = manifest.homepage_url;
     return `${joinLines(
         addBulletSlashCommand('help', `Launch the OpsGenie plugin command line help syntax, check out the [documentation](${homepageUrl}).`),
-        addBulletSlashCommand('alert', 'Create a new alert.'),
-        addBulletSlashCommand('team', 'List teams.'),
+        addBulletSlashCommand('alert create [Alert message] [Team name] [Priority]', 'Create an alert with the message for the specified responders'),
+        addBulletSlashCommand('alert note [Note message] [TinyId]', 'Add [note] to the alerts with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert snooze [TinyID] [time amount [m/h/d]]', 'Snooze the alerts with IDs [tinyID tinyID2..] for the specified time.'),
+        addBulletSlashCommand('alert ack [TinyID]', 'Acknowledge the alerts with IDs [tinyID tinyID2..].'),
+        addBulletSlashCommand('alert unack [TinyID]', 'UnAcknowledge the alerts with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert assign [TinyID] [User mattermost]', 'Assign alerts with IDs [tinyID tinyID2..] to [user]'),
+        addBulletSlashCommand('alert close [TinyID]', 'Close the alerts, incidents, mass notifications with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert own [TinyID]', 'Take ownership of the alerts with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert priority [TinyID] [Priority]', 'Update priority of the alert with [tinyID].'),
+        addBulletSlashCommand('list team', 'List teams.'),
+        addBulletSlashCommand('list alert', 'List alerts.'),
     )}\n`;
 }
 
