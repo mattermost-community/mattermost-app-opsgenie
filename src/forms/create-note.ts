@@ -10,7 +10,7 @@ import {NoteCreateForm, StoreKeys} from '../constant';
 import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 
-export async function newModalNoteToAlert(call: AppCallRequest): Promise<void> {
+export async function addNoteToAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues | undefined = call.values;
@@ -35,9 +35,10 @@ export async function newModalNoteToAlert(call: AppCallRequest): Promise<void> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+
     const data: AlertNote = {
         note: alertMessage
     }
-
     await tryPromiseOpsgenieWithMessage(opsGenieClient.addNoteToAlert(identifier, data), 'OpsGenie failed');
 }

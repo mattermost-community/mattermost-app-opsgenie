@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import {AppCallResponse} from '../types';
 import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
 import {newCreateAlertCall} from '../forms/create-alert';
-import {newModalNoteToAlert} from '../forms/create-note';
+import {addNoteToAlertCall} from '../forms/create-note';
 import {newCreateSnoozeAlertCall} from '../forms/create-snooze';
 import {assignOwnerAlertCall} from '../forms/assign-owner';
 import {closeAlertCall} from '../forms/close-alert';
@@ -79,16 +79,16 @@ export const closeActionsAlert = async (request: Request, response: Response) =>
     }
 };
 
-export const showModalNoteToAlertCall = async (request: Request, response: Response) => {
+export const addNoteToAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await newModalNoteToAlert(request.body);
+        await addNoteToAlertCall(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create incident form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error' + error.message);
         response.json(callResponse);
     }
 }

@@ -8,8 +8,7 @@ import * as cHelp from './help';
 import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cWebhook from './webhook';
-import {listTeamsSubmit} from "./team";
-import {showModalNoteToAlertCall} from "./alert";
+import {addNoteToAlertSubmit} from "./alert";
 
 const router: Router = express.Router();
 
@@ -24,7 +23,7 @@ router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccou
 router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlert);
-router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.showModalNoteToAlertCall);
+router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmit);
 
 router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlert);
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.followupAlert);
