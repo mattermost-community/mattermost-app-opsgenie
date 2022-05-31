@@ -1,6 +1,7 @@
 export const Commands = {
     HELP: 'help',
     ALERT: 'alert',
+    CREATE: 'create',
     NOTE: 'note',
     CONFIGURE: 'configure',
     TEAM: 'team',

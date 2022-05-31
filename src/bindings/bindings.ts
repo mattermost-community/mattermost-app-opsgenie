@@ -15,7 +15,8 @@ import {
     SnoozeAlertForm,
     options_alert_time,
     AssignAlertForm,
-    TakeOwnershipAlertForm, PriorityAlertForm
+    TakeOwnershipAlertForm,
+    PriorityAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -54,51 +55,87 @@ export const getConfigureBinding = (): any => {
     }
 };
 
-export const createAlertBinding = (): AppBinding => {
+export const alertBinding = (): AppBinding => {
+    const commands: string[] = [
+        Commands.CREATE,
+        Commands.NOTE,
+        Commands.CLOSE,
+        Commands.ACK,
+        Commands.UNACK,
+        Commands.SNOOZE,
+        Commands.ASSIGN,
+        Commands.OWN,
+        Commands.PRIORITY
+    ];
+
+    const bindings: AppBinding[] = [];
+
+    bindings.push(createAlertBinding());
+    bindings.push(addNoteToAlertBinding());
+    bindings.push(closeAlertBinding());
+    bindings.push(ackAlertBinding());
+    bindings.push(unackAlertBinding());
+    bindings.push(snoozeAlertBinding());
+    bindings.push(assignAlertBinding());
+    bindings.push(ownAlertBinding());
+    bindings.push(updatePriorityAlertBinding());
+
     return {
         label: Commands.ALERT,
         icon: OpsGenieIcon,
-        description: 'Create Alert in OpsGenie',
-        form: {
-            title: "Create alert",
-            icon: OpsGenieIcon,
-            submit: {
-                path: Routes.App.CallPathAlertCreate,
-                expand: { }
-            },
-            fields: [
-                {
-                    modal_label: 'Alert message',
-                    name: AlertCreateForm.ALERT_MESSAGE,
-                    subtype: 'textarea',
-                    type: AppFieldTypes.TEXT,
-                    is_required: true,
-                    position: 1,
-                    max_length: 130
-                },
-                {
-                    modal_label: 'Team name',
-                    name: AlertCreateForm.TEAM_NAME,
-                    type: AppFieldTypes.TEXT,
-                    is_required: true,
-                    position: 2,
-                    max_length: 100
-                },
-                {
-                    modal_label: 'Priority',
-                    name: AlertCreateForm.ALERT_PRIORITY,
-                    type: AppFieldTypes.STATIC_SELECT,
-                    is_required: false,
-                    position: 3,
-                    options: options_alert_priority,
-                    value: options_alert_priority.find(value => value.value === option_alert_priority_p3)
-                },
-            ]
-        }
+        description: 'Config Alert in OpsGenie',
+        hint: `[${commands.join(' | ')}]`,
+        bindings
     }
 }
 
-export const addNoteToAlertBinding = (): AppBinding => {
+const createAlertBinding = (): AppBinding => {
+    return (
+        {
+            label: Commands.CREATE,
+            icon: OpsGenieIcon,
+            description: 'Create Alert in OpsGenie',
+            form: {
+                title: 'Create alert',
+                icon: OpsGenieIcon,
+                submit: {
+                    path: Routes.App.CallPathAlertCreate,
+                    expand: { }
+                },
+                fields: [
+                    {
+                        modal_label: 'Alert message',
+                        name: AlertCreateForm.ALERT_MESSAGE,
+                        subtype: 'textarea',
+                        type: AppFieldTypes.TEXT,
+                        is_required: true,
+                        position: 1,
+                        max_length: 130
+                    },
+                    {
+                        modal_label: 'Team name',
+                        name: AlertCreateForm.TEAM_NAME,
+                        type: AppFieldTypes.TEXT,
+                        is_required: true,
+                        position: 2,
+                        max_length: 100
+                    },
+                    {
+                        modal_label: 'Priority',
+                        name: AlertCreateForm.ALERT_PRIORITY,
+                        type: AppFieldTypes.STATIC_SELECT,
+                        is_required: false,
+                        position: 3,
+                        options: options_alert_priority,
+                        value: options_alert_priority.find(value => value.value === option_alert_priority_p3)
+                    },
+                ]
+            }
+        }
+    );
+};
+
+const addNoteToAlertBinding = (): AppBinding => {
     return {
         label: Commands.NOTE,
         icon: OpsGenieIcon,
@@ -134,7 +171,7 @@ export const addNoteToAlertBinding = (): AppBinding => {
     }
 }
 
-export const closeAlertBinding = (): AppBinding => {
+const closeAlertBinding = (): AppBinding => {
     return {
         label: Commands.CLOSE,
         icon: OpsGenieIcon,
@@ -161,7 +198,7 @@ export const closeAlertBinding = (): AppBinding => {
     }
 }
 
-export const ackAlertBinding = (): AppBinding => {
+const ackAlertBinding = (): AppBinding => {
     return {
         label: Commands.ACK,
         icon: OpsGenieIcon,
@@ -188,7 +225,7 @@ export const ackAlertBinding = (): AppBinding => {
     }
 }
 
-export const unackAlertBinding = (): AppBinding => {
+const unackAlertBinding = (): AppBinding => {
     return {
         label: Commands.UNACK,
         icon: OpsGenieIcon,
@@ -215,7 +252,7 @@ export const unackAlertBinding = (): AppBinding => {
     }
 }
 
-export const snoozeAlertBinding = (): AppBinding => {
+const snoozeAlertBinding = (): AppBinding => {
     return {
         label: Commands.SNOOZE,
         icon: OpsGenieIcon,
@@ -250,7 +287,7 @@ export const snoozeAlertBinding = (): AppBinding => {
     }
 }
 
-export const assignAlertBinding = (): AppBinding => {
+const assignAlertBinding = (): AppBinding => {
     return {
         label: Commands.ASSIGN,
         icon: OpsGenieIcon,
@@ -284,7 +321,7 @@ export const assignAlertBinding = (): AppBinding => {
     }
 }
 
-export const ownAlertBinding = (): AppBinding => {
+const ownAlertBinding = (): AppBinding => {
     return {
         label: Commands.OWN,
         icon: OpsGenieIcon,
@@ -311,7 +348,7 @@ export const ownAlertBinding = (): AppBinding => {
     }
 }
 
-export const updatePriorityAlertBinding = (): AppBinding => {
+const updatePriorityAlertBinding = (): AppBinding => {
     return {
         label: Commands.PRIORITY,
         icon: OpsGenieIcon,

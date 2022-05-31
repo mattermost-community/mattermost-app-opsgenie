@@ -1,16 +1,10 @@
 import {AppBinding, AppsState, BindingOptions} from '../types';
 
 import {
-    createAlertBinding,
+    alertBinding,
     getHelpBinding,
     getConfigureBinding,
-    getAllBinding,
-    addNoteToAlertBinding,
-    closeAlertBinding,
-    ackAlertBinding,
-    unackAlertBinding,
-    snoozeAlertBinding,
-    assignAlertBinding, ownAlertBinding, updatePriorityAlertBinding
+    getAllBinding
 } from './bindings';
 import {
     AppBindingLocations,
@@ -24,15 +18,7 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
         Commands.HELP,
         Commands.CONFIGURE,
         Commands.ALERT,
-        Commands.NOTE,
-        Commands.TEAM,
-        Commands.CLOSE,
-        Commands.ACK,
-        Commands.UNACK,
-        Commands.SNOOZE,
-        Commands.ASSIGN,
-        Commands.OWN,
-        Commands.PRIORITY
+        Commands.LIST
     ];
 
     return {
@@ -54,33 +40,17 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     if (!options.isConfigured) {
         if (options.isSystemAdmin) {
             bindings.push(getHelpBinding());
-            bindings.push(createAlertBinding());
+            bindings.push(alertBinding());
             bindings.push(getConfigureBinding());
             bindings.push(getAllBinding());
-            bindings.push(addNoteToAlertBinding());
-            bindings.push(closeAlertBinding());
-            bindings.push(ackAlertBinding());
-            bindings.push(unackAlertBinding());
-            bindings.push(snoozeAlertBinding());
-            bindings.push(assignAlertBinding());
-            bindings.push(ownAlertBinding());
-            bindings.push(updatePriorityAlertBinding());
             return newCommandBindings(bindings);
         }
     }
 
     bindings.push(getHelpBinding());
-    bindings.push(createAlertBinding());
+    bindings.push(alertBinding());
     bindings.push(getConfigureBinding());
     bindings.push(getAllBinding());
-    bindings.push(addNoteToAlertBinding());
-    bindings.push(closeAlertBinding());
-    bindings.push(ackAlertBinding());
-    bindings.push(unackAlertBinding());
-    bindings.push(snoozeAlertBinding());
-    bindings.push(assignAlertBinding());
-    bindings.push(ownAlertBinding());
-    bindings.push(updatePriorityAlertBinding());
     return newCommandBindings(bindings);
 };
 
