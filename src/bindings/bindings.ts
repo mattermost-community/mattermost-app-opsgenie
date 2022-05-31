@@ -15,7 +15,7 @@ import {
     SnoozeAlertForm,
     options_alert_time,
     AssignAlertForm,
-    TakeOwnershipAlertForm
+    TakeOwnershipAlertForm, PriorityAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -311,6 +311,40 @@ export const ownAlertBinding = (): AppBinding => {
     }
 }
 
+export const updatePriorityAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.PRIORITY,
+        icon: OpsGenieIcon,
+        description: 'Update priority of alert in OpsGenie',
+        form: {
+            title: 'Update priority of th alert',
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathUpdatePriorityAlertSubmit,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: PriorityAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                },
+                {
+                    modal_label: 'Priority',
+                    name: PriorityAlertForm.ALERT_PRIORITY,
+                    type: AppFieldTypes.STATIC_SELECT,
+                    is_required: true,
+                    position: 2,
+                    options: options_alert_priority
+                }
+            ]
+        }
+    }
+}
 
 export const getAllBinding = (): any => {
     const commands: string[] = [

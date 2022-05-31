@@ -10,5 +10,6 @@ export const Commands = {
     UNACK: 'unack',
     SNOOZE: 'snooze',
     ASSIGN: 'assign',
-    OWN: 'own'
+    OWN: 'own',
+    PRIORITY: 'priority'
 }

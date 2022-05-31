@@ -482,6 +482,47 @@ async function notifyAssignOwnershipAlert(request: WebhookRequest<AssignWebhook>
     await mattermostClient.incomingWebhook(payload);
 }
 
+async function notifyUpdatePriorityAlert(request: WebhookRequest<AssignWebhook>, headers: { [key: string]: any }) {
+    const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
+    const mattermostUrl: string = 'http://127.0.0.1:8066';
+    const alert: AssignWebhook = request.alert;
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.OPSGENIE.API_KEY
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+    const alertDetailUrl: string = replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            account.data.name
+        ),
+        Routes.PathsVariable.Identifier,
+        alert.alertId
+    );
+    const payload = {
+        text: '',
+        username: 'opsgenie',
+        icon_url: `${config.APP.HOST}/static/opsgenie_picture.png`,
+        attachments: [
+            {
+                text: `${alert.username} changed the priority of the alert ${hyperlink(`#${alert.tinyId}`, alertDetailUrl)} "${alert.message}" from ${alert.oldPriority} to ${alert.priority}`,
+            }
+        ]
+    };
+
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: mattermostWebhookUrl,
+        accessToken: null
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    await mattermostClient.incomingWebhook(payload);
+}
+
 const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
     Create: notifyAlertCreated,
     AddNote: notifyNoteCreated,
@@ -490,7 +531,8 @@ const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
     UnAcknowledge: notifyUnackAlert,
     Snooze: notifySnoozeAlert,
     SnoozeEnded: notifySnoozeEndedAlert,
-    AssignOwnership: notifyAssignOwnershipAlert
+    AssignOwnership: notifyAssignOwnershipAlert,
+    UpdatePriority: notifyUpdatePriorityAlert
 };
 
 export const incomingWebhook = async (request: Request, response: Response) => {

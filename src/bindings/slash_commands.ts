@@ -10,7 +10,7 @@ import {
     ackAlertBinding,
     unackAlertBinding,
     snoozeAlertBinding,
-    assignAlertBinding, ownAlertBinding
+    assignAlertBinding, ownAlertBinding, updatePriorityAlertBinding
 } from './bindings';
 import {
     AppBindingLocations,
@@ -31,7 +31,8 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
         Commands.UNACK,
         Commands.SNOOZE,
         Commands.ASSIGN,
-        Commands.OWN
+        Commands.OWN,
+        Commands.PRIORITY
     ];
 
     return {
@@ -63,6 +64,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
             bindings.push(snoozeAlertBinding());
             bindings.push(assignAlertBinding());
             bindings.push(ownAlertBinding());
+            bindings.push(updatePriorityAlertBinding());
             return newCommandBindings(bindings);
         }
     }
@@ -78,6 +80,7 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     bindings.push(snoozeAlertBinding());
     bindings.push(assignAlertBinding());
     bindings.push(ownAlertBinding());
+    bindings.push(updatePriorityAlertBinding());
     return newCommandBindings(bindings);
 };
 

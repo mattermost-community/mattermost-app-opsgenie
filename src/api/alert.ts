@@ -19,6 +19,7 @@ import {takeOwnershipAlertCall} from '../forms/take-ownership-alert';
 import {h6, hyperlink, joinLines} from '../utils/markdown';
 import {AppsOpsGenie, Routes} from '../constant';
 import {replace} from '../utils/utils';
+import {priorityAlertCall} from "../forms/priority-alert";
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -186,6 +187,20 @@ export const takeOwnershipAlertSubmit = async (request: Request, response: Respo
 
     try {
         await takeOwnershipAlertCall(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+
+export const priorityAlertSubmit = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await priorityAlertCall(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);

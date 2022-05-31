@@ -126,6 +126,13 @@ export type AlertCreate = {
     }[];
 };
 
+export type PriorityAlert = {
+    priority: string;
+    user?: string;
+    source?: string;
+    note?: string;
+};
+
 export type AlertAssign = {
     owner: {
         id?: string;

@@ -57,7 +57,7 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void
     const alert: Alert = responseAlert.data;
 
     if (!alert.owner || alert.owner === mattermostUser.email) {
-        throw new Error(`Take ownership request will be processed for #165`);
+        throw new Error(`Take ownership request will be processed for #${alert.tinyId}`);
     }
 
     const data: AlertAssign = {

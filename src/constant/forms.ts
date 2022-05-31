@@ -38,3 +38,8 @@ export const AssignAlertForm = {
 export const TakeOwnershipAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id'
 }
+
+export const PriorityAlertForm = {
+    NOTE_TINY_ID: 'note_tiny_id',
+    ALERT_PRIORITY: 'alert_priority'
+}

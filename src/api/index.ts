@@ -8,7 +8,6 @@ import * as cHelp from './help';
 import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cWebhook from './webhook';
-import {createAlertSubmit} from "./alert";
 
 const router: Router = express.Router();
 
@@ -31,6 +30,7 @@ router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.unackAlertSubmit)
 router.post(`${Routes.App.CallPathSnoozeAlert}`, cAlert.snoozeAlertSubmit);
 router.post(`${Routes.App.CallPathAssignAlert}`, cAlert.assignAlertSubmit);
 router.post(`${Routes.App.CallPathTakeOwnershipAlertSubmit}`, cAlert.takeOwnershipAlertSubmit);
+router.post(`${Routes.App.CallPathUpdatePriorityAlertSubmit}`, cAlert.priorityAlertSubmit);
 
 router.post(`${Routes.App.CallPathAlertOtherActions}`, cAlert.otherActionsAlert);
 router.post(`${Routes.App.CallPathCloseOptions}`, cAlert.closeActionsAlert);

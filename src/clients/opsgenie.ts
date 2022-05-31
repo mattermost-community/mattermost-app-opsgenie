@@ -18,7 +18,7 @@ import {
     Teams,
     AlertUnack,
     AlertAck,
-    AlertClose
+    AlertClose, PriorityAlert
 } from '../types';
 import {Routes} from '../constant';
 import {replace, tryPromiseOpsgenieWithMessage} from '../utils/utils';
@@ -71,6 +71,19 @@ export class OpsGenieClient {
         }).then((response) => response.data);
 
         return tryPromiseOpsgenieWithMessage(promise, 'Opsgenie failed');
+    }
+
+    public updatePriorityToAlert(identifier: Identifier, alert: PriorityAlert): Promise<ResponseResult> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.UpdatePriorityToAlertPathPrefix}`;
+        return axios.put(replace(url, Routes.PathsVariable.Identifier, identifier.identifier), alert,{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
+            params: {
+                identifierType: identifier.identifierType
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
     }
 
     public addNoteToAlert(identifier: Identifier, data: AlertNote): Promise<ResponseResult> {
