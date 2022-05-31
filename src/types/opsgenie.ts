@@ -114,7 +114,8 @@ export type AlertCreate = {
 
 export type AlertAssign = {
     owner: {
-        id: string;
+        id?: string;
+        username?: string;
     };
     user?: string;
     source?: string;
@@ -233,6 +234,27 @@ export type SnoozeWebhook = {
     actions: any[];
     snoozeEndDate: string;
     snoozedUntil: string;
+    details: any;
+    priority: string;
+    oldPriority: string;
+    source: string;
+}
+
+export type AssignWebhook = {
+    alertId: string;
+    message: string;
+    tags: any[];
+    tinyId: string;
+    entity: string;
+    alias: string;
+    createdAt: Date;
+    updatedAt: Date;
+    username: string;
+    description: string;
+    owner: string;
+    responders: any[];
+    teams: any[];
+    actions: any[];
     details: any;
     priority: string;
     oldPriority: string;

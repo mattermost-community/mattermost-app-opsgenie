@@ -28,3 +28,8 @@ export const SnoozeAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id',
     TIME_AMOUNT: 'time_amount'
 }
+
+export const AssignAlertForm = {
+    NOTE_TINY_ID: 'note_tiny_id',
+    USER_ID: 'user_id'
+}

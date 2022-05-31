@@ -13,7 +13,8 @@ import {
     AckAlertForm,
     UnackAlertForm,
     SnoozeAlertForm,
-    options_alert_time
+    options_alert_time,
+    AssignAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -234,6 +235,40 @@ export const snoozeAlertBinding = (): AppBinding => {
                     is_required: true,
                     position: 2,
                     options: options_alert_time
+                },
+            ]
+        }
+    }
+}
+
+export const assignAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.ASSIGN,
+        icon: OpsGenieIcon,
+        description: 'Assign alert in OpsGenie',
+        form: {
+            title: 'Assign the alerts',
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathAssignAlert,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: AssignAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                },
+                {
+                    modal_label: 'User',
+                    name: AssignAlertForm.USER_ID,
+                    type: AppFieldTypes.USER,
+                    is_required: true,
+                    position: 2
                 },
             ]
         }

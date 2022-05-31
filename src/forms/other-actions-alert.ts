@@ -77,7 +77,7 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                             id: ActionsEvents.USER_SELECT_EVENT,
                             name: "Choose a user",
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAssignOwnerAlert}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAssignAlert}`,
                                 context: {
                                     action: ActionsEvents.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,

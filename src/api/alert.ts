@@ -8,7 +8,7 @@ import {
 import {newCreateAlertCall} from '../forms/create-alert';
 import {addNoteToAlertCall} from '../forms/create-note';
 import {createSnoozeAlertCall} from '../forms/create-snooze';
-import {assignOwnerAlertCall} from '../forms/assign-owner';
+import {assignAlertCall} from '../forms/assign-alert';
 import {closeAlertCall} from '../forms/close-alert';
 import {ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
@@ -152,16 +152,16 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
     }
 }
 
-export const assignOwnerToAlert = async (request: Request, response: Response) => {
+export const assignAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await assignOwnerAlertCall(request.body);
+        await assignAlertCall(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create incident form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };

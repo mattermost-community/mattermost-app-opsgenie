@@ -4,12 +4,13 @@ import {
     Alert,
     AlertWebhook,
     AppCallResponse,
+    AssignWebhook,
     AttachmentAction,
     AttachmentOption,
     CloseAlertAction,
     Identifier,
     IdentifierType,
-    NoteWebhook,
+    NoteWebhook, OpsUser,
     ResponseResultWithData, SnoozeWebhook,
     Team,
     WebhookRequest
@@ -434,6 +435,53 @@ async function notifySnoozeEndedAlert(request: WebhookRequest<AlertWebhook>, hea
     await mattermostClient.incomingWebhook(payload);
 }
 
+async function notifyAssignOwnershipAlert(request: WebhookRequest<AssignWebhook>, headers: { [key: string]: any }) {
+    const mattermostWebhookUrl: string = headers[AppMattermostConfig.WEBHOOK];
+    const mattermostUrl: string = 'http://127.0.0.1:8066';
+    const alert: AssignWebhook = request.alert;
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.OPSGENIE.API_KEY
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+
+    const identifier: Identifier = {
+        identifier: alert.owner,
+        identifierType: IdentifierType.USERNAME
+    };
+    const user: ResponseResultWithData<OpsUser> = await opsGenieClient.getUser(identifier);
+
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+    const alertDetailUrl: string = replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            account.data.name
+        ),
+        Routes.PathsVariable.Identifier,
+        alert.alertId
+    );
+    const payload = {
+        text: '',
+        username: 'opsgenie',
+        icon_url: `${config.APP.HOST}/static/opsgenie_picture.png`,
+        attachments: [
+            {
+                text: `${alert.username} assigned ownership of the alert ${hyperlink(`#${alert.tinyId}`, alertDetailUrl)} to ${user.data.fullName} "${alert.message}"`,
+            }
+        ]
+    };
+
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: mattermostWebhookUrl,
+        accessToken: null
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    await mattermostClient.incomingWebhook(payload);
+}
+
 const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
     Create: notifyAlertCreated,
     AddNote: notifyNoteCreated,
@@ -441,7 +489,8 @@ const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
     Acknowledge: notifyAckAlert,
     UnAcknowledge: notifyUnackAlert,
     Snooze: notifySnoozeAlert,
-    SnoozeEnded: notifySnoozeEndedAlert
+    SnoozeEnded: notifySnoozeEndedAlert,
+    AssignOwnership: notifyAssignOwnershipAlert
 };
 
 export const incomingWebhook = async (request: Request, response: Response) => {

@@ -8,5 +8,6 @@ export const Commands = {
     CLOSE: 'close',
     ACK: 'ack',
     UNACK: 'unack',
-    SNOOZE: 'snooze'
+    SNOOZE: 'snooze',
+    ASSIGN: 'assign'
 }
