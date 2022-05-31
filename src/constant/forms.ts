@@ -33,3 +33,7 @@ export const AssignAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id',
     USER_ID: 'user_id'
 }
+
+export const TakeOwnershipAlertForm = {
+    NOTE_TINY_ID: 'note_tiny_id'
+}

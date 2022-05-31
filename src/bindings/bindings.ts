@@ -14,7 +14,8 @@ import {
     UnackAlertForm,
     SnoozeAlertForm,
     options_alert_time,
-    AssignAlertForm
+    AssignAlertForm,
+    TakeOwnershipAlertForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -274,6 +275,34 @@ export const assignAlertBinding = (): AppBinding => {
         }
     }
 }
+
+export const ownAlertBinding = (): AppBinding => {
+    return {
+        label: Commands.OWN,
+        icon: OpsGenieIcon,
+        description: 'Take ownership alert in OpsGenie',
+        form: {
+            title: 'Take ownership of the alerts',
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathTakeOwnershipAlertSubmit,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
+            },
+            fields: [
+                {
+                    modal_label: 'Tiny ID',
+                    name: TakeOwnershipAlertForm.NOTE_TINY_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                }
+            ]
+        }
+    }
+}
+
 
 export const getAllBinding = (): any => {
     const commands: string[] = [

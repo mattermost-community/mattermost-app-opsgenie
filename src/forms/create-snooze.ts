@@ -20,7 +20,7 @@ import {
 } from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromiseOpsgenieWithMessage} from "../utils/utils";
+import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 
 export async function createSnoozeAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;

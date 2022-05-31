@@ -27,6 +27,7 @@ const AppPaths = {
     CallPathAssignAlert: '/alert/assign',
     CallPathSnoozeAlert: '/alert/snooze',
     CallPathNoteToAlertModal: '/alert/note',
+    CallPathTakeOwnershipAlertSubmit: '/alert/takeownership',
 
     CallPathIncomingWebhookPath: '/webhook'
 }

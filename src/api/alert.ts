@@ -15,6 +15,7 @@ import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
 import {unackAlertCall} from '../forms/unack-alert';
 import {getAllAlertCall} from '../forms/list-alert';
+import {takeOwnershipAlertCall} from '../forms/take-ownership-alert';
 import {h6, hyperlink, joinLines} from '../utils/markdown';
 import {AppsOpsGenie, Routes} from '../constant';
 import {replace} from '../utils/utils';
@@ -171,6 +172,20 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
 
     try {
         await createSnoozeAlertCall(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+
+export const takeOwnershipAlertSubmit = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await takeOwnershipAlertCall(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);

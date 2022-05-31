@@ -9,5 +9,6 @@ export const Commands = {
     ACK: 'ack',
     UNACK: 'unack',
     SNOOZE: 'snooze',
-    ASSIGN: 'assign'
+    ASSIGN: 'assign',
+    OWN: 'own'
 }
