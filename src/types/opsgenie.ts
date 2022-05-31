@@ -1,3 +1,7 @@
+export enum AlertStatus {
+    CLOSED = 'closed'
+}
+
 export enum IdentifierType {
     ID = 'id',
     TINY = 'tiny',

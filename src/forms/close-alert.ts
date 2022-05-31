@@ -1,8 +1,10 @@
 import {
+    Alert, AlertStatus,
     AppCallRequest,
     AppCallValues,
     Identifier,
-    IdentifierType
+    IdentifierType,
+    ResponseResultWithData
 } from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {CloseAlertForm, StoreKeys} from '../constant';
@@ -33,7 +35,12 @@ export async function closeAlertCall(call: AppCallRequest): Promise<void> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const response: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const alert: Alert = response.data;
+
+    if (alert.status === AlertStatus.CLOSED) {
+        throw new Error(`You have closed #${alert.tinyId}`);
+    }
 
     await tryPromiseOpsgenieWithMessage(opsGenieClient.closeAlert(identifier), 'OpsGenie failed');
 }
