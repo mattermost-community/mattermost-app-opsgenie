@@ -62,7 +62,7 @@ export const createAlertSubmit = async (request: Request, response: Response) =>
 
     try {
         await createAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
         response.json(callResponse);
     } catch (error: any) {
         callResponse = newErrorCallResponseWithMessage('OpsGenie error: ' + error.message);
