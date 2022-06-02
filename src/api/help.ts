@@ -28,6 +28,7 @@ function getUserCommands(): string {
     const homepageUrl: string = manifest.homepage_url;
     return `${joinLines(
         addBulletSlashCommand('help', `Launch the OpsGenie plugin command line help syntax, check out the [documentation](${homepageUrl}).`),
+        addBulletSlashCommand('connect', `Connect your OpsGenie account`),
         addBulletSlashCommand('alert create [Alert message] [Team name] [Priority]', 'Create an alert with the message for the specified responders'),
         addBulletSlashCommand('alert note [Note message] [TinyId]', 'Add [note] to the alerts with IDs [tinyID tinyID2..]'),
         addBulletSlashCommand('alert snooze [TinyID] [time amount [m/h/d]]', 'Snooze the alerts with IDs [tinyID tinyID2..] for the specified time.'),

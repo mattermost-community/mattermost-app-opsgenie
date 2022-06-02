@@ -7,6 +7,7 @@ import * as cConfigure from './configure';
 import * as cHelp from './help';
 import * as cAlert from './alert';
 import * as cTeam from './team';
+import * as cSubscription from './subscription';
 import * as cWebhook from './webhook';
 
 const router: Router = express.Router();
@@ -16,11 +17,18 @@ router.post(Routes.App.BindingsPath, cBindings.getBindings);
 router.post(Routes.App.InstallPath, cInstall.getInstall);
 
 router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
+
 router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
 
+router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, cSubscription.subscriptionAddSubmit);
+router.post(`${Routes.App.CallPathSubscriptionDeleteSubmit}`, cSubscription.subscriptionDeleteSubmit);
+router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, cSubscription.subscriptionListSubmit);
+
 router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 router.post(`${Routes.App.CallPathAlertsListSubmit}`, cAlert.listAlertsSubmit);
+
+router.post(`${Routes.App.CallPathConnectSubmit}`, cConfigure.connectAccountSubmit);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlertSubmit);
 router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmit);

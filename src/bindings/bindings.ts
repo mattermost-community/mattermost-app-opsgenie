@@ -49,6 +49,101 @@ export const getConfigureBinding = (): any => {
                     acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
                     oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
                     oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
+                    app: AppExpandLevels.EXPAND_SUMMARY,
+                }
+            }
+        }
+    }
+};
+
+export const connectAccountBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.CONNECT,
+        description: 'Connect your OpsGenie account',
+        form: {
+            title: "Connect account",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathConnectSubmit,
+                expand: {
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                }
+            }
+        }
+    }
+};
+
+export const subscriptionBinding = (): AppBinding => {
+    const subCommands: string[] = [
+        Commands.ADD,
+        Commands.DELETE,
+        Commands.LIST
+    ];
+
+    const bindings: AppBinding[] = [];
+
+    bindings.push(subscriptionAddBinding());
+    bindings.push(subscriptionDeleteBinding());
+    bindings.push(subscriptionListBinding());
+
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.SUBSCRIPTION,
+        description: 'Subscription teams of OpsGenie to Mattermost channel',
+        hint: `[${subCommands.join(' | ')}]`,
+        bindings
+    }
+};
+
+export const subscriptionAddBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.ADD,
+        description: 'Add a team subscription to a channel',
+        form: {
+            title: "Add a team subscription to a channel",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathSubscriptionAddSubmit,
+                expand: {
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                }
+            }
+        }
+    }
+};
+
+export const subscriptionDeleteBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.DELETE,
+        description: 'Unsubscribe team from channel',
+        form: {
+            title: "Unsubscribe team from channel",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathSubscriptionDeleteSubmit,
+                expand: {
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                }
+            }
+        }
+    }
+};
+
+export const subscriptionListBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.LIST,
+        description: 'List of teams subscribed to channels',
+        form: {
+            title: "List of teams subscribed to channels",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathSubscriptionListSubmit,
+                expand: {
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
                 }
             }
         }
@@ -56,7 +151,7 @@ export const getConfigureBinding = (): any => {
 };
 
 export const alertBinding = (): AppBinding => {
-    const commands: string[] = [
+    const subCommands: string[] = [
         Commands.CREATE,
         Commands.NOTE,
         Commands.CLOSE,
@@ -84,7 +179,7 @@ export const alertBinding = (): AppBinding => {
         label: Commands.ALERT,
         icon: OpsGenieIcon,
         description: 'Config Alert in OpsGenie',
-        hint: `[${commands.join(' | ')}]`,
+        hint: `[${subCommands.join(' | ')}]`,
         bindings
     }
 }

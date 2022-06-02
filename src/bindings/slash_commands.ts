@@ -4,7 +4,9 @@ import {
     alertBinding,
     getHelpBinding,
     getConfigureBinding,
-    getAllBinding
+    getAllBinding,
+    connectAccountBinding,
+    subscriptionBinding
 } from './bindings';
 import {
     AppBindingLocations,
@@ -40,6 +42,8 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     if (!options.isConfigured) {
         if (options.isSystemAdmin) {
             bindings.push(getHelpBinding());
+            bindings.push(connectAccountBinding());
+            bindings.push(subscriptionBinding());
             bindings.push(alertBinding());
             bindings.push(getConfigureBinding());
             bindings.push(getAllBinding());
@@ -48,6 +52,8 @@ export const getCommandBindings = (options: BindingOptions): AppsState => {
     }
 
     bindings.push(getHelpBinding());
+    bindings.push(connectAccountBinding());
+    bindings.push(subscriptionBinding());
     bindings.push(alertBinding());
     bindings.push(getConfigureBinding());
     bindings.push(getAllBinding());
