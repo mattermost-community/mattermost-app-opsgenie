@@ -45,6 +45,7 @@ const OpsGenieWebPaths = {
 const OpsGeniePaths = {
     IntegrationPathPrefix: '/integrations',
     AccountPathPrefix: '/account',
+    ActionPathPrefix: '/actions/channels',
     AlertPathPrefix: '/alerts',
     NoteToAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/notes`,
     UpdatePriorityToAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/priority`,
@@ -56,6 +57,7 @@ const OpsGeniePaths = {
     UserPathPrefix: `/users/${PathsVariable.Identifier}`,
     TeamPathPrefix: '/teams',
     APIVersionV2: '/v2',
+    APIVersionV1: '/v1',
 };
 
 const MattermostPaths = {

@@ -16,7 +16,7 @@ import {
     options_alert_time,
     AssignAlertForm,
     TakeOwnershipAlertForm,
-    PriorityAlertForm
+    PriorityAlertForm, SubscriptionCreateForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -107,9 +107,28 @@ export const subscriptionAddBinding = (): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionAddSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                    app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
                 }
-            }
+            },
+            fields: [
+                {
+                    modal_label: 'Team name',
+                    name: SubscriptionCreateForm.TEAM_NAME,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                    max_length: 100
+                },
+                {
+                    modal_label: 'Channel',
+                    name: SubscriptionCreateForm.CHANNEL_ID,
+                    type: AppFieldTypes.CHANNEL,
+                    is_required: true,
+                    position: 2
+                }
+            ]
         }
     }
 };

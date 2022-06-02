@@ -2,6 +2,11 @@ export const ConfigureForm = {
     API_KEY: 'opsgenie_api_key'
 }
 
+export const SubscriptionCreateForm = {
+    TEAM_NAME: 'team_name',
+    CHANNEL_ID: 'channel_id'
+}
+
 export const AlertCreateForm = {
     ALERT_MESSAGE: 'alert_message',
     ALERT_PRIORITY: 'alert_priority',

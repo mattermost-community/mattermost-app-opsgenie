@@ -1,46 +1,47 @@
+import {Request, Response} from 'express';
 import {
     CallResponseHandler,
     newErrorCallResponseWithMessage,
-    newFormCallResponse
+    newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
 import {AppCallResponse} from '../types';
-import {opsGenieConfigForm} from '../forms/configure-admin-account';
+import {subscriptionAddCall} from '../forms/subscription-add';
 
-export const subscriptionAddSubmit: CallResponseHandler = async (req, res) => {
+export const subscriptionAddSubmit: CallResponseHandler = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form = await opsGenieConfigForm(req.body);
-        callResponse = newFormCallResponse(form);
-        res.json(callResponse);
+        await subscriptionAddCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown("Subscription will be created");
+        response.json(callResponse);
     } catch (error: any) {
         callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
-        res.json(callResponse);
+        response.json(callResponse);
     }
 };
 
-export const subscriptionDeleteSubmit: CallResponseHandler = async (req, res) => {
+export const subscriptionDeleteSubmit: CallResponseHandler = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form = await opsGenieConfigForm(req.body);
-        callResponse = newFormCallResponse(form);
-        res.json(callResponse);
+        await subscriptionAddCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
+        response.json(callResponse);
     } catch (error: any) {
         callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
-        res.json(callResponse);
+        response.json(callResponse);
     }
 };
 
-export const subscriptionListSubmit: CallResponseHandler = async (req, res) => {
+export const subscriptionListSubmit: CallResponseHandler = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form = await opsGenieConfigForm(req.body);
-        callResponse = newFormCallResponse(form);
-        res.json(callResponse);
+        await subscriptionAddCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
+        response.json(callResponse);
     } catch (error: any) {
         callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
-        res.json(callResponse);
+        response.json(callResponse);
     }
 };

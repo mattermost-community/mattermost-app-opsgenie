@@ -18,10 +18,13 @@ import {
     Teams,
     AlertUnack,
     AlertAck,
-    AlertClose, PriorityAlert
+    AlertClose,
+    PriorityAlert,
+    ActionResponse,
+    ActionCreate
 } from '../types';
 import {Routes} from '../constant';
-import {replace, tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {replace} from '../utils/utils';
 
 export type OpsGenieOptions = {
     api_key: string;
@@ -36,41 +39,45 @@ export class OpsGenieClient {
         this.options = options;
     }
 
-    public getAccount(): Promise<ResponseResultWithData<Account>> {
-        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AccountPathPrefix}`;
-        const promise: Promise<any> = axios.get(url,{
+    public createActionChannel(data: ActionCreate): Promise<ResponseResultWithData<ActionResponse>> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV1}${Routes.OpsGenie.ActionPathPrefix}`;
+        return axios.post(url, { restActionChannel: data },{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             responseType: 'json'
         }).then((response) => response.data);
+    }
 
-        return tryPromiseOpsgenieWithMessage(promise, 'OpsGenie failed');
+    public getAccount(): Promise<ResponseResultWithData<Account>> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AccountPathPrefix}`;
+        return axios.get(url,{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
     }
 
     public listIntegrations(params?: ListIntegrationsParams): Promise<ResponseResultWithData<Integration[]>> {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.IntegrationPathPrefix}`;
-        const promise: Promise<any> = axios.get(url,{
+        return axios.get(url,{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             params,
             responseType: 'json'
         }).then((response) => response.data);
-
-        return tryPromiseOpsgenieWithMessage(promise, 'OpsGenie failed');
     }
 
     public createAlert(alert: AlertCreate): Promise<ResponseResult> {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.AlertPathPrefix}`;
-        const promise: Promise<any> =  axios.post(url, alert,{
+        return axios.post(url, alert,{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             responseType: 'json'
         }).then((response) => response.data);
-
-        return tryPromiseOpsgenieWithMessage(promise, 'Opsgenie failed');
     }
 
     public updatePriorityToAlert(identifier: Identifier, alert: PriorityAlert): Promise<ResponseResult> {

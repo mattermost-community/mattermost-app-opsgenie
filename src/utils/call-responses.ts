@@ -1,4 +1,4 @@
-import {Request} from 'express';
+import {Request, Response} from 'express';
 import {AppCallResponse, AppForm} from '../types';
 import {AppCallResponseTypes} from '../constant';
 
@@ -6,10 +6,11 @@ export type FieldValidationErrors = {[name: string]: string};
 
 export type CallResponseHandler = (
     req: Request,
-    res: {
+    res: Response & {
         json: (
             callResponse: AppCallResponse
-        ) => void}
+        ) => void,
+    }
 ) => Promise<void>;
 
 export function newOKCallResponse(): AppCallResponse {
