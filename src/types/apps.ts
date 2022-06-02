@@ -272,3 +272,16 @@ export type FormResponseData = {
 export type AppLookupResponse = {
     items: AppSelectOption[];
 }
+
+export type AppContextAction = {
+    action: string;
+    alert: {
+        id: string;
+        message: string;
+        tinyId: string;
+    }
+    mattermost_site_url: string;
+    bot_access_token: string;
+    selected_option?: string;
+}
+

@@ -1,7 +1,7 @@
 export default {
     APP: {
         PORT: 3000,
-        HOST: 'http://192.168.0.4'
+        HOST: 'http://192.168.1.13'
     },
     OPSGENIE: {
         URL: 'https://api.opsgenie.com',

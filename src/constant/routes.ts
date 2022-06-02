@@ -44,6 +44,7 @@ const OpsGenieWebPaths = {
 
 const OpsGeniePaths = {
     IntegrationPathPrefix: '/integrations',
+    DeleteIntegrationPathPrefix: `/integrations/${PathsVariable.Identifier}`,
     AccountPathPrefix: '/account',
     ActionPathPrefix: '/actions/channels',
     AlertPathPrefix: '/alerts',

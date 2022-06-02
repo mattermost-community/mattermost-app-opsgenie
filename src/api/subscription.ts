@@ -4,8 +4,11 @@ import {
     newErrorCallResponseWithMessage,
     newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
-import {AppCallResponse} from '../types';
+import {AppCallResponse, Integration} from '../types';
 import {subscriptionAddCall} from '../forms/subscription-add';
+import {subscriptionListCall} from '../forms/subscription-list';
+import {h6, joinLines} from '../utils/markdown';
+import {subscriptionDeleteCall} from '../forms/subscription-delete';
 
 export const subscriptionAddSubmit: CallResponseHandler = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -15,7 +18,7 @@ export const subscriptionAddSubmit: CallResponseHandler = async (request: Reques
         callResponse = newOKCallResponseWithMarkdown("Subscription will be created");
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -24,11 +27,11 @@ export const subscriptionDeleteSubmit: CallResponseHandler = async (request: Req
     let callResponse: AppCallResponse;
 
     try {
-        await subscriptionAddCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
+        await subscriptionDeleteCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown("Subscription will be deleted");
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -37,11 +40,22 @@ export const subscriptionListSubmit: CallResponseHandler = async (request: Reque
     let callResponse: AppCallResponse;
 
     try {
-        await subscriptionAddCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
+        const integrations: Integration[] = await subscriptionListCall(request.body);
+
+        const subscriptionsText: string = [
+            h6(`Subscription List: Found ${integrations.length} open subscriptions.`),
+            `${joinLines(
+                integrations.map((integration: Integration) => {
+                    const channelName: string = integration.name.split("_")[1];
+                    return `- Subscription ID: "${integration.id}" - Channel Name "${channelName}"`;
+                }).join('\n')
+            )}`
+        ].join('');
+
+        callResponse = newOKCallResponseWithMarkdown(subscriptionsText);
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };

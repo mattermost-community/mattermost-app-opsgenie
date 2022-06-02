@@ -7,6 +7,10 @@ export const SubscriptionCreateForm = {
     CHANNEL_ID: 'channel_id'
 }
 
+export const SubscriptionDeleteForm = {
+    SUBSCRIPTION_ID: 'subscription_id'
+}
+
 export const AlertCreateForm = {
     ALERT_MESSAGE: 'alert_message',
     ALERT_PRIORITY: 'alert_priority',

@@ -1,10 +1,11 @@
 import queryString from 'query-string';
 import {
-    ActionCreate,
     AppCallRequest,
     AppCallValues,
     Identifier,
     IdentifierType,
+    IntegrationCreate,
+    IntegrationType,
     Manifest,
     ResponseResultWithData,
     Team
@@ -24,6 +25,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
 
     const teamName: string = values?.[SubscriptionCreateForm.TEAM_NAME];
     const channelId: string = values?.[SubscriptionCreateForm.CHANNEL_ID].value;
+    const channelName: string = values?.[SubscriptionCreateForm.CHANNEL_ID].label;
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -52,14 +54,11 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const responseTeam: ResponseResultWithData<Team> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getTeam(identifier), 'OpsGenie failed');
     const team: Team = responseTeam.data;
 
-    const data: ActionCreate = {
-        name: team.name,
-        teamId: team.id,
-        actionType: 'rest',
-        restActionChannel: {
-            url
-        }
+    const data: IntegrationCreate = {
+        name: `Mattermost_${channelName}_${channelId}`,
+        type: IntegrationType.WEBHOOK,
+        teamId: team.id
     };
-    console.log('channelId', channelId);
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.createActionChannel(data), 'OpsGenie failed');
+
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.createIntegration(data), 'OpsGenie failed');
 }

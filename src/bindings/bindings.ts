@@ -16,7 +16,9 @@ import {
     options_alert_time,
     AssignAlertForm,
     TakeOwnershipAlertForm,
-    PriorityAlertForm, SubscriptionCreateForm
+    PriorityAlertForm,
+    SubscriptionCreateForm,
+    SubscriptionDeleteForm
 } from '../constant';
 
 export const getHelpBinding = (): any => {
@@ -145,8 +147,19 @@ export const subscriptionDeleteBinding = (): any => {
                 path: Routes.App.CallPathSubscriptionDeleteSubmit,
                 expand: {
                     oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                },
+            },
+            fields: [
+                {
+                    modal_label: 'Subscription ID',
+                    name: SubscriptionDeleteForm.SUBSCRIPTION_ID,
+                    type: AppFieldTypes.TEXT,
+                    is_required: true,
+                    position: 1,
+                    max_length: 36,
+                    min_length: 36
                 }
-            }
+            ]
         }
     }
 };

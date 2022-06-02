@@ -19,7 +19,7 @@ import {takeOwnershipAlertCall} from '../forms/take-ownership-alert';
 import {h6, hyperlink, joinLines} from '../utils/markdown';
 import {AppsOpsGenie, Routes} from '../constant';
 import {replace} from '../utils/utils';
-import {priorityAlertCall} from "../forms/priority-alert";
+import {priorityAlertCall} from '../forms/priority-alert';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -52,7 +52,7 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
         callResponse = newOKCallResponseWithMarkdown(teamsText);
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('OpsGenie error: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -65,7 +65,7 @@ export const createAlertSubmit = async (request: Request, response: Response) =>
         callResponse = newOKCallResponseWithMarkdown("Alert will be created");
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('OpsGenie error: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -121,7 +121,7 @@ export const otherActionsAlert = async (request: Request, response: Response) =>
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -135,7 +135,7 @@ export const closeActionsAlert = async (request: Request, response: Response) =>
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open create alert form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };

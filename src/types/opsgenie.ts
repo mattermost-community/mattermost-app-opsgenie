@@ -24,8 +24,6 @@ export enum IntegrationType {
     WEBHOOK = 'Webhook'
 }
 
-export type ActionType = 'rest' | 'aws-systems-manager' | 'aws-sns' | 'oec';
-
 export type ResponseResult = {
     result: string;
     took: number;
@@ -88,26 +86,10 @@ export type ActionResponse = {
     id: string;
 };
 
-export type ActionCreate = {
+export type IntegrationCreate = {
+    type: string;
     name: string;
     teamId: string;
-    actionType: ActionType;
-    awsSmActionChannel?: {
-        roleName: string;
-        accountId: string;
-        region: string
-    };
-    awsSnsActionChannel?: {
-        topicName: string;
-        accountId: string;
-        region: string;
-    };
-    restActionChannel?: {
-        url: string;
-        headers?: {
-            [key: string]: string;
-        }
-    }
 };
 
 export type Integration = {

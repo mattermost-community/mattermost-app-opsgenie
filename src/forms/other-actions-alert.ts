@@ -1,7 +1,6 @@
 import {
     AlertAssign,
-    AppCallAction,
-    CloseAlertAction,
+    AppCallAction, AppContextAction,
     DialogProps,
     Identifier,
     IdentifierType,
@@ -20,7 +19,7 @@ import {
 import config from '../config';
 import {OpsGenieClient} from '../clients/opsgenie';
 
-async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Promise<void> {
+async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const triggerId: string = call.trigger_id;
     const accessToken: string = call.context.bot_access_token;
@@ -54,7 +53,7 @@ async function showModalNoteToAlert(call: AppCallAction<CloseAlertAction>): Prom
     await mattermostClient.showDialog(dialogProps);
 }
 
-async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promise<void> {
+async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
@@ -82,7 +81,7 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                                     action: ActionsEvents.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             },
                             type: 'select',
                             data_source: 'users'
@@ -98,7 +97,7 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             }
                         }
                     ]
@@ -109,7 +108,7 @@ async function showPostOfListUsers(call: AppCallAction<CloseAlertAction>): Promi
     await mattermostClient.createPost(postCreate);
 }
 
-async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<void> {
+async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
@@ -138,7 +137,7 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                                     action: ActionsEvents.TIME_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             },
                             options: options_times
                         },
@@ -153,7 +152,7 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             }
                         }
                     ]
@@ -164,7 +163,7 @@ async function showPostOfTimes(call: AppCallAction<CloseAlertAction>): Promise<v
     await mattermostClient.createPost(postCreate);
 }
 
-async function showPostTakeOwnership(call: AppCallAction<CloseAlertAction>): Promise<void> {
+async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
     const alertTinyId: string = call.context.alert.tinyId;
 
     const opsGenieClient = new OpsGenieClient();
@@ -190,7 +189,7 @@ const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
     }
 };
 
-export async function otherActionsAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
+export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
     console.log('call', call);
     const action: string = call.context.action;
     const selectedOption: string|undefined = call.context.selected_option;

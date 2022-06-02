@@ -5,7 +5,7 @@ import {
     AppCallResponse,
     AppContext,
     AssignWebhook,
-    CloseAlertAction,
+    AppContextAction,
     Identifier,
     IdentifierType,
     NoteWebhook,
@@ -99,7 +99,7 @@ async function notifyAlertCreated(event: WebhookRequest<AlertWebhook>, context: 
                                     },
                                     bot_access_token: botAccessToken,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             }
                         },
                         {
@@ -118,7 +118,7 @@ async function notifyAlertCreated(event: WebhookRequest<AlertWebhook>, context: 
                                     },
                                     bot_access_token: botAccessToken,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             }
                         },
                         {
@@ -135,7 +135,7 @@ async function notifyAlertCreated(event: WebhookRequest<AlertWebhook>, context: 
                                     },
                                     bot_access_token: botAccessToken,
                                     mattermost_site_url: mattermostUrl
-                                } as CloseAlertAction
+                                } as AppContextAction
                             },
                             type: 'select',
                             options: options_alert

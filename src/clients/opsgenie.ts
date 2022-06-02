@@ -21,7 +21,7 @@ import {
     AlertClose,
     PriorityAlert,
     ActionResponse,
-    ActionCreate
+    IntegrationCreate
 } from '../types';
 import {Routes} from '../constant';
 import {replace} from '../utils/utils';
@@ -37,16 +37,6 @@ export class OpsGenieClient {
         options?: OpsGenieOptions
     ) {
         this.options = options;
-    }
-
-    public createActionChannel(data: ActionCreate): Promise<ResponseResultWithData<ActionResponse>> {
-        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV1}${Routes.OpsGenie.ActionPathPrefix}`;
-        return axios.post(url, { restActionChannel: data },{
-            headers: {
-                Authorization: `GenieKey ${this.options?.api_key}`
-            },
-            responseType: 'json'
-        }).then((response) => response.data);
     }
 
     public getAccount(): Promise<ResponseResultWithData<Account>> {
@@ -66,6 +56,26 @@ export class OpsGenieClient {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             params,
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public deleteIntegration(integrationId: string): Promise<ResponseResult> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.DeleteIntegrationPathPrefix}`;
+        return axios.delete(replace(url, Routes.PathsVariable.Identifier, integrationId),{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public createIntegration(data: IntegrationCreate): Promise<ResponseResultWithData<ActionResponse>> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV1}${Routes.OpsGenie.ActionPathPrefix}`;
+        return axios.post(url, data,{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
             responseType: 'json'
         }).then((response) => response.data);
     }
