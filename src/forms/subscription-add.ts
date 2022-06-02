@@ -6,7 +6,8 @@ import {
     Identifier,
     IdentifierType,
     Manifest,
-    ResponseResultWithData, Team
+    ResponseResultWithData,
+    Team
 } from '../types';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {AppsPluginName, Routes, StoreKeys, SubscriptionCreateForm} from '../constant';
@@ -59,6 +60,6 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
             url
         }
     };
-
+    console.log('channelId', channelId);
     await tryPromiseOpsgenieWithMessage(opsGenieClient.createActionChannel(data), 'OpsGenie failed');
 }

@@ -191,6 +191,7 @@ const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
 };
 
 export async function otherActionsAlertCall(call: AppCallAction<CloseAlertAction>): Promise<void> {
+    console.log('call', call);
     const action: string = call.context.action;
     const selectedOption: string|undefined = call.context.selected_option;
 

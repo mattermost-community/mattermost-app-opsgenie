@@ -1,5 +1,6 @@
 import GeneralConstants from '../constant/general';
 import {UserProfile} from '../types';
+import {AppsOpsGenie, Routes} from '../constant';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -38,4 +39,17 @@ export function isUserSystemAdmin(actingUser: UserProfile): boolean {
 
 export function isConnected(oauth2user: any): boolean {
     return !!oauth2user?.token?.access_token;
+}
+
+export function getAlertDetailUrl(accountName: string, alertId: string): string {
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+    return replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            accountName
+        ),
+        Routes.PathsVariable.Identifier,
+        alertId
+    );
 }
