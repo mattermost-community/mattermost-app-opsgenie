@@ -15,7 +15,8 @@ import {
     ResponseResultWithData,
     SnoozeWebhook,
     Team,
-    WebhookRequest, WebhookData
+    WebhookRequest,
+    WebhookData
 } from '../types';
 import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
 import {

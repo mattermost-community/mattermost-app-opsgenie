@@ -1,5 +1,6 @@
 import {
-    AppCallRequest, Channel,
+    AppCallRequest,
+    Channel,
     Integration,
     Integrations,
     IntegrationType,
@@ -12,7 +13,7 @@ import {StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
 import queryString, {ParsedQuery, ParsedUrl} from "query-string";
-import {MattermostClient, MattermostOptions} from "../clients/mattermost";
+import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 
 export async function subscriptionListCall(call: AppCallRequest): Promise<Subscription[]> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;

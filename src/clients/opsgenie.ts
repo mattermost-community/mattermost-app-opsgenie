@@ -21,7 +21,8 @@ import {
     AlertClose,
     PriorityAlert,
     ActionResponse,
-    IntegrationCreate, Integrations
+    IntegrationCreate,
+    Integrations
 } from '../types';
 import {Routes} from '../constant';
 import {replace} from '../utils/utils';
