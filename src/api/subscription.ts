@@ -41,7 +41,6 @@ export const subscriptionListSubmit: CallResponseHandler = async (request: Reque
 
     try {
         const integrations: Integration[] = await subscriptionListCall(request.body);
-        console.log('subscription', integrations);
         const subscriptionsText: string = [
             h6(`Subscription List: Found ${integrations.length} open subscriptions.`),
             `${joinLines(
