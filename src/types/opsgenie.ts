@@ -296,7 +296,7 @@ export type AssignWebhook = {
     source: string;
 }
 
-export type WebhookRequest<T> = {
+export type WebhookData<T> = {
     action: string;
     alert: T;
     source: {
@@ -306,4 +306,20 @@ export type WebhookRequest<T> = {
     integrationName: string;
     integrationId: string;
     integrationType: string;
+}
+
+export type WebhookRequest<T> = {
+    data: WebhookData<T>,
+    headers: {
+        Accept: string;
+        'Accept-Encoding': string;
+        'Content-Length': string;
+        'Content-Type': string;
+        'Mattermost-Session-Id': string;
+        'User-Agent': string;
+        'X-Forwarded-For': string;
+        'X-Forwarded-Proto': string;
+    }
+    httpMethod: string;
+    rawQuery: string;
 }

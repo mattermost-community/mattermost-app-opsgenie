@@ -37,8 +37,9 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const pluginName = m.app_id;
     const whPath = Routes.App.CallPathIncomingWebhookPath;
 
-    const params = queryString.stringify({
-        secret: whSecret
+    const params: string = queryString.stringify({
+        secret: whSecret,
+        channelId
     });
     const url: string = `https://d4d7-201-160-207-97.ngrok.io/plugins/${AppsPluginName}/apps/${pluginName}${whPath}?${params}`;
 

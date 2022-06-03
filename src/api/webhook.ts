@@ -1,4 +1,5 @@
 import {Request, Response} from 'express';
+import queryString, {ParsedQuery} from 'query-string';
 import {
     Account,
     AlertWebhook,
@@ -14,7 +15,7 @@ import {
     ResponseResultWithData,
     SnoozeWebhook,
     Team,
-    WebhookRequest
+    WebhookRequest, WebhookData
 } from '../types';
 import {newErrorCallResponseWithMessage, newOKCallResponse} from '../utils/call-responses';
 import {
@@ -26,12 +27,14 @@ import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import config from '../config';
 import {getAlertDetailUrl} from '../utils/utils';
-import {hyperlink} from "../utils/markdown";
-import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from "../clients/kvstore";
+import {hyperlink} from '../utils/markdown';
+import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 
-async function notifyAlertCreated(event: WebhookRequest<AlertWebhook>, context: AppContext) {
+async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.data;
     const alert: AlertWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
@@ -60,11 +63,13 @@ async function notifyAlertCreated(event: WebhookRequest<AlertWebhook>, context: 
     );
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -154,10 +159,12 @@ async function notifyAlertCreated(event: WebhookRequest<AlertWebhook>, context: 
     await mattermostClient.createPost(payload);
 }
 
-async function notifyNoteCreated(request: WebhookRequest<NoteWebhook>, context: AppContext) {
+async function notifyNoteCreated(webhookRequest: WebhookRequest<NoteWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: NoteWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<NoteWebhook> = webhookRequest.data;
+    const alert: NoteWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -173,11 +180,13 @@ async function notifyNoteCreated(request: WebhookRequest<NoteWebhook>, context: 
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -195,10 +204,12 @@ async function notifyNoteCreated(request: WebhookRequest<NoteWebhook>, context: 
     await mattermostClient.createPost(payload);
 }
 
-async function notifyCloseAlert(request: WebhookRequest<AlertWebhook>, context: AppContext) {
+async function notifyCloseAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: AlertWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const alert: AlertWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -214,11 +225,13 @@ async function notifyCloseAlert(request: WebhookRequest<AlertWebhook>, context: 
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -236,10 +249,12 @@ async function notifyCloseAlert(request: WebhookRequest<AlertWebhook>, context: 
     await mattermostClient.createPost(payload);
 }
 
-async function notifyAckAlert(request: WebhookRequest<AlertWebhook>, context: AppContext) {
+async function notifyAckAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: AlertWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const alert: AlertWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -255,11 +270,13 @@ async function notifyAckAlert(request: WebhookRequest<AlertWebhook>, context: Ap
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -277,10 +294,12 @@ async function notifyAckAlert(request: WebhookRequest<AlertWebhook>, context: Ap
     await mattermostClient.createPost(payload);
 }
 
-async function notifyUnackAlert(request: WebhookRequest<AlertWebhook>, context: AppContext) {
+async function notifyUnackAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: AlertWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const alert: AlertWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -296,11 +315,13 @@ async function notifyUnackAlert(request: WebhookRequest<AlertWebhook>, context: 
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -318,10 +339,12 @@ async function notifyUnackAlert(request: WebhookRequest<AlertWebhook>, context: 
     await mattermostClient.createPost(payload);
 }
 
-async function notifySnoozeAlert(request: WebhookRequest<SnoozeWebhook>, context: AppContext) {
+async function notifySnoozeAlert(webhookRequest: WebhookRequest<SnoozeWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: SnoozeWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<SnoozeWebhook> = webhookRequest.data;
+    const alert: SnoozeWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -337,11 +360,13 @@ async function notifySnoozeAlert(request: WebhookRequest<SnoozeWebhook>, context
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -359,10 +384,12 @@ async function notifySnoozeAlert(request: WebhookRequest<SnoozeWebhook>, context
     await mattermostClient.createPost(payload);
 }
 
-async function notifySnoozeEndedAlert(request: WebhookRequest<AlertWebhook>, context: AppContext) {
+async function notifySnoozeEndedAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: AlertWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const alert: AlertWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -378,11 +405,13 @@ async function notifySnoozeEndedAlert(request: WebhookRequest<AlertWebhook>, con
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -400,10 +429,12 @@ async function notifySnoozeEndedAlert(request: WebhookRequest<AlertWebhook>, con
     await mattermostClient.createPost(payload);
 }
 
-async function notifyAssignOwnershipAlert(request: WebhookRequest<AssignWebhook>, context: AppContext) {
+async function notifyAssignOwnershipAlert(webhookRequest: WebhookRequest<AssignWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: AssignWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AssignWebhook> = webhookRequest.data;
+    const alert: AssignWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -419,6 +450,7 @@ async function notifyAssignOwnershipAlert(request: WebhookRequest<AssignWebhook>
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const identifier: Identifier = {
         identifier: alert.owner,
@@ -427,9 +459,10 @@ async function notifyAssignOwnershipAlert(request: WebhookRequest<AssignWebhook>
     const user: ResponseResultWithData<OpsUser> = await opsGenieClient.getUser(identifier);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -447,10 +480,12 @@ async function notifyAssignOwnershipAlert(request: WebhookRequest<AssignWebhook>
     await mattermostClient.createPost(payload);
 }
 
-async function notifyUpdatePriorityAlert(request: WebhookRequest<AssignWebhook>, context: AppContext) {
+async function notifyUpdatePriorityAlert(webhookRequest: WebhookRequest<AssignWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const alert: AssignWebhook = request.alert;
+    const rawQuery: string = webhookRequest.rawQuery;
+    const event: WebhookData<AssignWebhook> = webhookRequest.data;
+    const alert: AssignWebhook = event.alert;
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -466,11 +501,13 @@ async function notifyUpdatePriorityAlert(request: WebhookRequest<AssignWebhook>,
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
+    const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
+    const channelId: string = <string>parsedQuery['channelId'];
     const payload: PostCreate = {
         message: '',
-        channel_id: 'yhso3rs8b3d7pnyaoh63km9fir',
+        channel_id: channelId,
         props: {
             attachments: [
                 {
@@ -501,14 +538,14 @@ const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
 };
 
 export const incomingWebhook = async (request: Request, response: Response) => {
-    const data: WebhookRequest<any> = request.body.values.data;
+    const webhookRequest: WebhookRequest<any> = request.body.values;
     const context: AppContext = request.body.context;
 
     let callResponse: AppCallResponse;
     try {
-        const action: Function = WEBHOOKS_ACTIONS[data.action];
+        const action: Function = WEBHOOKS_ACTIONS[webhookRequest.data.action];
         if (action) {
-            await action(data, context);
+            await action(webhookRequest, context);
         }
         callResponse = newOKCallResponse();
         response.json(callResponse);
