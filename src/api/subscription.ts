@@ -41,13 +41,15 @@ export const subscriptionListSubmit: CallResponseHandler = async (request: Reque
 
     try {
         const integrations: Integration[] = await subscriptionListCall(request.body);
-
+        console.log('subscription', integrations);
         const subscriptionsText: string = [
             h6(`Subscription List: Found ${integrations.length} open subscriptions.`),
             `${joinLines(
                 integrations.map((integration: Integration) => {
-                    const channelName: string = integration.name.split("_")[1];
-                    return `- Subscription ID: "${integration.id}" - Channel Name "${channelName}"`;
+                    const integrationSplit: string[] = integration.name.split("_");
+                    const channelName: string = integrationSplit[1];
+                    const teamName: string = integrationSplit[2];
+                    return `- Subscription ID: "${integration.id}" - Team Name "${teamName}" - Channel Name "${channelName}"`;
                 }).join('\n')
             )}`
         ].join('');

@@ -56,7 +56,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const team: Team = responseTeam.data;
 
     const data: IntegrationCreate = {
-        name: `Mattermost_${channelName}_${channelId}`,
+        name: `Mattermost_${channelName}_${team.name}`,
         type: IntegrationType.WEBHOOK,
         ownerTeam: {
             id: team.id
