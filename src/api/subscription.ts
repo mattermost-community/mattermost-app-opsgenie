@@ -4,7 +4,7 @@ import {
     newErrorCallResponseWithMessage,
     newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
-import {AppCallResponse, Integration} from '../types';
+import {AppCallResponse, Subscription} from '../types';
 import {subscriptionAddCall} from '../forms/subscription-add';
 import {subscriptionListCall} from '../forms/subscription-list';
 import {h6, joinLines} from '../utils/markdown';
@@ -40,16 +40,13 @@ export const subscriptionListSubmit: CallResponseHandler = async (request: Reque
     let callResponse: AppCallResponse;
 
     try {
-        const integrations: Integration[] = await subscriptionListCall(request.body);
+        const integrations: Subscription[] = await subscriptionListCall(request.body);
         const subscriptionsText: string = [
             h6(`Subscription List: Found ${integrations.length} open subscriptions.`),
             `${joinLines(
-                integrations.map((integration: Integration) => {
-                    const integrationSplit: string[] = integration.name.split("_");
-                    const channelName: string = integrationSplit[1];
-                    const teamName: string = integrationSplit[2];
-                    return `- Subscription ID: "${integration.id}" - Team Name "${teamName}" - Channel Name "${channelName}"`;
-                }).join('\n')
+                integrations.map((integration: Subscription) => 
+                    `- Subscription ID: "${integration.integrationId}" - Team Name "${integration.ownerTeam.name}" - Channel Name "${integration.channelName}"`
+                ).join('\n')
             )}`
         ].join('');
 

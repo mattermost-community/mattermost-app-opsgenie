@@ -45,6 +45,7 @@ const OpsGenieWebPaths = {
 const OpsGeniePaths = {
     IntegrationPathPrefix: '/integrations',
     DeleteIntegrationPathPrefix: `/integrations/${PathsVariable.Identifier}`,
+    GetIntegrationPathPrefix: `/integrations/${PathsVariable.Identifier}`,
     AccountPathPrefix: '/account',
     AlertPathPrefix: '/alerts',
     NoteToAlertPathPrefix: `/alerts/${PathsVariable.Identifier}/notes`,
@@ -65,6 +66,7 @@ const MattermostPaths = {
     PostsPath: '/posts',
     PostPath: `/posts/${PathsVariable.Identifier}`,
     UserPath: `/users/${PathsVariable.Identifier}`,
+    ChannelPath: `/channels/${PathsVariable.Identifier}`,
     DialogsOpenPath: '/actions/dialogs/open',
     ApiVersionV4: '/api/v4',
     ApiVersionV1: '/api/v1',

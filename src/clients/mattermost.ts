@@ -1,7 +1,13 @@
 import axios, {AxiosResponse} from 'axios';
-import {DialogProps, PostCreate, PostUpdate, User} from '../types';
+import {
+    Channel,
+    DialogProps,
+    PostCreate,
+    PostUpdate,
+    User
+} from '../types';
 import {Routes} from '../constant';
-import {replace} from "../utils/utils";
+import {replace} from '../utils/utils';
 
 export interface MattermostOptions {
     mattermostUrl: string;
@@ -47,6 +53,15 @@ export class MattermostClient {
     public getUser(userId: string): Promise<User> {
         const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.UserPath}`;
         return axios.get(replace(url, Routes.PathsVariable.Identifier, userId), {
+            headers: {
+                Authorization: `Bearer ${this.config.accessToken}`
+            }
+        }).then((response: AxiosResponse<any>) => response.data);
+    }
+
+    public getChannel(channelId: string): Promise<Channel> {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.ChannelPath}`;
+        return axios.get(replace(url, Routes.PathsVariable.Identifier, channelId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }

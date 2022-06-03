@@ -1,11 +1,11 @@
-import queryString from 'query-string';
+import queryString, {ParsedQuery, ParsedUrl} from 'query-string';
 import {
     AppCallRequest,
     AppCallValues,
     Identifier,
-    IdentifierType,
-    IntegrationCreate,
-    IntegrationType,
+    IdentifierType, Integration,
+    IntegrationCreate, Integrations,
+    IntegrationType, ListIntegrationsParams,
     Manifest,
     ResponseResultWithData,
     Team
@@ -55,12 +55,34 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const responseTeam: ResponseResultWithData<Team> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getTeam(identifier), 'OpsGenie failed');
     const team: Team = responseTeam.data;
 
+    const paramsIntegrations: ListIntegrationsParams = {
+        type: IntegrationType.WEBHOOK,
+        teamId: team.id,
+        teamName: team.name
+    };
+    const responseIntegrations: ResponseResultWithData<Integrations[]> = await tryPromiseOpsgenieWithMessage(opsGenieClient.listIntegrations(paramsIntegrations), 'OpsGenie failed');
+    const integrations: Integrations[] = responseIntegrations.data;
+
+    for (const integration of integrations) {
+        const responseIntegration: ResponseResultWithData<Integration> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getIntegration(integration.id), 'OpsGenie failed');
+        const auxIntegration: Integration = responseIntegration.data;
+        const queryParams: ParsedUrl = queryString.parseUrl(auxIntegration.url);
+        const params: ParsedQuery = queryParams.query;
+
+        if (<string>params['channelId'] === channelId) {
+            throw new Error(`team [${team.name}] is already associated with channel [${channelName}]`);
+        }
+    }
+
     const data: IntegrationCreate = {
         name: `Mattermost_${channelName}_${team.name}`,
         type: IntegrationType.WEBHOOK,
         ownerTeam: {
             id: team.id
         },
+        allowReadAccess: false,
+        allowWriteAccess: false,
+        allowConfigurationAccess: true,
         url
     };
     

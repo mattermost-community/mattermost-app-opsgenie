@@ -2,7 +2,7 @@ import {
     AppCallRequest,
     AppCallValues,
     AppForm,
-    Integration,
+    Integrations,
     IntegrationType,
     ListIntegrationsParams,
     ResponseResultWithData
@@ -67,7 +67,7 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> 
     const params: ListIntegrationsParams = {
         type: IntegrationType.API
     }
-    const integrations: ResponseResultWithData<Integration[]> = await opsgenieClient.listIntegrations(params);
+    const integrations: ResponseResultWithData<Integrations[]> = await opsgenieClient.listIntegrations(params);
     if (!integrations.data.length) {
         throw new Error('Your opsgenie setup has no api integration');
     }

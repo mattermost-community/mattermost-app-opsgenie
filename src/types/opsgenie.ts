@@ -90,19 +90,50 @@ export type IntegrationCreate = {
     type: string;
     name: string;
     url: string;
+    allowWriteAccess: boolean;
+    allowReadAccess: boolean;
+    allowConfigurationAccess: boolean;
     ownerTeam: {
         id?: string;
         name?: string;
     }
 };
 
-export type Integration = {
+export type Integrations = {
     id: string;
     name: string;
     enabled: boolean;
     type: string;
     teamId: string;
     version: string;
+}
+
+export type Integration = {
+    _readOnly: string[];
+    addAlertDescription: boolean;
+    addAlertDetails: boolean;
+    alertFilter: {
+        conditionMatchType: string;
+        conditions: any[];
+    };
+    forwardingActionMappings: any[];
+    forwardingEnabled: boolean;
+    headers: any;
+    url: string;
+    enabled: boolean;
+    isGlobal: boolean;
+    name: string;
+    ownerTeam: {
+        id: string;
+        name: string;
+    };
+    type: string;
+}
+
+export interface Subscription extends Integration {
+    integrationId: string;
+    channelId: string;
+    channelName: string;
 }
 
 export type Account = {

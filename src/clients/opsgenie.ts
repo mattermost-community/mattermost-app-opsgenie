@@ -21,7 +21,7 @@ import {
     AlertClose,
     PriorityAlert,
     ActionResponse,
-    IntegrationCreate
+    IntegrationCreate, Integrations
 } from '../types';
 import {Routes} from '../constant';
 import {replace} from '../utils/utils';
@@ -49,13 +49,23 @@ export class OpsGenieClient {
         }).then((response) => response.data);
     }
 
-    public listIntegrations(params?: ListIntegrationsParams): Promise<ResponseResultWithData<Integration[]>> {
+    public listIntegrations(params?: ListIntegrationsParams): Promise<ResponseResultWithData<Integrations[]>> {
         const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.IntegrationPathPrefix}`;
         return axios.get(url,{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`
             },
             params,
+            responseType: 'json'
+        }).then((response) => response.data);
+    }
+
+    public getIntegration(integrationId: string): Promise<ResponseResultWithData<Integration>> {
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.GetIntegrationPathPrefix}`;
+        return axios.get(replace(url, Routes.PathsVariable.Identifier, integrationId),{
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`
+            },
             responseType: 'json'
         }).then((response) => response.data);
     }
