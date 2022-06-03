@@ -71,7 +71,7 @@ export class OpsGenieClient {
     }
 
     public createIntegration(data: IntegrationCreate): Promise<ResponseResultWithData<ActionResponse>> {
-        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV1}${Routes.OpsGenie.ActionPathPrefix}`;
+        const url: string = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.IntegrationPathPrefix}`;
         return axios.post(url, data,{
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`

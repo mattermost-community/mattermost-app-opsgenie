@@ -40,7 +40,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const params = queryString.stringify({
         secret: whSecret
     });
-    const url: string = `${mattermostUrl}/plugins/${AppsPluginName}/apps/${pluginName}${whPath}?${params}`;
+    const url: string = `https://d4d7-201-160-207-97.ngrok.io/plugins/${AppsPluginName}/apps/${pluginName}${whPath}?${params}`;
 
     const optionsOps: OpsGenieOptions = {
         api_key: configStore.opsgenie_apikey
@@ -57,8 +57,11 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const data: IntegrationCreate = {
         name: `Mattermost_${channelName}_${channelId}`,
         type: IntegrationType.WEBHOOK,
-        teamId: team.id
+        ownerTeam: {
+            id: team.id
+        },
+        url
     };
-
+    
     await tryPromiseOpsgenieWithMessage(opsGenieClient.createIntegration(data), 'OpsGenie failed');
 }

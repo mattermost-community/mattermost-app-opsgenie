@@ -89,7 +89,11 @@ export type ActionResponse = {
 export type IntegrationCreate = {
     type: string;
     name: string;
-    teamId: string;
+    url: string;
+    ownerTeam: {
+        id?: string;
+        name?: string;
+    }
 };
 
 export type Integration = {
