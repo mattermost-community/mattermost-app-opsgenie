@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import {AppCallResponse} from '../types';
 import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
 import manifest from '../manifest.json';
+import {joinLines} from '../utils/markdown';
 
 export const getInstall = async (request: Request, response: Response) => {
     const helpText: string = [
@@ -17,8 +18,4 @@ function getCommands(): string {
     return `${joinLines(
         `To finish configuring the Opsgenie app please read the [Quick Start](${homepageUrl}#quick-start) section of the README`
     )}\n`;
-}
-
-function joinLines(...lines: string[]): string {
-    return lines.join('\n');
 }

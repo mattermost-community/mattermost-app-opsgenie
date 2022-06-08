@@ -44,7 +44,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
         secret: whSecret,
         channelId
     });
-    const url: string = `https://d4d7-201-160-207-97.ngrok.io/plugins/${AppsPluginName}/apps/${pluginName}${whPath}?${params}`;
+    const url: string = `https://e4f1-201-160-207-97.ngrok.io/plugins/${AppsPluginName}/apps/${pluginName}${whPath}?${params}`;
 
     const optionsOps: OpsGenieOptions = {
         api_key: configStore.opsgenie_apikey

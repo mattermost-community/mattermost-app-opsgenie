@@ -6,11 +6,11 @@ import {
     newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
 import {createAlertCall} from '../forms/create-alert';
-import {addNoteToAlertCall} from '../forms/create-note';
+import {addNoteToAlertAction, addNoteToAlertCall} from '../forms/create-note';
 import {createSnoozeAlertCall} from '../forms/create-snooze';
-import {assignAlertCall} from '../forms/assign-alert';
-import {closeAlertCall} from '../forms/close-alert';
-import {ackAlertCall} from '../forms/ack-alert';
+import {assignAlertAction, assignAlertCall} from '../forms/assign-alert';
+import {closeAlertAction, closeAlertCall} from '../forms/close-alert';
+import {ackAlertAction, ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
 import {unackAlertCall} from '../forms/unack-alert';
@@ -83,12 +83,39 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
         response.json(callResponse);
     }
 };
+export const closeAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await closeAlertAction(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+
 
 export const ackAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
         await ackAlertCall(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+export const ackAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await ackAlertAction(request.body);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);
@@ -153,13 +180,39 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
         response.json(callResponse);
     }
 }
+export const addNoteToAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await addNoteToAlertAction(request.body);
+        callResponse = newOKCallResponse();
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+}
 
 export const assignAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await assignAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const alert: Alert = await assignAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(`Assign ownership request will be processed for #${alert.tinyId}`);
+
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+export const assignAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        const alert: Alert = await assignAlertAction(request.body);
+        callResponse = newOKCallResponseWithMarkdown(`Assign ownership request will be processed for #${alert.tinyId}`);
 
         response.json(callResponse);
     } catch (error: any) {

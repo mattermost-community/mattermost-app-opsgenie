@@ -24,15 +24,28 @@ const AppPaths = {
     CallPathAlertsListSubmit: '/alert/list',
 
     CallPathAlertCreate: '/alert/create',
-    CallPathAlertClose: '/alert/close',
+
+    CallPathAlertCloseSubmit: '/alert/close/submit',
+    CallPathAlertCloseAction: '/alert/close/action',
+
+
     CallPathAlertUnacknowledge: '/alert/unacknowledge',
-    CallPathAlertAcknowledged: '/alert/acknowledged',
+
+    CallPathAlertAcknowledgedSubmit: '/alert/acknowledged',
+    CallPathAlertAcknowledgedAction: '/alert/acknowledged/action',
+
     CallPathAlertOtherActions: '/alert/otheractions',
     CallPathCloseOptions: '/alert/closeoptions',
-    CallPathAssignAlert: '/alert/assign',
+
+    CallPathAssignAlertSubmit: '/alert/assign',
+    CallPathAssignAlertAction: '/alert/assign/action',
+
     CallPathUpdatePriorityAlertSubmit: '/alert/priority',
     CallPathSnoozeAlert: '/alert/snooze',
-    CallPathNoteToAlertModal: '/alert/note',
+
+    CallPathNoteToAlertSubmit: '/alert/note',
+    CallPathNoteToAlertAction: '/alert/note/action',
+
     CallPathTakeOwnershipAlertSubmit: '/alert/takeownership',
 
     CallPathIncomingWebhookPath: '/webhook'

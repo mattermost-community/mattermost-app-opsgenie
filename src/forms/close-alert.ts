@@ -1,9 +1,9 @@
 import {
     Alert,
     AlertClose,
-    AlertStatus,
+    AlertStatus, AppCallAction,
     AppCallRequest,
-    AppCallValues,
+    AppCallValues, AppContextAction,
     Identifier,
     IdentifierType,
     ResponseResultWithData
@@ -49,4 +49,8 @@ export async function closeAlertCall(call: AppCallRequest): Promise<void> {
         user: username
     };
     await tryPromiseOpsgenieWithMessage(opsGenieClient.closeAlert(identifier, data), 'OpsGenie failed');
+}
+
+export async function closeAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {
+    console.log('call', call)
 }

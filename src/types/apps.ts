@@ -63,6 +63,7 @@ export type AppCallRequest = AppCall & {
 };
 
 export type AppCallDialog<T> = {
+    type: string;
     callback_id: string;
     state: string;
     user_id: string;

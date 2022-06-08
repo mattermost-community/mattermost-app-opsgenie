@@ -95,7 +95,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                             type: 'button',
                             style: 'default',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedSubmit}`,
                                 context: {
                                     action: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
                                     alert: {
@@ -114,7 +114,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                             type: 'button',
                             style: 'success',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertCloseAction}`,
                                 context: {
                                     action: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
                                     alert: {

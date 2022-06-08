@@ -1,7 +1,7 @@
 import {
-    Alert, AlertAck,
+    Alert, AlertAck, AppCallAction,
     AppCallRequest,
-    AppCallValues,
+    AppCallValues, AppContextAction,
     Identifier,
     IdentifierType,
     ResponseResultWithData,
@@ -46,4 +46,8 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
         user: username
     };
     await tryPromiseOpsgenieWithMessage(opsGenieClient.acknowledgeAlert(identifier, data), 'OpsGenie failed');
+}
+
+export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {
+    console.log('call', call)
 }
