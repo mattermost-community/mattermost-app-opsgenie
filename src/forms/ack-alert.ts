@@ -49,5 +49,38 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
 }
 
 export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {
-    console.log('call', call)
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.user_name;
+    const values: AppCallValues | undefined = call.context.alert;
+
+    const alertTinyId: string = values?.[AckAlertForm.TINY_ID];
+    const options: KVStoreOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken,
+    };
+    
+    const kvStoreClient = new KVStoreClient(options);
+
+    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.opsgenie_apikey
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY
+    };
+    const response: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const alert: Alert = response.data;
+    if (alert.acknowledged) {
+        throw new Error(`You have acknowledged #${alert.tinyId}`);
+    }
+
+    const data: AlertAck = {
+        user: username
+    };
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.acknowledgeAlert(identifier, data), 'OpsGenie failed');
 }

@@ -31,7 +31,8 @@ export const CloseAlertForm = {
 }
 
 export const AckAlertForm = {
-    NOTE_TINY_ID: 'note_tiny_id'
+    NOTE_TINY_ID: 'note_tiny_id',
+    TINY_ID: 'tinyId'
 }
 
 export const UnackAlertForm = {

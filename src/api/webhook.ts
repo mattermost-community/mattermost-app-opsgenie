@@ -95,7 +95,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                             type: 'button',
                             style: 'default',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedSubmit}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedAction}`,
                                 context: {
                                     action: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
                                     alert: {
