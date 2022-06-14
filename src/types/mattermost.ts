@@ -217,6 +217,3 @@ export type DialogProps = {
     }
 }
 
-export type AddNoteDialogForm = {
-    note: string;
-}
