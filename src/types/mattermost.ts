@@ -131,6 +131,21 @@ export type PostCreate = {
     }
 }
 
+export type PostResponse = {
+    id: string,
+    create_at: number,
+    update_at: number,
+    edit_at: 0,
+    delete_at: 0,
+    is_pinned: false,
+    user_id: string,
+    channel_id: string,
+    root_id: string,
+    original_id: string,
+    message: string,
+    props: { attachments: Attachment[]; }
+}
+
 export type PostUpdate = {
     id: string;
     is_pinned?: boolean;

@@ -18,6 +18,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/dominion-ancient/mattermost-app-opsgenie#readme",
   "dependencies": {
+    "@types/lodash": "^4.14.182",
     "axios": "^0.27.2",
     "body-parser": "^1.20.0",
     "date-fns": "^2.28.0",
