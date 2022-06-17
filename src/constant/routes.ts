@@ -77,6 +77,7 @@ const OpsGeniePaths = {
 const MattermostPaths = {
     PathKV: '/kv',
     PostsPath: '/posts',
+    PostsEphemeralPath: '/posts/ephemeral',
     PostPath: `/posts/${PathsVariable.Identifier}`,
     UserPath: `/users/${PathsVariable.Identifier}`,
     ChannelPath: `/channels/${PathsVariable.Identifier}`,
@@ -84,6 +85,7 @@ const MattermostPaths = {
     ApiVersionV4: '/api/v4',
     ApiVersionV1: '/api/v1',
 }
+
 
 export const Routes = {
     PathsVariable,

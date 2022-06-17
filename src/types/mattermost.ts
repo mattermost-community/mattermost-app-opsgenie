@@ -131,6 +131,11 @@ export type PostCreate = {
     }
 }
 
+export type PostEphemeralCreate = {
+    user_id: string;
+    post: PostCreate;
+}
+
 export type PostResponse = {
     id: string,
     create_at: number,

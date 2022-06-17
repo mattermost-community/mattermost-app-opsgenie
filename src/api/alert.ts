@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {Alert, AlertStatus, AppCallResponse} from '../types';
+import {Alert, AlertStatus, AppCallAction, AppCallResponse, AppContextAction, PostCreate, PostEphemeralCreate} from '../types';
 import {
     newErrorCallResponseWithMessage,
     newOKCallResponse,
@@ -20,6 +20,7 @@ import {h6, hyperlink, joinLines} from '../utils/markdown';
 import {AppsOpsGenie, Routes} from '../constant';
 import {replace} from '../utils/utils';
 import {priorityAlertCall} from '../forms/priority-alert';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -209,6 +210,15 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
 };
 export const assignAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
+    const call: AppCallAction<AppContextAction> = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
         const alert: Alert = await assignAlertAction(request.body);
@@ -216,7 +226,15 @@ export const assignAlertModal = async (request: Request, response: Response) => 
 
         response.json(callResponse);
     } catch (error: any) {
+        const post: PostEphemeralCreate = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        }
         callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        await mattermostClient.createEphemeralPost(post);
         response.json(callResponse);
     }
 };
