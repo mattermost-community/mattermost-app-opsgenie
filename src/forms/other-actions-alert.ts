@@ -40,7 +40,7 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
             title: 'Add Note',
             icon_url: `${config.APP.HOST}/static/opsgenie.png`,
             submit_label: 'Add',
-            state: alertTinyId,
+            state: JSON.stringify(call.context),
             elements: [
                 {
                     display_name: 'Note',

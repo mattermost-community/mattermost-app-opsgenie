@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {Alert, AlertStatus, AppCallAction, AppCallResponse, AppContextAction, PostCreate, PostEphemeralCreate} from '../types';
+import {Alert, AlertStatus, AppCallAction, AppCallDialog, AppCallResponse, AppContextAction, PostCreate, PostEphemeralCreate} from '../types';
 import {
     newErrorCallResponseWithMessage,
     newOKCallResponse,
@@ -183,13 +183,41 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
 }
 export const addNoteToAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
+    const call: AppCallDialog<{ alert_message: string }> = request.body;
+    const context: AppContextAction = JSON.parse(call.state);
+    const mattermostUrl: string | undefined = context.mattermost_site_url;
+    const botAccessToken: string | undefined = context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
-        await addNoteToAlertAction(request.body);
-        callResponse = newOKCallResponse();
+        const alert: Alert = await addNoteToAlertAction(request.body); 
+        const message = `Note will be added for #${alert.tinyId}`;
+        const post: PostEphemeralCreate = {
+            post: {
+                message: message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+        await mattermostClient.createEphemeralPost(post);
 
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
+        const post: PostEphemeralCreate = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+        await mattermostClient.createEphemeralPost(post);
         callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
