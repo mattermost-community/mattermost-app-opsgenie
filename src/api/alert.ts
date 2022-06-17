@@ -331,7 +331,7 @@ export const takeOwnershipAlertSubmit = async (request: Request, response: Respo
 
     try {
         await takeOwnershipAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        callResponse = newOKCallResponseWithMarkdown(`Take ownership request will be processed`);
 
         response.json(callResponse);
     } catch (error: any) {

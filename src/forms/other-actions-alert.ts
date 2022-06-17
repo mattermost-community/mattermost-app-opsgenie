@@ -1,4 +1,5 @@
 import {
+    Alert,
     AlertAssign,
     AppCallAction,
     AppContextAction,
@@ -6,6 +7,7 @@ import {
     Identifier,
     IdentifierType,
     PostCreate,
+    ResponseResultWithData,
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {
@@ -20,6 +22,7 @@ import {
 } from '../constant';
 import config from '../config';
 import {OpsGenieClient} from '../clients/opsgenie';
+import { tryPromiseOpsgenieWithMessage } from '../utils/utils';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
@@ -183,7 +186,7 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Pro
             id: ''
         }
     }
-    await opsGenieClient.assignAlert(identifier, data);
+    await tryPromiseOpsgenieWithMessage(opsGenieClient.assignAlert(identifier, data), 'OpsGenie failed');
 }
 
 const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
