@@ -42,6 +42,7 @@ const AppPaths = {
 
     CallPathUpdatePriorityAlertSubmit: '/alert/priority',
     CallPathSnoozeAlert: '/alert/snooze',
+    CallPathSnoozeAlertAction: '/alert/snooze/action',
 
     CallPathNoteToAlertSubmit: '/alert/note',
     CallPathNoteToAlertAction: '/alert/note/action',

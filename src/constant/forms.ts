@@ -41,7 +41,7 @@ export const UnackAlertForm = {
 
 export const SnoozeAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id',
-    TIME_AMOUNT: 'time_amount'
+    TIME_AMOUNT: 'time_amount',
 }
 
 export const AssignAlertForm = {

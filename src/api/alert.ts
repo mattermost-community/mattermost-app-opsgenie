@@ -7,7 +7,7 @@ import {
 } from '../utils/call-responses';
 import {createAlertCall} from '../forms/create-alert';
 import {addNoteToAlertAction, addNoteToAlertCall} from '../forms/create-note';
-import {createSnoozeAlertCall} from '../forms/create-snooze';
+import {createSnoozeAlertAction, createSnoozeAlertCall} from '../forms/create-snooze';
 import {assignAlertAction, assignAlertCall} from '../forms/assign-alert';
 import {closeAlertAction, closeAlertCall} from '../forms/close-alert';
 import {ackAlertAction, ackAlertCall} from '../forms/ack-alert';
@@ -222,8 +222,15 @@ export const assignAlertModal = async (request: Request, response: Response) => 
 
     try {
         const alert: Alert = await assignAlertAction(request.body);
+        const post: PostEphemeralCreate = {
+            post: {
+                message: `Assign ownership request will be processed for #${alert.tinyId}`,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+        await mattermostClient.createEphemeralPost(post);
         callResponse = newOKCallResponseWithMarkdown(`Assign ownership request will be processed for #${alert.tinyId}`);
-
         response.json(callResponse);
     } catch (error: any) {
         const post: PostEphemeralCreate = {
@@ -232,9 +239,10 @@ export const assignAlertModal = async (request: Request, response: Response) => 
                 channel_id: channelId,
             },
             user_id: call.user_id,
-        }
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        };
         await mattermostClient.createEphemeralPost(post);
+
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
@@ -244,10 +252,47 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
 
     try {
         await createSnoozeAlertCall(request.body);
-        callResponse = newOKCallResponse();
-
+        callResponse = newOKCallResponseWithMarkdown("Alert will be snoozed");
         response.json(callResponse);
     } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        response.json(callResponse);
+    }
+};
+
+export const snoozeAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+    const call: AppCallAction<AppContextAction> = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    try {
+        const alert: Alert = await createSnoozeAlertAction(request.body);
+        const post: PostEphemeralCreate = {
+            post: {
+                message: "Alert will be snoozed",
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+        await mattermostClient.createEphemeralPost(post);
+        callResponse = newOKCallResponseWithMarkdown("Alert will be snoozed");
+        response.json(callResponse);
+    } catch (error: any) {
+        const post: PostEphemeralCreate = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+        await mattermostClient.createEphemeralPost(post);
+        
         callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
