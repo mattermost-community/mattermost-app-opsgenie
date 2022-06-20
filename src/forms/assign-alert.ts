@@ -1,16 +1,9 @@
-import {
-    Identifier,
-    User,
-    IdentifierType,
-    AlertAssign,
-    AppCallRequest,
-    AppCallValues
-} from '../types';
+import {AlertAssign, AppCallRequest, AppCallValues, Identifier, IdentifierType, User} from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {AssignAlertForm, StoreKeys} from '../constant';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {AssignAlertForm, ExceptionType, StoreKeys} from '../constant';
+import {tryPromise} from '../utils/utils';
 
 export async function assignAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -45,7 +38,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<void> {
         identifier: mattermostUser.email,
         identifierType: IdentifierType.USERNAME
     }
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.getUser(identifierUser), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getUser(identifierUser),  ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const identifierAlert: Identifier = {
         identifier: alertTinyId,
@@ -57,5 +50,5 @@ export async function assignAlertCall(call: AppCallRequest): Promise<void> {
             username: mattermostUser.email
         }
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.assignAlert(identifierAlert, data), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

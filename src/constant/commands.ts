@@ -1,6 +1,6 @@
 export const Commands = {
     HELP: 'help',
-    CONNECT: 'connect',
+    ACCOUNT: 'account',
     ALERT: 'alert',
     CREATE: 'create',
     NOTE: 'note',
@@ -16,5 +16,7 @@ export const Commands = {
     SNOOZE: 'snooze',
     ASSIGN: 'assign',
     OWN: 'own',
-    PRIORITY: 'priority'
+    PRIORITY: 'priority',
+    LOGIN: 'login',
+    LOGOUT: 'logout'
 }

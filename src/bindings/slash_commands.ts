@@ -20,7 +20,8 @@ const newCommandBindings = (bindings: AppBinding[]): AppsState => {
         Commands.HELP,
         Commands.CONFIGURE,
         Commands.ALERT,
-        Commands.LIST
+        Commands.LIST,
+        Commands.ACCOUNT
     ];
 
     return {

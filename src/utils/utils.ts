@@ -1,32 +1,12 @@
 import GeneralConstants from '../constant/general';
-import {UserProfile} from '../types';
-import {AppsOpsGenie, Routes} from '../constant';
+import {AppCallResponse, UserProfile} from '../types';
+import {AppsOpsGenie, ExceptionType, Routes} from '../constant';
+import config from '../config';
+import {Exception} from "./exception";
+import {newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown} from './call-responses';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
-}
-
-export function errorWithMessage(error: Error, message: string): string {
-    return `"${message}".  ${error.message}`;
-}
-
-export function errorOpsgenieWithMessage(error: Error|any, message: string): string {
-    const errorMessage: string = error?.data?.message || error.message;
-    return `"${message}".  ${errorMessage}`;
-}
-
-export async function tryPromiseWithMessage(p: Promise<any>, message: string): Promise<any> {
-    return p.catch((error) => {
-        console.log('error', error);
-        throw new Error(errorWithMessage(error, message));
-    });
-}
-
-export async function tryPromiseOpsgenieWithMessage(p: Promise<any>, message: string): Promise<any> {
-    return p.catch((error) => {
-        console.log('error', error);
-        throw new Error(errorOpsgenieWithMessage(error.response, message));
-    });
 }
 
 export function isConfigured(oauth2: any): boolean {
@@ -53,3 +33,39 @@ export function getAlertDetailUrl(accountName: string, alertId: string): string 
         alertId
     );
 }
+
+export function errorDataMessage(error: Exception | Error | any): string {
+    const errorMessage: string = error?.data || error?.data?.message || error?.message || error;
+    return `${errorMessage}`;
+}
+
+export function tryPromise(p: Promise<any>, exceptionType: ExceptionType, message: string) {
+    return p.catch((error) => {
+        const errorMessage: string = errorDataMessage(error);
+        throw new Exception(exceptionType, `${message} ${errorMessage}`);
+    });
+}
+
+export function showMessageToMattermost(exception: Exception | Error): AppCallResponse {
+    if (!(exception instanceof Exception)) {
+        return newErrorCallResponseWithMessage(exception.message);
+    }
+
+    switch (exception.type) {
+        case ExceptionType.TEXT_ERROR: return newErrorCallResponseWithMessage(exception.message);
+        case ExceptionType.MARKDOWN: return newOKCallResponseWithMarkdown(exception.message);
+        default: return newErrorCallResponseWithMessage(exception.message);
+    }
+}
+
+export function getHTTPPath(): string {
+    const host: string = config.APP.HOST;
+    const ip: string = host.replace(/^(http:\/\/|https:\/\/|)/g, '');
+
+    if (/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip)) {
+        return `${config.APP.HOST}:${config.APP.PORT}`;
+    }
+
+    return config.APP.HOST;
+}
+

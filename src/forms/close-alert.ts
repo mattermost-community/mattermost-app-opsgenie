@@ -9,9 +9,10 @@ import {
     ResponseResultWithData
 } from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {CloseAlertForm, StoreKeys} from '../constant';
+import {CloseAlertForm, ExceptionType, StoreKeys} from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {tryPromise} from '../utils/utils';
+import {Exception} from "../utils/exception";
 
 export async function closeAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -38,15 +39,15 @@ export async function closeAlertCall(call: AppCallRequest): Promise<void> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const response: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN,  'OpsGenie failed');
     const alert: Alert = response.data;
 
     if (alert.status === AlertStatus.CLOSED) {
-        throw new Error(`You have closed #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `You have closed #${alert.tinyId}`, );
     }
 
     const data: AlertClose = {
         user: username
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.closeAlert(identifier, data), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN,  'OpsGenie failed');
 }

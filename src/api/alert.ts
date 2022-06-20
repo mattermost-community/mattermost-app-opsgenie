@@ -1,7 +1,6 @@
 import {Request, Response} from 'express';
 import {Alert, AlertStatus, AppCallResponse} from '../types';
 import {
-    newErrorCallResponseWithMessage,
     newOKCallResponse,
     newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
@@ -18,7 +17,7 @@ import {getAllAlertCall} from '../forms/list-alert';
 import {takeOwnershipAlertCall} from '../forms/take-ownership-alert';
 import {h6, hyperlink, joinLines} from '../utils/markdown';
 import {AppsOpsGenie, Routes} from '../constant';
-import {replace} from '../utils/utils';
+import {replace, showMessageToMattermost} from '../utils/utils';
 import {priorityAlertCall} from '../forms/priority-alert';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
@@ -52,7 +51,7 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
         callResponse = newOKCallResponseWithMarkdown(teamsText);
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -65,7 +64,7 @@ export const createAlertSubmit = async (request: Request, response: Response) =>
         callResponse = newOKCallResponseWithMarkdown("Alert will be created");
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -79,7 +78,7 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -93,7 +92,7 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -107,7 +106,7 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -121,7 +120,7 @@ export const otherActionsAlert = async (request: Request, response: Response) =>
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -135,7 +134,7 @@ export const closeActionsAlert = async (request: Request, response: Response) =>
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -149,7 +148,7 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 }
@@ -163,7 +162,7 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -177,7 +176,7 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -191,7 +190,7 @@ export const takeOwnershipAlertSubmit = async (request: Request, response: Respo
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -205,7 +204,7 @@ export const priorityAlertSubmit = async (request: Request, response: Response) 
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };

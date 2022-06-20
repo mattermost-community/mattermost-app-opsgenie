@@ -1,15 +1,16 @@
 import {
-    Alert, AlertUnack,
+    Alert,
+    AlertUnack,
     AppCallRequest,
     AppCallValues,
     Identifier,
     IdentifierType,
     ResponseResultWithData,
 } from '../types';
-import {AckAlertForm, StoreKeys} from '../constant';
+import {AckAlertForm, ExceptionType, StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {tryPromise} from '../utils/utils';
 
 export async function unackAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -36,7 +37,7 @@ export async function unackAlertCall(call: AppCallRequest): Promise<void> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const response: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = response.data;
     if (!alert.acknowledged) {
         throw new Error(`Unacknowledge request will be processed for #${alert.tinyId}`);
@@ -45,5 +46,5 @@ export async function unackAlertCall(call: AppCallRequest): Promise<void> {
     const data: AlertUnack = {
         user: username
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.unacknowledgeAlert(identifier, data), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

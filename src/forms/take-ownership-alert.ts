@@ -8,11 +8,12 @@ import {
     ResponseResultWithData,
     User
 } from '../types';
-import {StoreKeys, TakeOwnershipAlertForm} from '../constant';
+import {ExceptionType, StoreKeys, TakeOwnershipAlertForm} from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {tryPromise} from '../utils/utils';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
+import {Exception} from "../utils/exception";
 
 export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -47,17 +48,17 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void
         identifier: mattermostUser.email,
         identifierType: IdentifierType.USERNAME
     }
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.getUser(identifierUser), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const identifier: Identifier = {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier),  ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = responseAlert.data;
 
     if (!alert.owner || alert.owner === mattermostUser.email) {
-        throw new Error(`Take ownership request will be processed for #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `Take ownership request will be processed for #${alert.tinyId}`);
     }
 
     const data: AlertAssign = {
@@ -66,5 +67,5 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void
             username: mattermostUser.email
         }
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.assignAlert(identifier, data), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

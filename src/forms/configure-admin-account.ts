@@ -7,18 +7,12 @@ import {
     ListIntegrationsParams,
     ResponseResultWithData
 } from '../types';
-import {
-    AppFieldTypes,
-    ConfigureForm,
-    OpsGenieIcon,
-    Routes,
-    StoreKeys
-} from '../constant';
+import {AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys} from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
+import {Exception} from "../utils/exception";
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
-    console.log('call', call);
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
 
@@ -69,7 +63,7 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> 
     }
     const integrations: ResponseResultWithData<Integrations[]> = await opsgenieClient.listIntegrations(params);
     if (!integrations.data.length) {
-        throw new Error('Your opsgenie setup has no api integration');
+        throw new Exception(ExceptionType.MARKDOWN, 'Your opsgenie setup has no api integration');
     }
 
     const options: KVStoreOptions = {

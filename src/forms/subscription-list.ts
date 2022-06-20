@@ -9,9 +9,9 @@ import {
     Subscription,
 } from '../types';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {StoreKeys} from '../constant';
+import {ExceptionType, StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {tryPromise} from '../utils/utils';
 import queryString, {ParsedQuery, ParsedUrl} from "query-string";
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 
@@ -35,7 +35,7 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
     const params: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
     };
-    const responseIntegration: ResponseResultWithData<Integrations[]> = await tryPromiseOpsgenieWithMessage(opsGenieClient.listIntegrations(params), 'OpsGenie failed');
+    const responseIntegration: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(params), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -45,7 +45,7 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
 
     const promises: Promise<Subscription>[] = responseIntegration.data.map((int: Integrations) => {
         return new Promise(async (resolve, reject) => {
-            const responseIntegration: ResponseResultWithData<Integration> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getIntegration(int.id), 'OpsGenie failed');
+            const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, 'OpsGenie failed');
             const integration: Integration = responseIntegration.data;
 
             const queryParams: ParsedUrl = queryString.parseUrl(integration.url);

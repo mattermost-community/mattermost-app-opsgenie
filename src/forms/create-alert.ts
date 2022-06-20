@@ -1,15 +1,8 @@
-import {
-    AlertCreate,
-    AlertResponderType,
-    AppCallRequest,
-    AppCallValues,
-    Identifier,
-    IdentifierType
-} from '../types';
+import {AlertCreate, AlertResponderType, AppCallRequest, AppCallValues, Identifier, IdentifierType} from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {AlertCreateForm, option_alert_priority_p3, StoreKeys} from '../constant';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {AlertCreateForm, ExceptionType, option_alert_priority_p3, StoreKeys} from '../constant';
+import {tryPromise} from '../utils/utils';
 
 export async function createAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -37,7 +30,7 @@ export async function createAlertCall(call: AppCallRequest): Promise<void> {
         identifier: teamName,
         identifierType: IdentifierType.NAME,
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.getTeam(identifier), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const alertCreate: AlertCreate = {
         message,
@@ -49,5 +42,5 @@ export async function createAlertCall(call: AppCallRequest): Promise<void> {
             }
         ]
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.createAlert(alertCreate), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

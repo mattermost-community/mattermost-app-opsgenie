@@ -1,12 +1,7 @@
-import {addHours, addMinutes, addDays, format, endOfDay} from 'date-fns';
+import {addDays, addHours, addMinutes, endOfDay, format} from 'date-fns';
+import {AlertSnooze, AppCallRequest, AppCallValues, Identifier, IdentifierType} from '../types';
 import {
-    AlertSnooze,
-    AppCallRequest,
-    AppCallValues,
-    Identifier,
-    IdentifierType
-} from '../types';
-import {
+    ExceptionType,
     option_time_10m,
     option_time_15m,
     option_time_1d,
@@ -20,7 +15,7 @@ import {
 } from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {tryPromise} from '../utils/utils';
 
 export async function createSnoozeAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -48,7 +43,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<void>
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const currentDate: Date = new Date();
     const date: { [key: string]: Date } = {
@@ -68,5 +63,5 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<void>
         endTime,
         user: username
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.snoozeAlert(identifier, data), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.snoozeAlert(identifier, data),  ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

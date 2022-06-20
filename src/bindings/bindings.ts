@@ -59,12 +59,50 @@ export const getConfigureBinding = (): any => {
 };
 
 export const connectAccountBinding = (): any => {
+    const subCommands: string[] = [
+        Commands.LOGIN,
+        Commands.LOGOUT
+    ];
+
+    const bindings: AppBinding[] = [];
+
+    bindings.push(accountLoginBinding());
+    bindings.push(accountLogoutBinding());
+
     return {
         icon: OpsGenieIcon,
-        label: Commands.CONNECT,
+        label: Commands.ACCOUNT,
+        description: 'Connect your OpsGenie account',
+        hint: `[${subCommands.join(' | ')}]`,
+        bindings
+    }
+};
+
+export const accountLoginBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.LOGIN,
         description: 'Connect your OpsGenie account',
         form: {
-            title: "Connect account",
+            title: "Account login",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathConnectSubmit,
+                expand: {
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                }
+            }
+        }
+    }
+};
+
+export const accountLogoutBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.LOGIN,
+        description: 'Connect your OpsGenie account',
+        form: {
+            title: "Account logout",
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathConnectSubmit,

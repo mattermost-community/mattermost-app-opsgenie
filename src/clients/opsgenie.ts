@@ -35,7 +35,7 @@ export class OpsGenieClient {
     private readonly options: OpsGenieOptions | undefined;
 
     constructor(
-        options?: OpsGenieOptions
+        options: OpsGenieOptions
     ) {
         this.options = options;
     }

@@ -17,7 +17,7 @@ import {
     Routes
 } from '../constant';
 import config from '../config';
-import {OpsGenieClient} from '../clients/opsgenie';
+import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
@@ -166,7 +166,10 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
 async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
     const alertTinyId: string = call.context.alert.tinyId;
 
-    const opsGenieClient = new OpsGenieClient();
+    const opsGenieOpt: OpsGenieOptions = {
+        api_key: ''
+    };
+    const opsGenieClient = new OpsGenieClient(opsGenieOpt);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
@@ -190,7 +193,6 @@ const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
 };
 
 export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
-    console.log('call', call);
     const action: string = call.context.action;
     const selectedOption: string|undefined = call.context.selected_option;
 

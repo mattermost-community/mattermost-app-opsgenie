@@ -1,11 +1,8 @@
-import {
-    AppCallRequest,
-    AppCallValues,
-} from '../types';
+import {AppCallRequest, AppCallValues,} from '../types';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {StoreKeys, SubscriptionDeleteForm} from '../constant';
+import {ExceptionType, StoreKeys, SubscriptionDeleteForm} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {tryPromise} from '../utils/utils';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -27,5 +24,5 @@ export async function subscriptionDeleteCall(call: AppCallRequest): Promise<void
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.deleteIntegration(subscriptionId), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.deleteIntegration(subscriptionId), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

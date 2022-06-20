@@ -15,7 +15,10 @@ const AppPaths = {
     CallPathConfigForm: '/config/form',
     CallPathConfigSubmit: '/config/form/submit',
 
-    CallPathConnectSubmit: '/connect/submit',
+    CallPathConnectSubmit: '/connect/login/submit',
+    OAuthCompletePath: '/oauth2/complete',
+    OAuthConnectPath: '/oauth2/connect',
+
     CallPathSubscriptionAddSubmit: '/subscription/add/submit',
     CallPathSubscriptionDeleteSubmit: '/subscription/delete/submit',
     CallPathSubscriptionListSubmit: '/subscription/list/submit',
