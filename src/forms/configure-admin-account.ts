@@ -18,7 +18,6 @@ import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstor
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
-    console.log('call', call);
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
 

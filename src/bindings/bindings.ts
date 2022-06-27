@@ -30,7 +30,9 @@ export const getHelpBinding = (): any => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathHelp,
-                expand: {}
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             }
         }
     };
@@ -271,7 +273,7 @@ const addNoteToAlertBinding = (): AppBinding => {
             title: "Add Note To Alert",
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathNoteToAlertModal,
+                path: Routes.App.CallPathNoteToAlertSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }
@@ -307,7 +309,7 @@ const closeAlertBinding = (): AppBinding => {
             title: "Close Alert",
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAlertClose,
+                path: Routes.App.CallPathAlertCloseSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }
@@ -334,7 +336,7 @@ const ackAlertBinding = (): AppBinding => {
             title: 'Acknowledge the alerts',
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAlertAcknowledged,
+                path: Routes.App.CallPathAlertAcknowledgedSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }
@@ -423,7 +425,7 @@ const assignAlertBinding = (): AppBinding => {
             title: 'Assign the alerts',
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAssignAlert,
+                path: Routes.App.CallPathAssignAlertSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }

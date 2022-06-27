@@ -53,6 +53,7 @@ export const subscriptionListSubmit: CallResponseHandler = async (request: Reque
         callResponse = newOKCallResponseWithMarkdown(subscriptionsText);
         response.json(callResponse);
     } catch (error: any) {
+        console.log('error', error);
         callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }

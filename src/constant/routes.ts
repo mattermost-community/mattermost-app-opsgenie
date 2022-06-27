@@ -24,15 +24,29 @@ const AppPaths = {
     CallPathAlertsListSubmit: '/alert/list',
 
     CallPathAlertCreate: '/alert/create',
-    CallPathAlertClose: '/alert/close',
+
+    CallPathAlertCloseSubmit: '/alert/close/submit',
+    CallPathAlertCloseAction: '/alert/close/action',
+
+
     CallPathAlertUnacknowledge: '/alert/unacknowledge',
-    CallPathAlertAcknowledged: '/alert/acknowledged',
+
+    CallPathAlertAcknowledgedSubmit: '/alert/acknowledged',
+    CallPathAlertAcknowledgedAction: '/alert/acknowledged/action',
+
     CallPathAlertOtherActions: '/alert/otheractions',
     CallPathCloseOptions: '/alert/closeoptions',
-    CallPathAssignAlert: '/alert/assign',
+
+    CallPathAssignAlertSubmit: '/alert/assign',
+    CallPathAssignAlertAction: '/alert/assign/action',
+
     CallPathUpdatePriorityAlertSubmit: '/alert/priority',
     CallPathSnoozeAlert: '/alert/snooze',
-    CallPathNoteToAlertModal: '/alert/note',
+    CallPathSnoozeAlertAction: '/alert/snooze/action',
+
+    CallPathNoteToAlertSubmit: '/alert/note',
+    CallPathNoteToAlertAction: '/alert/note/action',
+
     CallPathTakeOwnershipAlertSubmit: '/alert/takeownership',
 
     CallPathIncomingWebhookPath: '/webhook'
@@ -63,7 +77,9 @@ const OpsGeniePaths = {
 
 const MattermostPaths = {
     PathKV: '/kv',
+    UsersUpdateRolePath: `/users/${PathsVariable.Identifier}/roles`,
     PostsPath: '/posts',
+    PostsEphemeralPath: '/posts/ephemeral',
     PostPath: `/posts/${PathsVariable.Identifier}`,
     UserPath: `/users/${PathsVariable.Identifier}`,
     ChannelPath: `/channels/${PathsVariable.Identifier}`,
@@ -71,6 +87,7 @@ const MattermostPaths = {
     ApiVersionV4: '/api/v4',
     ApiVersionV1: '/api/v1',
 }
+
 
 export const Routes = {
     PathsVariable,

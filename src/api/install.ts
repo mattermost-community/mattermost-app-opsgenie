@@ -1,9 +1,24 @@
 import {Request, Response} from 'express';
-import {AppCallResponse} from '../types';
+import {AppCallRequest, AppCallResponse} from '../types';
 import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
 import manifest from '../manifest.json';
+import {joinLines} from '../utils/markdown';
+import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 
 export const getInstall = async (request: Request, response: Response) => {
+    const call: AppCallRequest = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.acting_user_access_token;
+    const userId: string | undefined = call.context.bot_user_id;
+
+    const mattermostOpts: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOpts);
+
+    await mattermostClient.updateRolesByUser(<string>userId, 'system_admin system_post_all');
+
     const helpText: string = [
         getCommands()
     ].join('');
@@ -17,8 +32,4 @@ function getCommands(): string {
     return `${joinLines(
         `To finish configuring the Opsgenie app please read the [Quick Start](${homepageUrl}#quick-start) section of the README`
     )}\n`;
-}
-
-function joinLines(...lines: string[]): string {
-    return lines.join('\n');
 }

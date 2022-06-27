@@ -56,8 +56,8 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void
     const responseAlert: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
     const alert: Alert = responseAlert.data;
 
-    if (!alert.owner || alert.owner === mattermostUser.email) {
-        throw new Error(`Take ownership request will be processed for #${alert.tinyId}`);
+    if (alert.owner === mattermostUser.email) {
+        throw new Error(`You already are the owner of alert #${alert.tinyId}`);
     }
 
     const data: AlertAssign = {
@@ -66,5 +66,5 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void
             username: mattermostUser.email
         }
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.assignAlert(identifier, data), 'OpsGenie failed');
+    return await tryPromiseOpsgenieWithMessage(opsGenieClient.assignAlert(identifier, data), 'OpsGenie failed');
 }

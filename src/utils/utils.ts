@@ -1,6 +1,7 @@
 import GeneralConstants from '../constant/general';
-import {UserProfile} from '../types';
-import {AppsOpsGenie, Routes} from '../constant';
+import {AppActingUser, UserProfile} from '../types';
+import {AppsOpsGenie, Routes, StoreKeys} from '../constant';
+import {ConfigStoreProps, KVStoreClient} from "../clients/kvstore";
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -33,8 +34,14 @@ export function isConfigured(oauth2: any): boolean {
     return Boolean(oauth2.client_id && oauth2.client_secret);
 }
 
-export function isUserSystemAdmin(actingUser: UserProfile): boolean {
+export function isUserSystemAdmin(actingUser: AppActingUser): boolean {
     return Boolean(actingUser.roles && actingUser.roles.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
+}
+
+export async function existsKvOpsGenieConfig(kvClient: KVStoreClient): Promise<boolean> {
+    const trelloConfig: ConfigStoreProps = await kvClient.kvGet(StoreKeys.config);
+
+    return Boolean(Object.keys(trelloConfig).length);
 }
 
 export function isConnected(oauth2user: any): boolean {

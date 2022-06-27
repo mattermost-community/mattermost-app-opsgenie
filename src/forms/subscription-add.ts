@@ -9,22 +9,20 @@ import {
     Integrations,
     IntegrationType,
     ListIntegrationsParams,
-    Manifest,
     ResponseResultWithData,
     Team
 } from '../types';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {AppsPluginName, Routes, StoreKeys, SubscriptionCreateForm} from '../constant';
-import manifest from '../manifest.json';
+import {Routes, StoreKeys, SubscriptionCreateForm} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from "../clients/opsgenie";
 import {tryPromiseOpsgenieWithMessage} from "../utils/utils";
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+    const appPath: string | undefined = call.context.app_path;
     const whSecret: string | undefined = call.context.app?.webhook_secret;
     const values: AppCallValues | undefined  = call.values;
-    const m: Manifest = manifest;
 
     const teamName: string = values?.[SubscriptionCreateForm.TEAM_NAME];
     const channelId: string = values?.[SubscriptionCreateForm.CHANNEL_ID].value;
@@ -37,14 +35,13 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const kvStore: KVStoreClient = new KVStoreClient(options);
 
     const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
-    const pluginName = m.app_id;
     const whPath = Routes.App.CallPathIncomingWebhookPath;
 
     const params: string = queryString.stringify({
         secret: whSecret,
         channelId
     });
-    const url: string = `https://d4d7-201-160-207-97.ngrok.io/plugins/${AppsPluginName}/apps/${pluginName}${whPath}?${params}`;
+    const url: string = `${mattermostUrl}${appPath}${whPath}?${params}`;
 
     const optionsOps: OpsGenieOptions = {
         api_key: configStore.opsgenie_apikey
