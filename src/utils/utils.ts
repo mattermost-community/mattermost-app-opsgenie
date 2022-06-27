@@ -42,13 +42,13 @@ export function getAlertDetailUrl(accountName: string, alertId: string): string 
 }
 
 export function errorDataMessage(error: Exception | Error | any): string {
-    const errorMessage: string = error?.data || error?.data?.message || error?.message || error;
+    const errorMessage: string = error?.data?.message || error?.data || error?.message || error;
     return `${errorMessage}`;
 }
 
 export function tryPromise(p: Promise<any>, exceptionType: ExceptionType, message: string) {
     return p.catch((error) => {
-        const errorMessage: string = errorDataMessage(error);
+        const errorMessage: string = errorDataMessage(error.response);
         throw new Exception(exceptionType, `${message} ${errorMessage}`);
     });
 }
