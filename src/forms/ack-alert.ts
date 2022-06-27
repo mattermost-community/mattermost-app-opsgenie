@@ -1,8 +1,9 @@
 import {
-    Alert,
-    AlertAck,
+    Alert, AlertAck,
+    AppCallAction,
     AppCallRequest,
-    AppCallValues,
+    AppCallValues, 
+    AppContextAction,
     Identifier,
     IdentifierType,
     ResponseResultWithData,
@@ -42,6 +43,43 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
     const alert: Alert = response.data;
     if (alert.acknowledged) {
         throw new Exception(ExceptionType.MARKDOWN, `You have acknowledged #${alert.tinyId}`);
+    }
+
+    const data: AlertAck = {
+        user: username
+    };
+    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+}
+
+export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.user_name;
+    const values: AppCallValues | undefined = call.context.alert;
+
+    const alertTinyId: string = values?.[AckAlertForm.TINY_ID];
+    const options: KVStoreOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken,
+    };
+    
+    const kvStoreClient = new KVStoreClient(options);
+
+    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.opsgenie_apikey
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY
+    };
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const alert: Alert = response.data;
+    if (alert.acknowledged) {
+        throw new Error(`You have acknowledged #${alert.tinyId}`);
     }
 
     const data: AlertAck = {

@@ -1,8 +1,9 @@
 import {Request, Response} from 'express';
 import manifest from '../manifest.json';
 import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
-import {AppCallRequest, AppCallResponse} from '../types';
+import {AppCallRequest, AppCallResponse, ExpandedBotActingUser} from '../types';
 import {addBulletSlashCommand, h5, joinLines} from '../utils/markdown';
+import {isUserSystemAdmin} from '../utils/utils';
 
 export const getHelp = async (request: Request, response: Response) => {
     const helpText: string = [
@@ -18,10 +19,11 @@ function getHeader(): string {
 }
 
 function getCommands(call: AppCallRequest): string {
-    const context = call.context as any;
-    const text: string = getUserCommands();
+    const context = call.context as ExpandedBotActingUser;
 
-    return text;
+    return isUserSystemAdmin(context.acting_user)
+        ? getAdminCommands()
+        : getUserCommands();
 }
 
 function getUserCommands(): string {

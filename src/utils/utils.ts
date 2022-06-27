@@ -1,9 +1,10 @@
 import GeneralConstants from '../constant/general';
-import {AppCallResponse, UserProfile} from '../types';
-import {AppsOpsGenie, ExceptionType, Routes} from '../constant';
+import {AppActingUser, AppCallResponse} from '../types';
+import {AppsOpsGenie, ExceptionType, Routes, StoreKeys} from '../constant';
+import {ConfigStoreProps, KVStoreClient} from "../clients/kvstore";
+import { Exception } from './exception';
+import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 import config from '../config';
-import {Exception} from "./exception";
-import {newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown} from './call-responses';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -13,8 +14,14 @@ export function isConfigured(oauth2: any): boolean {
     return Boolean(oauth2.client_id && oauth2.client_secret);
 }
 
-export function isUserSystemAdmin(actingUser: UserProfile): boolean {
+export function isUserSystemAdmin(actingUser: AppActingUser): boolean {
     return Boolean(actingUser.roles && actingUser.roles.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
+}
+
+export async function existsKvOpsGenieConfig(kvClient: KVStoreClient): Promise<boolean> {
+    const trelloConfig: ConfigStoreProps = await kvClient.kvGet(StoreKeys.config);
+
+    return Boolean(Object.keys(trelloConfig).length);
 }
 
 export function isConnected(oauth2user: any): boolean {
