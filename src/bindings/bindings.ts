@@ -30,7 +30,9 @@ export const getHelpBinding = (): any => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathHelp,
-                expand: {}
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             }
         }
     };

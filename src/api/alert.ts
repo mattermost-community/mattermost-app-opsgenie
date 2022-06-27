@@ -1,5 +1,14 @@
 import {Request, Response} from 'express';
-import {Alert, AlertStatus, AppCallAction, AppCallDialog, AppCallResponse, AppContextAction, PostCreate, PostEphemeralCreate} from '../types';
+import {
+    Alert,
+    AlertOption,
+    AlertStatus,
+    AppCallAction,
+    AppCallDialog,
+    AppCallResponse,
+    AppContextAction,
+    PostEphemeralCreate
+} from '../types';
 import {
     newErrorCallResponseWithMessage,
     newOKCallResponse,
@@ -20,7 +29,7 @@ import {h6, hyperlink, joinLines} from '../utils/markdown';
 import {AppsOpsGenie, Routes} from '../constant';
 import {replace} from '../utils/utils';
 import {priorityAlertCall} from '../forms/priority-alert';
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -45,7 +54,7 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
                         Routes.PathsVariable.Identifier,
                         alert.id
                     );
-                    const status: string = alert.acknowledged ? 'acked' : 'unacked';
+                    const status: string = alert.acknowledged ? AlertOption.ASKED : AlertOption.UNACKED;
                     return `- #${alert.tinyId}: "${alert.message}" [${status}] - ${hyperlink('View details', alertDetailUrl)}.`;
                 }).join('\n')
             )}\n`
@@ -236,12 +245,14 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
         response.json(callResponse);
     }
 };
+
 export const assignAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
     const call: AppCallAction<AppContextAction> = request.body;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
+
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
         accessToken: <string>botAccessToken
@@ -300,7 +311,7 @@ export const snoozeAlertModal = async (request: Request, response: Response) => 
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     try {
-        const alert: Alert = await createSnoozeAlertAction(request.body);
+        await createSnoozeAlertAction(request.body);
         const post: PostEphemeralCreate = {
             post: {
                 message: "Alert will be snoozed",

@@ -77,6 +77,7 @@ const OpsGeniePaths = {
 
 const MattermostPaths = {
     PathKV: '/kv',
+    UsersUpdateRolePath: `/users/${PathsVariable.Identifier}/roles`,
     PostsPath: '/posts',
     PostsEphemeralPath: '/posts/ephemeral',
     PostPath: `/posts/${PathsVariable.Identifier}`,

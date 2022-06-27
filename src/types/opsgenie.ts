@@ -10,6 +10,11 @@ export enum IdentifierType {
     NAME = 'name'
 }
 
+export enum AlertOption {
+    ASKED = 'acked',
+    UNACKED = 'unacked'
+}
+
 export enum AlertResponderType {
     TEAM = 'team',
     USER = 'user',
