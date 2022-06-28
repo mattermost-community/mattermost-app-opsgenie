@@ -48,3 +48,40 @@ export async function unackAlertCall(call: AppCallRequest): Promise<void> {
     };
     await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }
+
+export async function unackAlertAction(call: AppCallRequest): Promise<void> {
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const username: string | undefined = call.context.acting_user?.username;
+    const values: AppCallValues | undefined = call.values;
+
+    const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
+
+    const options: KVStoreOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken,
+    };
+    const kvStoreClient = new KVStoreClient(options);
+
+    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.opsgenie_apikey
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY
+    };
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const alert: Alert = response.data;
+    if (!alert.acknowledged) {
+        throw new Error(`Unacknowledge request will be processed for #${alert.tinyId}`);
+    }
+
+    const data: AlertUnack = {
+        user: username
+    };
+    await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+}

@@ -22,7 +22,7 @@ import {closeAlertAction, closeAlertCall} from '../forms/close-alert';
 import {ackAlertAction, ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
-import {unackAlertCall} from '../forms/unack-alert';
+import {unackAlertAction, unackAlertCall} from '../forms/unack-alert';
 import {getAllAlertCall} from '../forms/list-alert';
 import {takeOwnershipAlertCall} from '../forms/take-ownership-alert';
 import {h6, hyperlink, joinLines} from '../utils/markdown';
@@ -145,6 +145,19 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
         response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
+        response.json(callResponse);
+    }
+};
+
+export const unackAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        await unackAlertAction(request.body);
+        callResponse = newOKCallResponse();
+        response.json(callResponse);
+    } catch (error: any) {
+        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
         response.json(callResponse);
     }
 };
