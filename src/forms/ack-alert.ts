@@ -66,7 +66,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
     const channelId: string | undefined = call.channel_id;
     const alertTinyId: string = values?.[AckAlertForm.TINY_ID];
     const postId: string = call.post_id;
-    let acknowledged: boolean = true;
+    let acknowledged: boolean = false;
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
         accessToken: <string>botAccessToken,
@@ -96,10 +96,10 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
         const data: AlertAck = {
             user: username
         };
-        const res = await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
         message = `You have acknowledged #${alert.tinyId}`;
     } catch (error: any) {
-        acknowledged = false;
+        acknowledged = true;
         message = 'Unexpected error: ' + error.message;
     }
     const post: PostEphemeralCreate = {
@@ -118,7 +118,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
 }
 
 
-const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, acknowledged: boolean) => {
+export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, acknowledged: boolean) => {
     const alert: AppCallValues | undefined = call.context.alert;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
