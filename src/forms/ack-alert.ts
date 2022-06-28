@@ -111,7 +111,6 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
     return message;
 }
 
-
 export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, acknowledged: boolean) => {
     const alert: AppCallValues | undefined = call.context.alert;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
