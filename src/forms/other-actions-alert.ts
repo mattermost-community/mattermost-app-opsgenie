@@ -185,18 +185,22 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Pro
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let message: string;
-
-    const options: KVStoreOptions = {
+    
+    const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
+        accessToken: <string>botAccessToken
     };
 
-    const mattermostClient: MattermostClient = new MattermostClient(options);
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try{
         const alertTinyId: string = call.context.alert.tinyId;
         const userId: string | undefined = call.user_id;
         const username: string | undefined = call.user_name;
+        const options: KVStoreOptions = {
+            mattermostUrl: <string>mattermostUrl,
+            accessToken: <string>botAccessToken,
+        };
         const kvStoreClient = new KVStoreClient(options);
     
         const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
