@@ -57,7 +57,7 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
     await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }
 
-export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {
+export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
     let message: string;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
@@ -106,19 +106,9 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
         acknowledged = true;
         message = 'Unexpected error: ' + error.message;
     }
-    const post: PostEphemeralCreate = {
-        post: {
-            message: message,
-            channel_id: channelId,
-        },
-
-        user_id: call.user_id,
-
-    };
 
     await mattermostClient.updatePost(postId, await bodyPostUpdate(call, acknowledged));
-    await mattermostClient.createEphemeralPost(post);
-
+    return message;
 }
 
 

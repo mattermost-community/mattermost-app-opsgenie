@@ -122,17 +122,39 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
     }
 };
 export const ackAlertModal = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
+    const call: AppCallDialog<{ alert_message: string }> = request.body;
+    const context: AppContextAction = JSON.parse(call.state);
+    const mattermostUrl: string | undefined = context.mattermost_site_url;
+    const botAccessToken: string | undefined = context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    let post: PostEphemeralCreate;
 
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     try {
-        await ackAlertAction(request.body);
-        callResponse = newOKCallResponse();
-
-        response.json(callResponse);
+        const message = await ackAlertAction(request.body);
+        post = {
+            post: {
+                message: message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
-        response.json(callResponse);
+        post = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
     }
+
+    await mattermostClient.createEphemeralPost(post);
+    response.json();
 };
 
 export const unackAlertSubmit = async (request: Request, response: Response) => {
@@ -150,16 +172,39 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
 };
 
 export const unackAlertModal = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
+    const call: AppCallDialog<{ alert_message: string }> = request.body;
+    const context: AppContextAction = JSON.parse(call.state);
+    const mattermostUrl: string | undefined = context.mattermost_site_url;
+    const botAccessToken: string | undefined = context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    let post: PostEphemeralCreate;
 
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     try {
-        await unackAlertAction(request.body);
-        callResponse = newOKCallResponse();
-        response.json(callResponse);
+        const message = await unackAlertAction(request.body);
+        post = {
+            post: {
+                message: message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
-        response.json(callResponse);
+        post = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
     }
+
+    await mattermostClient.createEphemeralPost(post);
+    response.json();
 };
 
 export const otherActionsAlert = async (request: Request, response: Response) => {

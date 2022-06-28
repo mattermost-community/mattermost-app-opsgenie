@@ -54,7 +54,7 @@ export async function unackAlertCall(call: AppCallRequest): Promise<void> {
     await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }
 
-export async function unackAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {
+export async function unackAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
     let message: string;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
@@ -114,5 +114,5 @@ export async function unackAlertAction(call: AppCallAction<AppContextAction>): P
     };
 
     await mattermostClient.updatePost(postId, await bodyPostUpdate(call, acknowledged));
-    await mattermostClient.createEphemeralPost(post);
+    return message;
    }
