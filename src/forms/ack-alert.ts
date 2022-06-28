@@ -17,7 +17,7 @@ import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {tryPromise} from '../utils/utils';
 import {Exception} from "../utils/exception";
-import { MattermostClient } from '../clients/mattermost';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import config from '../config';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<void> {
@@ -67,13 +67,17 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
     const alertTinyId: string = values?.[AckAlertForm.TINY_ID];
     const postId: string = call.post_id;
     let acknowledged: boolean = false;
-    const options: KVStoreOptions = {
+    const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
+        accessToken: <string>botAccessToken
     };
-    const mattermostClient: MattermostClient = new MattermostClient(options);
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
+        const options: KVStoreOptions = {
+            mattermostUrl: <string>mattermostUrl,
+            accessToken: <string>botAccessToken,
+        };
         const kvStoreClient = new KVStoreClient(options);
 
         const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
