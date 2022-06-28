@@ -42,7 +42,7 @@ export function getAlertDetailUrl(accountName: string, alertId: string): string 
 }
 
 export function errorDataMessage(error: Exception | Error | any): string {
-    const errorMessage: string = error?.data || error?.data?.message || error?.message || error;
+    const errorMessage: string = error?.data?.message || error?.response?.data?.message || error?.message || error;
     return `${errorMessage}`;
 }
 

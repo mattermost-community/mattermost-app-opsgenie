@@ -1,11 +1,16 @@
 import {
+    Alert,
     AlertAssign,
     AppCallAction,
+    AppCallResponse,
     AppContextAction,
     DialogProps,
     Identifier,
     IdentifierType,
-    PostCreate
+    PostCreate,
+    PostEphemeralCreate,
+    ResponseResultWithData,
+    User
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {
@@ -17,11 +22,15 @@ import {
     options_times,
     Routes,
     NoteModalForm,
-    ExceptionType
+    ExceptionType,
+    StoreKeys
 } from '../constant';
 import config from '../config';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import { tryPromise } from '../utils/utils';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { Exception } from '../utils/exception';
+import { newErrorCallResponseWithMessage } from '../utils/call-responses';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
@@ -172,23 +181,76 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
 }
 
 async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
-    const alertTinyId: string = call.context.alert.tinyId;
-
-    const opsGenieOpt: OpsGenieOptions = {
-        api_key: ''
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    let message: string;
+    
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
     };
-    const opsGenieClient = new OpsGenieClient(opsGenieOpt);
 
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
-    }
-    const data: AlertAssign = {
-        owner: {
-            id: ''
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+
+    try{
+        const alertTinyId: string = call.context.alert.tinyId;
+        const userId: string | undefined = call.user_id;
+        const username: string | undefined = call.user_name;
+        const options: KVStoreOptions = {
+            mattermostUrl: <string>mattermostUrl,
+            accessToken: <string>botAccessToken,
+        };
+        const kvStoreClient = new KVStoreClient(options);
+    
+        const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+        const opsGenieOpt: OpsGenieOptions = {
+            api_key: config.opsgenie_apikey
+        };
+        const opsGenieClient = new OpsGenieClient(opsGenieOpt);
+    
+        const mattermostUser: User = await mattermostClient.getUser(<string>userId);
+    
+        const identifierUser: Identifier = {
+            identifier: mattermostUser.email,
+            identifierType: IdentifierType.USERNAME
         }
+        
+        await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    
+        const identifier: Identifier = {
+            identifier: alertTinyId,
+            identifierType: IdentifierType.TINY
+        };
+        const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        const alert: Alert = responseAlert.data;
+    
+        if (alert.owner === mattermostUser.email) {
+            throw new Exception(ExceptionType.MARKDOWN, `You already are alert #${alert.tinyId} owner`);
+        }
+    
+        const data: AlertAssign = {
+            user: username,
+            owner: {
+                username: mattermostUser.email
+            }
+        };
+        
+        await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        
+        message = `Take ownership request will be processed for #${alert.tinyId}`;
+    } catch (error: any) {
+        message = 'Unexpected error: ' + error.message;
     }
-    await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+
+    const post: PostEphemeralCreate = {
+        post: {
+            message: message,
+            channel_id: channelId,
+        },
+        user_id: call.user_id,
+    };
+    await mattermostClient.createEphemeralPost(post);
 }
 
 const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
