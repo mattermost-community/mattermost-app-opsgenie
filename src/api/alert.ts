@@ -22,7 +22,7 @@ import {closeAlertAction, closeAlertCall} from '../forms/close-alert';
 import {ackAlertAction, ackAlertCall} from '../forms/ack-alert';
 import {otherActionsAlertCall} from '../forms/other-actions-alert';
 import {closeActionsAlertCall} from '../forms/close-actions-alert';
-import {unackAlertCall} from '../forms/unack-alert';
+import {unackAlertAction, unackAlertCall} from '../forms/unack-alert';
 import {getAllAlertCall} from '../forms/list-alert';
 import {takeOwnershipAlertCall} from '../forms/take-ownership-alert';
 import {h6, hyperlink, joinLines} from '../utils/markdown';
@@ -122,17 +122,39 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
     }
 };
 export const ackAlertModal = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
+    const call: AppCallAction<AppContextAction> = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    let post: PostEphemeralCreate;
 
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    console.log(call);
     try {
-        await ackAlertAction(request.body);
-        callResponse = newOKCallResponse();
-
-        response.json(callResponse);
+        const message = await ackAlertAction(request.body);
+        post = {
+            post: {
+                message: message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
-        response.json(callResponse);
+        post = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
     }
+
+    await mattermostClient.createEphemeralPost(post);
+    response.json();
 };
 
 export const unackAlertSubmit = async (request: Request, response: Response) => {
@@ -147,6 +169,41 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
         callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
+};
+
+export const unackAlertModal = async (request: Request, response: Response) => {
+    const call: AppCallAction<AppContextAction> = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    let post: PostEphemeralCreate;
+
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    try {
+        const message = await unackAlertAction(request.body);
+        post = {
+            post: {
+                message: message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+    } catch (error: any) {
+        post = {
+            post: {
+                message: 'Unexpected error: ' + error.message,
+                channel_id: channelId,
+            },
+            user_id: call.user_id,
+        };
+    }
+
+    await mattermostClient.createEphemeralPost(post);
+    response.json();
 };
 
 export const otherActionsAlert = async (request: Request, response: Response) => {

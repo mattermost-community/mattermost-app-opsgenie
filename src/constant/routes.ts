@@ -33,6 +33,7 @@ const AppPaths = {
 
 
     CallPathAlertUnacknowledge: '/alert/unacknowledge',
+    CallPathAlertUnacknowledgeAction: '/alert/unacknowledge/action',
 
     CallPathAlertAcknowledgedSubmit: '/alert/acknowledged',
     CallPathAlertAcknowledgedAction: '/alert/acknowledged/action',

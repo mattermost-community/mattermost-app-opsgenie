@@ -45,6 +45,8 @@ router.post(`${Routes.App.CallPathAlertAcknowledgedSubmit}`, cAlert.ackAlertSubm
 router.post(`${Routes.App.CallPathAlertAcknowledgedAction}`, cAlert.ackAlertModal);
 
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.unackAlertSubmit);
+router.post(`${Routes.App.CallPathAlertUnacknowledgeAction}`, cAlert.unackAlertModal);
+
 router.post(`${Routes.App.CallPathSnoozeAlert}`, cAlert.snoozeAlertSubmit);
 router.post(`${Routes.App.CallPathSnoozeAlertAction}`, cAlert.snoozeAlertModal);
 
