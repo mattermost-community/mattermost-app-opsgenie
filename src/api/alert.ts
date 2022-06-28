@@ -122,10 +122,9 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
     }
 };
 export const ackAlertModal = async (request: Request, response: Response) => {
-    const call: AppCallDialog<{ alert_message: string }> = request.body;
-    const context: AppContextAction = JSON.parse(call.state);
-    const mattermostUrl: string | undefined = context.mattermost_site_url;
-    const botAccessToken: string | undefined = context.bot_access_token;
+    const call: AppCallAction<AppContextAction> = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let post: PostEphemeralCreate;
 
@@ -134,6 +133,7 @@ export const ackAlertModal = async (request: Request, response: Response) => {
         accessToken: <string>botAccessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+    console.log(call);
     try {
         const message = await ackAlertAction(request.body);
         post = {
@@ -172,10 +172,9 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
 };
 
 export const unackAlertModal = async (request: Request, response: Response) => {
-    const call: AppCallDialog<{ alert_message: string }> = request.body;
-    const context: AppContextAction = JSON.parse(call.state);
-    const mattermostUrl: string | undefined = context.mattermost_site_url;
-    const botAccessToken: string | undefined = context.bot_access_token;
+    const call: AppCallAction<AppContextAction> = request.body;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let post: PostEphemeralCreate;
 
