@@ -53,5 +53,20 @@ function getAdminCommands(): string {
     return `${joinLines(
         addBulletSlashCommand('help', `Launch the OpsGenie plugin command line help syntax, check out the [documentation](${homepageUrl}).`),
         addBulletSlashCommand('configure', `Configure OpsGenie.`),
+        addBulletSlashCommand('connect', `Connect your OpsGenie account`),
+        addBulletSlashCommand('subscription add [Team name] [Channel mattermost]', `Add subscription of team to channel`),
+        addBulletSlashCommand('subscription delete [SubscriptionId]', `Delete subscription of channel`),
+        addBulletSlashCommand('subscription list', `List subscriptions open`),
+        addBulletSlashCommand('alert create [Alert message] [Team name] [Priority]', 'Create an alert with the message for the specified responders'),
+        addBulletSlashCommand('alert note [Note message] [TinyId]', 'Add [note] to the alerts with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert snooze [TinyID] [time amount [m/h/d]]', 'Snooze the alerts with IDs [tinyID tinyID2..] for the specified time.'),
+        addBulletSlashCommand('alert ack [TinyID]', 'Acknowledge the alerts with IDs [tinyID tinyID2..].'),
+        addBulletSlashCommand('alert unack [TinyID]', 'UnAcknowledge the alerts with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert assign [TinyID] [User mattermost]', 'Assign alerts with IDs [tinyID tinyID2..] to [user]'),
+        addBulletSlashCommand('alert close [TinyID]', 'Close the alerts, incidents, mass notifications with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert own [TinyID]', 'Take ownership of the alerts with IDs [tinyID tinyID2..]'),
+        addBulletSlashCommand('alert priority [TinyID] [Priority]', 'Update priority of the alert with [tinyID].'),
+        addBulletSlashCommand('list team', 'List teams.'),
+        addBulletSlashCommand('list alert', 'List alerts.'),
     )}\n`;
 }

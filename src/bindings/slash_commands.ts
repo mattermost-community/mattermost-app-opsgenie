@@ -53,7 +53,8 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
     if (isUserSystemAdmin(<AppActingUser>actingUser)) {
         bindings.push(getConfigureBinding());
         commands.push(Commands.CONFIGURE);
-    } else if (await existsKvOpsGenieConfig(kvClient)) {
+    }  
+    if (await existsKvOpsGenieConfig(kvClient)) {
         commands.push(Commands.ACCOUNT);
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
