@@ -19,9 +19,9 @@ export function isUserSystemAdmin(actingUser: AppActingUser): boolean {
 }
 
 export async function existsKvOpsGenieConfig(kvClient: KVStoreClient): Promise<boolean> {
-    const trelloConfig: ConfigStoreProps = await kvClient.kvGet(StoreKeys.config);
+    const opsGenieConfig: ConfigStoreProps = await kvClient.kvGet(StoreKeys.config);
 
-    return Boolean(Object.keys(trelloConfig).length);
+    return Boolean(Object.keys(opsGenieConfig).length);
 }
 
 export function isConnected(oauth2user: any): boolean {
