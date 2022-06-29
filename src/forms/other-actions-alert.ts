@@ -1,10 +1,16 @@
 import {
+    Alert,
     AlertAssign,
-    AppCallAction, AppContextAction,
+    AppCallAction,
+    AppCallResponse,
+    AppContextAction,
     DialogProps,
     Identifier,
     IdentifierType,
     PostCreate,
+    PostEphemeralCreate,
+    ResponseResultWithData,
+    User
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {
@@ -14,10 +20,17 @@ import {
     option_alert_take_ownership,
     option_alert_snooze,
     options_times,
-    Routes
+    Routes,
+    NoteModalForm,
+    ExceptionType,
+    StoreKeys
 } from '../constant';
 import config from '../config';
-import {OpsGenieClient} from '../clients/opsgenie';
+import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
+import { tryPromise } from '../utils/utils';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { Exception } from '../utils/exception';
+import { newErrorCallResponseWithMessage } from '../utils/call-responses';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
@@ -33,23 +46,24 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
 
     const dialogProps: DialogProps = {
         trigger_id: triggerId,
-        url: `${config.APP.HOST}${Routes.App.CallPathNoteToAlertModal}`,
+        url: `${config.APP.HOST}${Routes.App.CallPathNoteToAlertAction}`,
         dialog: {
             title: 'Add Note',
             icon_url: `${config.APP.HOST}/static/opsgenie.png`,
             submit_label: 'Add',
-            state: alertTinyId,
+            state: JSON.stringify(call.context),
             elements: [
                 {
                     display_name: 'Note',
                     type: 'textarea',
-                    name: 'note',
+                    name: NoteModalForm.NOTE_MESSAGE,
                     placeholder: 'Your note here...',
-                    optional: false
+                    optional: false,
+                    max_length: 25000
                 }
             ],
         }
-    }
+    };
     await mattermostClient.showDialog(dialogProps);
 }
 
@@ -57,6 +71,7 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
+    const alert: any = call.context.alert;
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -76,11 +91,12 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
                             id: ActionsEvents.USER_SELECT_EVENT,
                             name: "Choose a user",
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAssignAlert}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAssignAlertAction}`,
                                 context: {
                                     action: ActionsEvents.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+                                    alert
                                 } as AppContextAction
                             },
                             type: 'select',
@@ -132,11 +148,12 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
                             name: "Choose snooze time",
                             type: 'select',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlert}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlertAction}`,
                                 context: {
                                     action: ActionsEvents.TIME_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+                                    alert: call.context.alert
                                 } as AppContextAction
                             },
                             options: options_times
@@ -164,20 +181,76 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
 }
 
 async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
-    const alertTinyId: string = call.context.alert.tinyId;
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const channelId: string | undefined = call.channel_id;
+    let message: string;
+    
+    const mattermostOptions: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken
+    };
 
-    const opsGenieClient = new OpsGenieClient();
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
-    }
-    const data: AlertAssign = {
-        owner: {
-            id: ''
+    try{
+        const alertTinyId: string = call.context.alert.tinyId;
+        const userId: string | undefined = call.user_id;
+        const username: string | undefined = call.user_name;
+        const options: KVStoreOptions = {
+            mattermostUrl: <string>mattermostUrl,
+            accessToken: <string>botAccessToken,
+        };
+        const kvStoreClient = new KVStoreClient(options);
+    
+        const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+        const opsGenieOpt: OpsGenieOptions = {
+            api_key: config.opsgenie_apikey
+        };
+        const opsGenieClient = new OpsGenieClient(opsGenieOpt);
+    
+        const mattermostUser: User = await mattermostClient.getUser(<string>userId);
+    
+        const identifierUser: Identifier = {
+            identifier: mattermostUser.email,
+            identifierType: IdentifierType.USERNAME
         }
+        
+        await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    
+        const identifier: Identifier = {
+            identifier: alertTinyId,
+            identifierType: IdentifierType.TINY
+        };
+        const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        const alert: Alert = responseAlert.data;
+    
+        if (alert.owner === mattermostUser.email) {
+            throw new Exception(ExceptionType.MARKDOWN, `You already are alert #${alert.tinyId} owner`);
+        }
+    
+        const data: AlertAssign = {
+            user: username,
+            owner: {
+                username: mattermostUser.email
+            }
+        };
+        
+        await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        
+        message = `Take ownership request will be processed for #${alert.tinyId}`;
+    } catch (error: any) {
+        message = 'Unexpected error: ' + error.message;
     }
-    await opsGenieClient.assignAlert(identifier, data);
+
+    const post: PostEphemeralCreate = {
+        post: {
+            message: message,
+            channel_id: channelId,
+        },
+        user_id: call.user_id,
+    };
+    await mattermostClient.createEphemeralPost(post);
 }
 
 const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
@@ -190,7 +263,6 @@ const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
 };
 
 export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
-    console.log('call', call);
     const action: string = call.context.action;
     const selectedOption: string|undefined = call.context.selected_option;
 

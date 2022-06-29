@@ -30,7 +30,9 @@ export const getHelpBinding = (): any => {
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathHelp,
-                expand: {}
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL
+                }
             }
         }
     };
@@ -59,12 +61,50 @@ export const getConfigureBinding = (): any => {
 };
 
 export const connectAccountBinding = (): any => {
+    const subCommands: string[] = [
+        Commands.LOGIN,
+        Commands.LOGOUT
+    ];
+
+    const bindings: AppBinding[] = [];
+
+    bindings.push(accountLoginBinding());
+    bindings.push(accountLogoutBinding());
+
     return {
         icon: OpsGenieIcon,
-        label: Commands.CONNECT,
+        label: Commands.ACCOUNT,
+        description: 'Connect your OpsGenie account',
+        hint: `[${subCommands.join(' | ')}]`,
+        bindings
+    }
+};
+
+export const accountLoginBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.LOGIN,
         description: 'Connect your OpsGenie account',
         form: {
-            title: "Connect account",
+            title: "Account login",
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathConnectSubmit,
+                expand: {
+                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                }
+            }
+        }
+    }
+};
+
+export const accountLogoutBinding = (): any => {
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.LOGIN,
+        description: 'Connect your OpsGenie account',
+        form: {
+            title: "Account logout",
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
@@ -271,7 +311,7 @@ const addNoteToAlertBinding = (): AppBinding => {
             title: "Add Note To Alert",
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathNoteToAlertModal,
+                path: Routes.App.CallPathNoteToAlertSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }
@@ -307,7 +347,7 @@ const closeAlertBinding = (): AppBinding => {
             title: "Close Alert",
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAlertClose,
+                path: Routes.App.CallPathAlertCloseSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }
@@ -334,7 +374,7 @@ const ackAlertBinding = (): AppBinding => {
             title: 'Acknowledge the alerts',
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAlertAcknowledged,
+                path: Routes.App.CallPathAlertAcknowledgedSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }
@@ -423,7 +463,7 @@ const assignAlertBinding = (): AppBinding => {
             title: 'Assign the alerts',
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAssignAlert,
+                path: Routes.App.CallPathAssignAlertSubmit,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL
                 }

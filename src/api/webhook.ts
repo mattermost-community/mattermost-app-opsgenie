@@ -95,7 +95,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                             type: 'button',
                             style: 'default',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledged}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedAction}`,
                                 context: {
                                     action: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
                                     alert: {
@@ -114,7 +114,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                             type: 'button',
                             style: 'success',
                             integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAlertClose}`,
+                                url: `${config.APP.HOST}${Routes.App.CallPathAlertCloseAction}`,
                                 context: {
                                     action: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
                                     alert: {
@@ -544,6 +544,7 @@ export const incomingWebhook = async (request: Request, response: Response) => {
 
     let callResponse: AppCallResponse;
     try {
+        console.log('data', webhookRequest.data);
         const action: Function = WEBHOOKS_ACTIONS[webhookRequest.data.action];
         if (action) {
             await action(webhookRequest, context);

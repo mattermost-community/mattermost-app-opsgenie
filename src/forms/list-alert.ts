@@ -1,14 +1,8 @@
-import {
-    Account,
-    Alert,
-    AppCallRequest,
-    ListAlertParams,
-    ResponseResultWithData,
-} from '../types';
+import {Account, Alert, AppCallRequest, ListAlertParams, ResponseResultWithData,} from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {StoreKeys} from '../constant';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {ExceptionType, StoreKeys} from '../constant';
+import {tryPromise} from '../utils/utils';
 
 export async function getAllAlertCall(call: AppCallRequest): Promise<[Alert[], Account]> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -30,9 +24,9 @@ export async function getAllAlertCall(call: AppCallRequest): Promise<[Alert[], A
     const params: ListAlertParams = {
         limit: 100
     };
-    const teams: ResponseResultWithData<Alert[]> = await tryPromiseOpsgenieWithMessage(opsGenieClient.listAlert(params), 'OpsGenie failed');
+    const teams: ResponseResultWithData<Alert[]> = await tryPromise(opsGenieClient.listAlert(params), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
-    const account: ResponseResultWithData<Account> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAccount(), 'OpsGenie failed');
+    const account: ResponseResultWithData<Account> = await tryPromise(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     return [teams.data, account.data];
 }

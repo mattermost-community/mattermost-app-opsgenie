@@ -2,10 +2,10 @@ import {Request, Response} from 'express';
 import {AppCallResponse, Teams} from '../types';
 import {getAllTeamsCall} from '../forms/list-team';
 import {
-    newErrorCallResponseWithMessage,
     newOKCallResponseWithMarkdown
 } from '../utils/call-responses';
 import {h6, joinLines} from "../utils/markdown";
+import {showMessageToMattermost} from "../utils/utils";
 
 export const listTeamsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
@@ -19,7 +19,7 @@ export const listTeamsSubmit = async (request: Request, response: Response) => {
         callResponse = newOKCallResponseWithMarkdown(teamsText);
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('OpsGenie error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };

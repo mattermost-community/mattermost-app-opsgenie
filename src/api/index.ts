@@ -9,6 +9,7 @@ import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cSubscription from './subscription';
 import * as cWebhook from './webhook';
+import {connectAccountLoginSubmit} from "./configure";
 
 const router: Router = express.Router();
 
@@ -28,15 +29,30 @@ router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, cSubscription.subscr
 router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 router.post(`${Routes.App.CallPathAlertsListSubmit}`, cAlert.listAlertsSubmit);
 
-router.post(`${Routes.App.CallPathConnectSubmit}`, cConfigure.connectAccountSubmit);
+router.post(`${Routes.App.CallPathConnectSubmit}`, cConfigure.connectAccountLoginSubmit);
+router.post(`${Routes.App.OAuthConnectPath}`, cConfigure.fOauth2Connect);
+router.post(`${Routes.App.OAuthCompletePath}`, cConfigure.fOauth2Complete);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlertSubmit);
-router.post(`${Routes.App.CallPathNoteToAlertModal}`, cAlert.addNoteToAlertSubmit);
-router.post(`${Routes.App.CallPathAlertClose}`, cAlert.closeAlertSubmit);
-router.post(`${Routes.App.CallPathAlertAcknowledged}`, cAlert.ackAlertSubmit);
+
+router.post(`${Routes.App.CallPathNoteToAlertSubmit}`, cAlert.addNoteToAlertSubmit);
+router.post(`${Routes.App.CallPathNoteToAlertAction}`, cAlert.addNoteToAlertModal);
+
+router.post(`${Routes.App.CallPathAlertCloseSubmit}`, cAlert.closeAlertSubmit);
+router.post(`${Routes.App.CallPathAlertCloseAction}`, cAlert.closeAlertModal);
+
+router.post(`${Routes.App.CallPathAlertAcknowledgedSubmit}`, cAlert.ackAlertSubmit);
+router.post(`${Routes.App.CallPathAlertAcknowledgedAction}`, cAlert.ackAlertModal);
+
 router.post(`${Routes.App.CallPathAlertUnacknowledge}`, cAlert.unackAlertSubmit);
+router.post(`${Routes.App.CallPathAlertUnacknowledgeAction}`, cAlert.unackAlertModal);
+
 router.post(`${Routes.App.CallPathSnoozeAlert}`, cAlert.snoozeAlertSubmit);
-router.post(`${Routes.App.CallPathAssignAlert}`, cAlert.assignAlertSubmit);
+router.post(`${Routes.App.CallPathSnoozeAlertAction}`, cAlert.snoozeAlertModal);
+
+router.post(`${Routes.App.CallPathAssignAlertSubmit}`, cAlert.assignAlertSubmit);
+router.post(`${Routes.App.CallPathAssignAlertAction}`, cAlert.assignAlertModal);
+
 router.post(`${Routes.App.CallPathTakeOwnershipAlertSubmit}`, cAlert.takeOwnershipAlertSubmit);
 router.post(`${Routes.App.CallPathUpdatePriorityAlertSubmit}`, cAlert.priorityAlertSubmit);
 

@@ -3,12 +3,15 @@ import {
     AppCallRequest,
     AppCallValues,
     Identifier,
-    IdentifierType, PriorityAlert, ResponseResultWithData
+    IdentifierType,
+    PriorityAlert,
+    ResponseResultWithData
 } from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {PriorityAlertForm, StoreKeys} from '../constant';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {ExceptionType, PriorityAlertForm, StoreKeys} from '../constant';
+import {tryPromise} from '../utils/utils';
+import {Exception} from '../utils/exception';
 
 export async function priorityAlertCall(call: AppCallRequest): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -36,16 +39,16 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<void> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = responseAlert.data;
 
     if (alert.priority === priority) {
-        throw new Error(`Update priority request will be processed for #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `Update priority request will be processed for #${alert.tinyId}`);
     }
 
     const priorityAlert: PriorityAlert = {
         priority,
         user: username
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.updatePriorityToAlert(identifier, priorityAlert), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.updatePriorityToAlert(identifier, priorityAlert), ExceptionType.MARKDOWN, 'OpsGenie failed');
 }

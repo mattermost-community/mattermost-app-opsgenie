@@ -22,12 +22,17 @@ export const NoteCreateForm = {
     NOTE_TINY_ID: 'note_tiny_id'
 }
 
+export const NoteModalForm = {
+    NOTE_MESSAGE: 'alert_message',
+}
+
 export const CloseAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id'
 }
 
 export const AckAlertForm = {
-    NOTE_TINY_ID: 'note_tiny_id'
+    NOTE_TINY_ID: 'note_tiny_id',
+    TINY_ID: 'tinyId'
 }
 
 export const UnackAlertForm = {
@@ -36,7 +41,7 @@ export const UnackAlertForm = {
 
 export const SnoozeAlertForm = {
     NOTE_TINY_ID: 'note_tiny_id',
-    TIME_AMOUNT: 'time_amount'
+    TIME_AMOUNT: 'time_amount',
 }
 
 export const AssignAlertForm = {

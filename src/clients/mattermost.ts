@@ -3,6 +3,8 @@ import {
     Channel,
     DialogProps,
     PostCreate,
+    PostEphemeralCreate,
+    PostResponse,
     PostUpdate,
     User
 } from '../types';
@@ -23,9 +25,37 @@ export class MattermostClient {
         this.config = config;
     }
 
-    public createPost(post: PostCreate): Promise<any> {
+    public updateRolesByUser(userId: string, roles: string): Promise<any> {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.UsersUpdateRolePath}`;
+
+        return axios.put(replace(url, Routes.PathsVariable.Identifier, userId), { roles }, {
+            headers: {
+                Authorization: `Bearer ${this.config.accessToken}`
+            }
+        }).then((response: AxiosResponse<any>) => response.data);
+    }
+
+    public createPost(post: PostCreate): Promise<PostResponse> {
         const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
         return axios.post(url, post, {
+            headers: {
+                Authorization: `Bearer ${this.config.accessToken}`
+            }
+        }).then((response: AxiosResponse<any>) => response.data);
+    }
+
+    public createEphemeralPost(post: PostEphemeralCreate): Promise<PostResponse> {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsEphemeralPath}`;
+        return axios.post(url, post, {
+            headers: {
+                Authorization: `Bearer ${this.config.accessToken}`
+            }
+        }).then((response: AxiosResponse<any>) => response.data);
+    }
+
+    public getPost(postId: string): Promise<PostResponse> {
+        const url: string = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
+        return axios.get(replace(url, Routes.PathsVariable.Identifier, postId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`
             }

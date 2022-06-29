@@ -1,13 +1,17 @@
 import {
+    Alert,
     AlertNote,
+    AppCallDialog,
     AppCallRequest,
     AppCallValues,
+    AppContextAction,
     Identifier,
-    IdentifierType
+    IdentifierType,
+    ResponseResultWithData
 } from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {NoteCreateForm, StoreKeys} from '../constant';
-import {tryPromiseOpsgenieWithMessage} from '../utils/utils';
+import {ExceptionType, NoteCreateForm, StoreKeys} from '../constant';
+import {tryPromise} from '../utils/utils';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 
 export async function addNoteToAlertCall(call: AppCallRequest): Promise<void> {
@@ -36,11 +40,45 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<void> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.getAlert(identifier), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const data: AlertNote = {
         note: alertMessage,
         user: username
     };
-    await tryPromiseOpsgenieWithMessage(opsGenieClient.addNoteToAlert(identifier, data), 'OpsGenie failed');
+    await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN,  'OpsGenie failed');
+}
+
+export async function addNoteToAlertAction(call: AppCallDialog<{ alert_message: string }>): Promise<Alert> {
+    const context: AppContextAction = JSON.parse(call.state);
+    const mattermostUrl: string | undefined = context.mattermost_site_url;
+    const botAccessToken: string | undefined = context.bot_access_token;
+
+    const alertMessage: string = call.submission.alert_message;
+    const alertTinyId: string = context.alert.tinyId;
+
+    const options: KVStoreOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>botAccessToken,
+    };
+    const kvStoreClient = new KVStoreClient(options);
+
+    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: config.opsgenie_apikey
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY
+    };
+    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+
+    const data: AlertNote = {
+        note: alertMessage
+    };
+    await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return responseAlert.data;
 }
