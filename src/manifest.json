@@ -1,7 +1,7 @@
 {
     "app_id": "OpsGenie",
     "version": "v1.0.0",
-    "homepage_url": "https://bitbucket.org/dominion-ancient/mattermost-app-opsgenie",
+    "homepage_url": "https://github.com/development-ancient/mattermost-app-opsengine",
     "display_name": "OpsGenie",
     "description": "OpsGenie cloud app for Mattermost",
     "icon": "opsgenie.png",
