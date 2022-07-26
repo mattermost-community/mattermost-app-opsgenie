@@ -10,7 +10,6 @@ export const getInstall = async (request: Request, response: Response) => {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.acting_user_access_token;
     const userId: string | undefined = call.context.bot_user_id;
-    console.log('context', call.context);
 
     const mattermostOpts: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -18,11 +17,8 @@ export const getInstall = async (request: Request, response: Response) => {
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOpts);
 
-    try {
-        await mattermostClient.updateRolesByUser(<string>userId, 'system_admin system_post_all');
-    } catch (error) {
-        console.log('error', error);
-    }
+    await mattermostClient.updateRolesByUser(<string>userId, 'system_admin system_post_all');
+
     const helpText: string = [
         getCommands()
     ].join('');
