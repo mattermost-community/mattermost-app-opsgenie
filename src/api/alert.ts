@@ -112,8 +112,8 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await ackAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await ackAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
@@ -161,8 +161,8 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
     let callResponse: AppCallResponse;
 
     try {
-        await unackAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await unackAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {

@@ -20,7 +20,7 @@ import {Exception} from "../utils/exception";
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import config from '../config';
 
-export async function ackAlertCall(call: AppCallRequest): Promise<void> {
+export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -48,13 +48,14 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = response.data;
     if (alert.acknowledged) {
-        throw new Exception(ExceptionType.MARKDOWN, `You have acknowledged #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `You already have acknowledged #${alert.tinyId}`);
     }
 
     const data: AlertAck = {
         user: username
     };
     await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return `You have acknowledged #${alert.tinyId}`;
 }
 
 export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
