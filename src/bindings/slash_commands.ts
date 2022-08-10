@@ -55,11 +55,11 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
         commands.push(Commands.CONFIGURE);
     }  
     if (await existsKvOpsGenieConfig(kvClient)) {
-        commands.push(Commands.ACCOUNT);
+        //commands.push(Commands.ACCOUNT);
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
         commands.push(Commands.LIST);
-        bindings.push(connectAccountBinding());
+        //bindings.push(connectAccountBinding());
         bindings.push(subscriptionBinding());
         bindings.push(alertBinding());
         bindings.push(getAllBinding());

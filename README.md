@@ -37,7 +37,7 @@ Step 2: Configure OpsGenie Api-Key As a super admin role user, execute /genie co
 
 ## Slash commands
 
-/pd configure: This command will enable all the other commands; it asks the administrator for an API key (which will be used to execute calls to OpsGenie’s API)
+/genie configure: This command will enable all the other commands; it asks the administrator for an API key (which will be used to execute calls to OpsGenie’s API)
 
 # End user guide
 
@@ -45,21 +45,21 @@ Step 2: Configure OpsGenie Api-Key As a super admin role user, execute /genie co
 
 ## Using /genie commands
 
-- /pd help: This command will show all current commands available for this application.
-- /pd alert create: Allow any user to create a new alert.
-- /pd alert note: Adds a note to an existing alert.
-- /pd alert close: Closes an existing alert.
-- /pd alert ack: Acknowledge an existing alert.
-- /pd alert unack: UnAcknowledge an existing alert.
-- /pd alert snooze: Snooze an existing alert for a period of time.
-- /pd alert assign: Assign an existing to a mattermost team member.
-- /pd alert own: Take ownership of an existing alert (assign alert to yourself).
-- /pd alert priority: Set the priority of an existing alert.
-- /pd list alert: Get a list of the existing alerts.
-- /pd list team: Get a list of the existing teams.
-- /pd subscription add: Creates a new subscription for notifications: choose a team and a channel and get notified of the updates in that team. You can subscribe more than one team per channel.
-- /pd subscription list: Show the list of all subscriptions made in all of your channels.
-- /pd subscription remove: Will allow you to remove a subscription. No more notifications from that team will be received.
+- /genie help: This command will show all current commands available for this application.
+- /genie alert create: Allow any user to create a new alert.
+- /genie alert note: Adds a note to an existing alert.
+- /genie alert close: Closes an existing alert.
+- /genie alert ack: Acknowledge an existing alert.
+- /genie alert unack: UnAcknowledge an existing alert.
+- /genie alert snooze: Snooze an existing alert for a period of time.
+- /genie alert assign: Assign an existing to a mattermost team member.
+- /genie alert own: Take ownership of an existing alert (assign alert to yourself).
+- /genie alert priority: Set the priority of an existing alert.
+- /genie list alert: Get a list of the existing alerts.
+- /genie list team: Get a list of the existing teams.
+- /genie subscription add: Creates a new subscription for notifications: choose a team and a channel and get notified of the updates in that team. You can subscribe more than one team per channel.
+- /genie subscription list: Show the list of all subscriptions made in all of your channels.
+- /genie subscription remove: Will allow you to remove a subscription. No more notifications from that team will be received.
 
 # Development
 
