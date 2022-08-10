@@ -37,12 +37,12 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
     try {
         const [alerts, account] = await getAllAlertCall(request.body);
 
-        const alertsWithStatusOpen: number = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN).length;
-        const alertsUnacked: number = alerts.filter((alert: Alert) => !alert.acknowledged).length;
+        const alertsWithStatusOpen: Alert[] = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN);
+        const alertsUnacked: number = alertsWithStatusOpen.filter((alert: Alert) => !alert.acknowledged).length;
         const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
 
         const teamsText: string = [
-            h6(`Alert List: Found ${alertsUnacked} unacked alerts out of ${alertsWithStatusOpen} open alerts.`),
+            h6(`Alert List: Found ${alertsUnacked} unacked alerts out of ${alertsWithStatusOpen.length} open alerts. [Total: ${alerts.length}]`),
             `${joinLines(
                 alerts.map((alert: Alert) => {
                     const alertDetailUrl: string = replace(
