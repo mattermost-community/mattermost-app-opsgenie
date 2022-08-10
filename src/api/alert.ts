@@ -238,8 +238,8 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
     let callResponse: AppCallResponse;
 
     try {
-        await addNoteToAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await addNoteToAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
