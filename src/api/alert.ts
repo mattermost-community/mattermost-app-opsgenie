@@ -347,11 +347,11 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
     let callResponse: AppCallResponse;
 
     try {
-        await createSnoozeAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be snoozed");
+        const message = await createSnoozeAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };

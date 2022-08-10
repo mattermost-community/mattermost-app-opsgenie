@@ -28,7 +28,7 @@ import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {tryPromise} from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
-export async function createSnoozeAlertCall(call: AppCallRequest): Promise<void> {
+export async function createSnoozeAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -75,6 +75,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<void>
         user: username
     };
     await tryPromise(opsGenieClient.snoozeAlert(identifier, data),  ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return `Alert #${alertTinyId} will be snoozed for ${timeAmount}`
 }
 
 export async function createSnoozeAlertAction(call: AppCallAction<AppContextAction>): Promise<Alert> {
