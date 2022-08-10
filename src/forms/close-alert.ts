@@ -18,7 +18,7 @@ import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import * as _ from 'lodash';
 import { Exception } from '../utils/exception';
 
-export async function closeAlertCall(call: AppCallRequest): Promise<void> {
+export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -47,13 +47,14 @@ export async function closeAlertCall(call: AppCallRequest): Promise<void> {
     const alert: Alert = response.data;
 
     if (alert.status === AlertStatus.CLOSED) {
-        throw new Exception(ExceptionType.MARKDOWN, `You have closed #${alert.tinyId}`, );
+        throw new Exception(ExceptionType.MARKDOWN, `You already have closed #${alert.tinyId}`, );
     }
 
     const data: AlertClose = {
         user: username
     };
     await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN,  'OpsGenie failed');
+    return `Alert #${alert.tinyId} will be closed`;
 }
 
 export async function closeAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {

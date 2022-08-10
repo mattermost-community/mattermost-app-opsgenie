@@ -84,8 +84,8 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
     let callResponse: AppCallResponse;
 
     try {
-        await closeAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await closeAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
