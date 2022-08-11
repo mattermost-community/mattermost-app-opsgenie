@@ -2,9 +2,9 @@ import {AlertCreate, AlertResponderType, AppCallRequest, AppCallValues, Identifi
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {AlertCreateForm, ExceptionType, option_alert_priority_p3, StoreKeys} from '../constant';
-import {tryPromise} from '../utils/utils';
+import { tryPromise } from '../utils/utils';
 
-export async function createAlertCall(call: AppCallRequest): Promise<void> {
+export async function createAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues | undefined = call.values;
@@ -43,4 +43,5 @@ export async function createAlertCall(call: AppCallRequest): Promise<void> {
         ]
     };
     await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return `New alert "${message}" will be created`
 }

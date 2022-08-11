@@ -71,8 +71,8 @@ export const createAlertSubmit = async (request: Request, response: Response) =>
     let callResponse: AppCallResponse;
 
     try {
-        await createAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
+        const message = await createAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
