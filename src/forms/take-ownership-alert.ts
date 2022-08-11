@@ -15,7 +15,7 @@ import {tryPromise} from '../utils/utils';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {Exception} from "../utils/exception";
 
-export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void> {
+export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -68,4 +68,5 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<void
         }
     };
     await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return `Take ownership request will be processed for #${alert.tinyId}`;
 }

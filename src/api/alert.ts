@@ -293,12 +293,12 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
     let callResponse: AppCallResponse;
 
     try {
-        const alert: Alert = await assignAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown(`Assign ownership request will be processed for #${alert.tinyId}`);
+        const message = await assignAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -398,8 +398,8 @@ export const takeOwnershipAlertSubmit = async (request: Request, response: Respo
     let callResponse: AppCallResponse;
 
     try {
-        await takeOwnershipAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown(`Take ownership request will be processed`);
+        const message = await takeOwnershipAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
