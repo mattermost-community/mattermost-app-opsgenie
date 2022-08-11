@@ -13,7 +13,7 @@ import {
 import {AckAlertForm, ExceptionType, StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { bodyPostUpdate } from './ack-alert';
 import { Exception } from '../utils/exception';
@@ -45,15 +45,17 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
     };
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = response.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    
     if (!alert.acknowledged) {
-        throw new Exception(ExceptionType.MARKDOWN, `Unacknowledge request will be processed for #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `Unacknowledge request will be processed for ${alertURL}`);
     }
 
     const data: AlertUnack = {
         user: username
     };
     await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `You have unacknowledged #${alert.tinyId}`
+    return `You have unacknowledged ${alertURL}`
 }
 
 export async function unackAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {

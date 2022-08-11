@@ -14,7 +14,7 @@ import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {AssignAlertForm, ExceptionType, StoreKeys} from '../constant';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 
 export async function assignAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -49,7 +49,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         identifier: mattermostUser.email,
         identifierType: IdentifierType.USERNAME
     }
-    const userResponse = await tryPromise(opsGenieClient.getUser(identifierUser),  ExceptionType.MARKDOWN, 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getUser(identifierUser),  ExceptionType.MARKDOWN, 'OpsGenie failed');
 
     const identifierAlert: Identifier = {
         identifier: alertTinyId,
@@ -57,6 +57,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
     }
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifierAlert), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert = responseAlert.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const data: AlertAssign = {
         user: username,
@@ -66,7 +67,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         note: "Action executed via Mattermost Plugin"
     };
     await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `Assign alert's #${alert.tinyId} ownership to ${mattermostUser.email} will be processed`;
+    return `Assign alert's ${alertURL} ownership to ${mattermostUser.email} will be processed`;
 }
 
 export async function assignAlertAction(call: AppCallAction<AppContextAction>): Promise<Alert> {

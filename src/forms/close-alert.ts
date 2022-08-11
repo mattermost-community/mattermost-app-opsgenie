@@ -13,7 +13,7 @@ import {
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {AckAlertForm, CloseAlertForm, ExceptionType, StoreKeys} from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import * as _ from 'lodash';
 import { Exception } from '../utils/exception';
@@ -45,16 +45,17 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     };
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN,  'OpsGenie failed');
     const alert: Alert = response.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.status === AlertStatus.CLOSED) {
-        throw new Exception(ExceptionType.MARKDOWN, `You already have closed #${alert.tinyId}`, );
+        throw new Exception(ExceptionType.MARKDOWN, `You already have closed ${alertURL}`, );
     }
 
     const data: AlertClose = {
         user: username
     };
     await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN,  'OpsGenie failed');
-    return `Alert #${alert.tinyId} will be closed`;
+    return `Alert ${alertURL} will be closed`;
 }
 
 export async function closeAlertAction(call: AppCallAction<AppContextAction>): Promise<void> {

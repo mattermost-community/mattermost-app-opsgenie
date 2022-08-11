@@ -11,7 +11,7 @@ import {
 } from '../types';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ExceptionType, NoteCreateForm, StoreKeys} from '../constant';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 
 export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> {
@@ -41,14 +41,14 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> 
         identifierType: IdentifierType.TINY
     };
     const alertResponse: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    const alert: Alert = alertResponse.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alertResponse.data.id, opsGenieClient);
     
     const data: AlertNote = {
         note: alertMessage,
         user: username
     };
     await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN,  'OpsGenie failed');
-    return `Note will be added for #${alert.tinyId}`;
+    return `Note will be added for ${alertURL}`;
 }
 
 export async function addNoteToAlertAction(call: AppCallDialog<{ alert_message: string }>): Promise<Alert> {

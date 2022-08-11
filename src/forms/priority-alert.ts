@@ -10,7 +10,7 @@ import {
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {ExceptionType, PriorityAlertForm, StoreKeys} from '../constant';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import {Exception} from '../utils/exception';
 
 export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
@@ -41,9 +41,10 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
     };
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = responseAlert.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.priority === priority) {
-        throw new Exception(ExceptionType.MARKDOWN, `Alert's #${alert.tinyId} priority is already ${priority}`);
+        throw new Exception(ExceptionType.MARKDOWN, `Alert's ${alertURL} priority is already ${priority}`);
     }
 
     const priorityAlert: PriorityAlert = {
@@ -51,5 +52,5 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
         user: username
     };
     await tryPromise(opsGenieClient.updatePriorityToAlert(identifier, priorityAlert), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `Updated #${alert.tinyId} priority to ${priority}`;
+    return `Updated ${alertURL} priority to ${priority}`;
 }
