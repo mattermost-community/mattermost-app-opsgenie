@@ -13,7 +13,7 @@ import {ExceptionType, PriorityAlertForm, StoreKeys} from '../constant';
 import {tryPromise} from '../utils/utils';
 import {Exception} from '../utils/exception';
 
-export async function priorityAlertCall(call: AppCallRequest): Promise<void> {
+export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -43,7 +43,7 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<void> {
     const alert: Alert = responseAlert.data;
 
     if (alert.priority === priority) {
-        throw new Exception(ExceptionType.MARKDOWN, `Update priority request will be processed for #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `Alert's #${alert.tinyId} priority is already ${priority}`);
     }
 
     const priorityAlert: PriorityAlert = {
@@ -51,4 +51,5 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<void> {
         user: username
     };
     await tryPromise(opsGenieClient.updatePriorityToAlert(identifier, priorityAlert), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return `Updated #${alert.tinyId} priority to ${priority}`;
 }

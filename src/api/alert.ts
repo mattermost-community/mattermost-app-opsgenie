@@ -412,8 +412,8 @@ export const priorityAlertSubmit = async (request: Request, response: Response) 
     let callResponse: AppCallResponse;
 
     try {
-        await priorityAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await priorityAlertCall(request.body); 
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
