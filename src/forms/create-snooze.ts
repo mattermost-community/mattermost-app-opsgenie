@@ -25,7 +25,7 @@ import {
 } from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
 export async function createSnoozeAlertCall(call: AppCallRequest): Promise<string> {
@@ -54,7 +54,10 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const alert: Alert = response.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+
 
     const currentDate: Date = new Date();
     const date: { [key: string]: Date } = {
@@ -68,14 +71,13 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         [option_time_1d]: addDays(currentDate, 1),
     };
 
-    const endTime: string = format(endOfDay(date[timeAmount]), 'yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
-
+    const endTime: string = date[timeAmount].toISOString();
     const data: AlertSnooze = {
         endTime,
         user: username
     };
     await tryPromise(opsGenieClient.snoozeAlert(identifier, data),  ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `Alert #${alertTinyId} will be snoozed for ${timeAmount}`
+    return `Alert ${alertURL} will be snoozed for ${timeAmount}`
 }
 
 export async function createSnoozeAlertAction(call: AppCallAction<AppContextAction>): Promise<Alert> {
