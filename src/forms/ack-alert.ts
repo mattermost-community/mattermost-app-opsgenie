@@ -15,12 +15,12 @@ import {
 import {AckAlertForm, ActionsEvents, ExceptionType, options_alert, Routes, StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import {Exception} from "../utils/exception";
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import config from '../config';
 
-export async function ackAlertCall(call: AppCallRequest): Promise<void> {
+export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -47,14 +47,17 @@ export async function ackAlertCall(call: AppCallRequest): Promise<void> {
     };
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = response.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+
     if (alert.acknowledged) {
-        throw new Exception(ExceptionType.MARKDOWN, `You have acknowledged #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `You already have acknowledged ${alertURL}`);
     }
 
     const data: AlertAck = {
         user: username
     };
     await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    return `You have acknowledged ${alertURL}`;
 }
 
 export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {

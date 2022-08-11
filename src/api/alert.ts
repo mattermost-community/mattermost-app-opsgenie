@@ -37,12 +37,12 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
     try {
         const [alerts, account] = await getAllAlertCall(request.body);
 
-        const alertsWithStatusOpen: number = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN).length;
-        const alertsUnacked: number = alerts.filter((alert: Alert) => !alert.acknowledged).length;
+        const alertsWithStatusOpen: Alert[] = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN);
+        const alertsUnacked: number = alertsWithStatusOpen.filter((alert: Alert) => !alert.acknowledged).length;
         const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
 
         const teamsText: string = [
-            h6(`Alert List: Found ${alertsUnacked} unacked alerts out of ${alertsWithStatusOpen} open alerts.`),
+            h6(`Alert List: Found ${alertsUnacked} unacked alerts out of ${alertsWithStatusOpen.length} open alerts. [Total: ${alerts.length}]`),
             `${joinLines(
                 alerts.map((alert: Alert) => {
                     const alertDetailUrl: string = replace(
@@ -71,8 +71,8 @@ export const createAlertSubmit = async (request: Request, response: Response) =>
     let callResponse: AppCallResponse;
 
     try {
-        await createAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be created");
+        const message = await createAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
@@ -84,8 +84,8 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
     let callResponse: AppCallResponse;
 
     try {
-        await closeAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await closeAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
@@ -112,8 +112,8 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        await ackAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await ackAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
@@ -161,8 +161,8 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
     let callResponse: AppCallResponse;
 
     try {
-        await unackAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await unackAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
@@ -238,8 +238,8 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
     let callResponse: AppCallResponse;
 
     try {
-        await addNoteToAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await addNoteToAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
@@ -293,12 +293,12 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
     let callResponse: AppCallResponse;
 
     try {
-        const alert: Alert = await assignAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown(`Assign ownership request will be processed for #${alert.tinyId}`);
+        const message = await assignAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -347,11 +347,11 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
     let callResponse: AppCallResponse;
 
     try {
-        await createSnoozeAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be snoozed");
+        const message = await createSnoozeAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = showMessageToMattermost(error);
         response.json(callResponse);
     }
 };
@@ -398,8 +398,8 @@ export const takeOwnershipAlertSubmit = async (request: Request, response: Respo
     let callResponse: AppCallResponse;
 
     try {
-        await takeOwnershipAlertCall(request.body);
-        callResponse = newOKCallResponseWithMarkdown(`Take ownership request will be processed`);
+        const message = await takeOwnershipAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {
@@ -412,8 +412,8 @@ export const priorityAlertSubmit = async (request: Request, response: Response) 
     let callResponse: AppCallResponse;
 
     try {
-        await priorityAlertCall(request.body);
-        callResponse = newOKCallResponse();
+        const message = await priorityAlertCall(request.body); 
+        callResponse = newOKCallResponseWithMarkdown(message);
 
         response.json(callResponse);
     } catch (error: any) {

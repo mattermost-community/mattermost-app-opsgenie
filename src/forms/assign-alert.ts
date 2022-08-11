@@ -14,9 +14,9 @@ import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {AssignAlertForm, ExceptionType, StoreKeys} from '../constant';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 
-export async function assignAlertCall(call: AppCallRequest): Promise<Alert> {
+export async function assignAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
@@ -56,16 +56,18 @@ export async function assignAlertCall(call: AppCallRequest): Promise<Alert> {
         identifierType: IdentifierType.TINY
     }
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifierAlert), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const alert = responseAlert.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const data: AlertAssign = {
         user: username,
         owner: {
             username: mattermostUser.email
-        }
+        },
+        note: "Action executed via Mattermost Plugin"
     };
     await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-
-    return responseAlert.data;
+    return `Assign alert's ${alertURL} ownership to ${mattermostUser.email} will be processed`;
 }
 
 export async function assignAlertAction(call: AppCallAction<AppContextAction>): Promise<Alert> {

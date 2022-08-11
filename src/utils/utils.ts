@@ -1,10 +1,12 @@
 import GeneralConstants from '../constant/general';
-import {AppActingUser, AppCallResponse} from '../types';
+import {Account, Alert, AppActingUser, AppCallResponse, Identifier, IdentifierType, ResponseResultWithData} from '../types';
 import {AppsOpsGenie, ExceptionType, Routes, StoreKeys} from '../constant';
 import {ConfigStoreProps, KVStoreClient} from "../clients/kvstore";
 import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 import config from '../config';
+import { OpsGenieClient } from '../clients/opsgenie';
+import { hyperlink } from './markdown';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -76,3 +78,18 @@ export function getHTTPPath(): string {
     return config.APP.HOST;
 }
 
+export const getAlertLink = async (alertTinyId: string, alertID: string, opsGenieClient: OpsGenieClient) => {
+    const account: ResponseResultWithData<Account> = await tryPromise(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
+
+    const alertDetailUrl = replace(
+        replace(
+            url,
+            Routes.PathsVariable.Account,
+            account.data.name
+        ),
+        Routes.PathsVariable.Identifier,
+        alertID
+    );
+    return `${hyperlink(`#${alertTinyId}`, alertDetailUrl) }`
+}

@@ -40,8 +40,8 @@ async function getCommands(call: AppCallRequest): Promise<string> {
         commands.push(addBulletSlashCommand(Commands.CONFIGURE, `Configure OpsGenie.`));
     }
     if (await existsKvOpsGenieConfig(kvClient)) {
-        commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGIN}`, `Connect your OpsGenie account.`));
-        commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGOUT}`, `Disconnect from your OpsGenie account.`));
+        //commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGIN}`, `Connect your OpsGenie account.`));
+        //commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGOUT}`, `Disconnect from your OpsGenie account.`));
 
         commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.ADD} [Team name] [Mattermost Channel]`, `Add subscription of team to channel.`));
         commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.DELETE} [SubscriptionId]`, `Delete subscription of channel.`));
