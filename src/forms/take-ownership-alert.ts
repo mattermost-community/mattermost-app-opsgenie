@@ -11,7 +11,7 @@ import {
 import {ExceptionType, StoreKeys, TakeOwnershipAlertForm} from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {tryPromise} from '../utils/utils';
+import {getAlertLink, tryPromise} from '../utils/utils';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {Exception} from "../utils/exception";
 
@@ -56,9 +56,10 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
     };
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier),  ExceptionType.MARKDOWN, 'OpsGenie failed');
     const alert: Alert = responseAlert.data;
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (!alert.owner || alert.owner === mattermostUser.email) {
-        throw new Exception(ExceptionType.MARKDOWN, `Take ownership request will be processed for #${alert.tinyId}`);
+        throw new Exception(ExceptionType.MARKDOWN, `Take ownership request will be processed for ${alertURL}`);
     }
 
     const data: AlertAssign = {
@@ -68,5 +69,5 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
         }
     };
     await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `Take ownership request will be processed for #${alert.tinyId}`;
+    return `Take ownership request will be processed for ${alertURL}`;
 }
