@@ -1,4 +1,4 @@
-import {AppActingUser, AppBinding, AppCallRequest, AppsState} from '../types';
+import {AppActingUser, AppBinding, AppCallRequest, AppContext, AppsState} from '../types';
 
 import {
     alertBinding,
@@ -16,8 +16,10 @@ import {
 } from '../constant';
 import {existsKvOpsGenieConfig, isUserSystemAdmin} from "../utils/utils";
 import {KVStoreClient, KVStoreOptions} from "../clients/kvstore";
+import { configureI18n } from '../utils/translations';
 
-const newCommandBindings = (bindings: AppBinding[], commands: string[]): AppsState => {
+const newCommandBindings = (context: AppContext, bindings: AppBinding[], commands: string[]): AppsState => {
+    const i18nObj = configureI18n(context);
     return {
         location: AppBindingLocations.COMMAND,
         bindings: [
@@ -25,7 +27,7 @@ const newCommandBindings = (bindings: AppBinding[], commands: string[]): AppsSta
                 icon: OpsGenieIcon,
                 label: CommandTrigger,
                 hint: `[${commands.join(' | ')}]`,
-                description: 'Manage OpsGenie',
+                description: i18nObj.__('bindings-descriptions.bindings'),
                 bindings,
             },
         ],
@@ -36,6 +38,7 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const actingUser: AppActingUser | undefined = call.context.acting_user;
+    const context = call.context as AppContext;
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -55,16 +58,14 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
         commands.push(Commands.CONFIGURE);
     }  
     if (await existsKvOpsGenieConfig(kvClient)) {
-        //commands.push(Commands.ACCOUNT);
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
         commands.push(Commands.LIST);
-        //bindings.push(connectAccountBinding());
         bindings.push(subscriptionBinding());
         bindings.push(alertBinding());
         bindings.push(getAllBinding());
     }
 
-    return newCommandBindings(bindings, commands);
+    return newCommandBindings(context, bindings, commands);
 };
 
