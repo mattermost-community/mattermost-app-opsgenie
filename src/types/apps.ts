@@ -105,6 +105,7 @@ export type AppCallResponse<Res = unknown> = {
 export type AppContext = {
     app_id: string;
     location?: string;
+    locale?: string;
     user_agent?: string;
     track_as_submit?: boolean;
     mattermost_site_url?: string;
