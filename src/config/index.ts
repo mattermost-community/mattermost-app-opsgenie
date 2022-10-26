@@ -2,8 +2,8 @@ require('dotenv').config('../');
 
 export default {
     APP: {
-        PORT: Number(process.env.PORT) || 3000,
-        HOST: process.env.HOST || 'https://a480-201-160-205-161.ngrok.io'
+        PORT: Number(process.env.PORT) || 4002,
+        HOST: process.env.HOST || ''
     },
     OPSGENIE: {
         URL: 'https://api.opsgenie.com'

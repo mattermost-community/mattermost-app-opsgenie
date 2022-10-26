@@ -1,5 +1,5 @@
 {
-    "app_id": "OpsGenie",
+    "app_id": "opsgenie",
     "version": "v1.0.0",
     "homepage_url": "https://github.com/development-ancient/mattermost-app-opsengine",
     "display_name": "OpsGenie",
@@ -32,6 +32,16 @@
         "/in_post"
     ],
     "http": {
-        "root_url": ""
+        "root_url": "https://mattermost-opsgenie-dev.ancient.mx"
+    },
+    "aws_lambda": {
+        "functions": [
+            {
+                "path": "/",
+                "name": "opsgenie",
+                "handler": "opsgenie/index.handler",
+                "runtime": "nodejs16.x"
+            }
+        ]
     }
 }
