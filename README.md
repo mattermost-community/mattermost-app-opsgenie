@@ -1,18 +1,18 @@
 # Mattermost/OpsGenie Integration
 
 * [Feature summary](#feature-summary)
-* [Setting up](#setting-up)
+* [Set up](#set-up)
     * [Installation](#installation)
     * [Configuration](#configuration)
 * [Admin guide](#admin-guide)
     * [Slash commands](#slash-commands)
 * [End user guide](#end-user-guide)
-    * [Getting started](#getting-started)
-    * [Using /opsgenie commands](#using-genie-commands)
+    * [Get started](#get-started)
+    * [Use /opsgenie commands](#use-genie-commands)
 * [Development](#development)
     * [Manual installation](#manual-installation)
-    * [Running the local development environment](#running-the-local-development-environment)
-    * [Running the local development environment with docker](#running-the-local-development-environment-with-docker)
+    * [Run the local development environment](#run-the-local-development-environment)
+  * [Run the local development environment with Docker](#run-the-local-development-environment-with-docker)
 
 This application allows you to integrate OpsGenie to your Mattermost instance, letting you know when a new alert is created, as well as getting notified about alert updates. Also, allows the user to create new alerts, add notes to alerts, close alerts, assign alerts, etc. without moving from the Mattermost window.
 
@@ -20,46 +20,55 @@ This application allows you to integrate OpsGenie to your Mattermost instance, l
 
 **OpsGenie to Mattermost notifications:** Link your Mattermost channels with the OpsGenie Teams you want to see, so you and your team can get notifications about the creation and updates of each alert.
 
-# Setting up
+# Set up
 
 ## Installation
 
 This plugin requires that your Mattermost workspace has the ``/apps install`` command enabled.
 
-To install, as a super admin user role, execute command /apps install http OPSGENIE_API_URL in any channel. /genie command should be available after the configuration has been successfully installed. OPSGENIE_API_URL should be replaced with the URL where the OpsGenie API instance is running. Example: /apps install http https://mattermost-opsgenie-dev.ancient.mx/manifest.json
+To install, as a super admin user, run the command ``/apps install http OPSGENIE_API_URL`` in any channel. The ``/genie`` command should be available after the configuration has been successfully installed.
+
+The ``OPSGENIE_API_URL`` should be replaced with the URL where the OpsGenie API instance is running. Example: ``/apps install http https://mattermost-opsgenie-dev.ancient.mx/manifest.json``
 
 ## Configuration
 
-Configuration Step 1: Firstly, you need to install the app in your current Mattermost instance (refer to Installation), the /genie command should be available.
-Step 2: Configure OpsGenie Api-Key As a super admin role user, execute /genie configure command, which will open a modal were the API key will be asked (https://example.app.opsgenie.com/settings/integration/edit/API/[id]). To be able to obtain the OpsGenie Api-Key first you have to add an api integration to your OpsGenie account, you can create the integration going to the settings/integrations tab and clicking the “Add Integration” button. Once inside the “Add Integration” menu, select the “API” option. To finish the api integration setup you just need to click the “Save Integration” button
+1. First, install the app in your current Mattermost instance (refer to [Installation](#installation)) so that the ``/genie`` command is available.
+2. Open your OpsGenie profile to get your credentials and link to your Mattermost instance.
+3. Select the **Integrations** tab in the **Settings** menu. Then, click on the **Add Integration** button.
+4. Inside the **Add Integration** menu, select the **API** option.
+5. Update the integration name and access. Finish the **API** integration set up clicking the **Save Integration** button.
+6. Copy the given API Key.
+7. Return to Mattermost. 
+8. As a super admin user, run the ``/genie configure`` command.
+9. In the configuration modal, enter your API Key.
 
 # Admin guide
 
 ## Slash commands
 
-/genie configure: This command will enable all the other commands; it asks the administrator for an API key (which will be used to execute calls to OpsGenie’s API)
+- ``/genie configure``: This command will enable all the other commands; it asks the administrator for an API key (which will be used to execute calls to OpsGenie’s API).
 
 # End user guide
 
-## Getting started
+## Get started
 
-## Using /genie commands
+## Use ``/genie`` commands
 
-- /genie help: This command will show all current commands available for this application.
-- /genie alert create: Allow any user to create a new alert.
-- /genie alert note: Adds a note to an existing alert.
-- /genie alert close: Closes an existing alert.
-- /genie alert ack: Acknowledge an existing alert.
-- /genie alert unack: UnAcknowledge an existing alert.
-- /genie alert snooze: Snooze an existing alert for a period of time.
-- /genie alert assign: Assign an existing to a mattermost team member.
-- /genie alert own: Take ownership of an existing alert (assign alert to yourself).
-- /genie alert priority: Set the priority of an existing alert.
-- /genie list alert: Get a list of the existing alerts.
-- /genie list team: Get a list of the existing teams.
-- /genie subscription add: Creates a new subscription for notifications: choose a team and a channel and get notified of the updates in that team. You can subscribe more than one team per channel.
-- /genie subscription list: Show the list of all subscriptions made in all of your channels.
-- /genie subscription remove: Will allow you to remove a subscription. No more notifications from that team will be received.
+- ``/genie help``: This command will show all current commands available for this application.
+- ``/genie alert create``: Allow any user to create a new alert.
+- ``/genie alert note``: Adds a note to an existing alert.
+- ``/genie alert close``: Closes an existing alert.
+- ``/genie alert ack``: Acknowledge an existing alert.
+- ``/genie alert unack``: UnAcknowledge an existing alert.
+- ``/genie alert snooze``: Snooze an existing alert for a period of time.
+- ``/genie alert assign``: Assign an existing to a mattermost team member.
+- ``/genie alert own``: Take ownership of an existing alert (assign alert to yourself).
+- ``/genie alert priority``: Set the priority of an existing alert.
+- ``/genie list alert``: Get a list of the existing alerts.
+- ``/genie list team``: Get a list of the existing teams.
+- ``/genie subscription add``: Creates a new subscription for notifications: choose a team and a channel and get notified of the updates in that team. You can subscribe more than one team per channel.
+- ``/genie subscription list``: Show the list of all subscriptions made in all of your channels.
+- ``/genie subscription remove``: Will allow you to remove a subscription. No more notifications from that team will be received.
 
 # Development
 
@@ -67,18 +76,17 @@ Step 2: Configure OpsGenie Api-Key As a super admin role user, execute /genie co
 
 *  Download the latest repository release.
 
-### Running the local development environment
+### Run the local development environment
 
-* It is necessary to have installed at least node version 12 and maximum version 18.
-  On the next page you can download the latest lts version of node for the required operating system https://nodejs.org/es/download/
+* You need to have installed at least node version 12 and maximum version 18. You can download the latest lts version of node for the required operating system here https://nodejs.org/es/download/
 
-*  Install libraries, move project directory and execute npm install to download all dependency libraries
+*  Install libraries: ``cd`` to the project directory and execute ``npm install`` to download all dependency libraries.
 
 ```
 $ npm install
 ```
 
-*  Update the environment configuration file. The .env file must be modified or added to set the environment variables, it must be in the root of the repository.
+*  Update the environment configuration file. The ``.env`` file must be modified or added to set the environment variables, it must be in the root of the repository.
 
 ```
 file: .env
@@ -90,11 +98,9 @@ HOST=https://mattermost-opsgenie-dev.ancient.mx
 
 Variable definition
 
-PROJECT: in case of executing the project with docker using the .build.sh this variable will be used for the name of the container
-
-PORT: port number on which the opsgenie integration is listening
-
-HOST: OpsGenie api usage url
+- PROJECT: In case of executing the project with Docker using the ``.build.sh`` file, this variable will be used for the name of the container
+- PORT: Port number on which the OpsGenie integration is listening
+- HOST: OpsGenie API usage URL
 
 * Finally, the project must be executed.
 
@@ -102,19 +108,18 @@ HOST: OpsGenie api usage url
 $ npm run dev
 ```
 
-### Running the local development environment with docker
+### Run the local development environment with Docker
 
-* It is necessary to have docker installed, on the following page you can find the necessary steps to install docker in the operating system that requires it
+* You need to have Docker installed. You can find the necessary steps to install Docker for the following operating systems:
 
-https://docs.docker.com/engine/install/ubuntu/ - Ubuntu
-https://docs.docker.com/desktop/mac/install/ - Mac
-https://docs.docker.com/desktop/windows/install/ - Windows
+[Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+[Mac](https://docs.docker.com/desktop/mac/install/)
+[Windows](https://docs.docker.com/desktop/windows/install/)
 
-* Once you have docker installed, the next step would be to run the ./build.sh file to create the api container and expose it locally or on the server, depending on the case required.
+* Once you have Docker installed, the next step would be to run the ``./build.sh`` file to create the API container and expose it locally or on the server, depending on the case required.
 
 ```
 $ ./build
 ```
 
-When the container is created correctly, the api will be running at the url http://127.0.0.1:4002
-in such a way that the installation can be carried out in Mattermost.
+When the container is created correctly, the API will be running at the url http://127.0.0.1:4002 in such a way that the installation can be carried out in Mattermost.
