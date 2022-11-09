@@ -11,6 +11,7 @@ import {
 import {ExceptionType, StoreKeys, TakeOwnershipAlertForm} from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
+import {configureI18n} from "../utils/translations";
 import {getAlertLink, tryPromise} from '../utils/utils';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {Exception} from "../utils/exception";
@@ -21,6 +22,7 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
     const username: string | undefined = call.context.acting_user?.username;
     const userId: string | undefined = call.context.acting_user?.id;
     const values: AppCallValues | undefined = call.values;
+		const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[TakeOwnershipAlertForm.NOTE_TINY_ID];
 
@@ -48,18 +50,18 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
         identifier: mattermostUser.email,
         identifierType: IdentifierType.USERNAME
     }
-    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const identifier: Identifier = {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier),  ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier),  ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = responseAlert.data;
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (!alert.owner || alert.owner === mattermostUser.email) {
-        throw new Exception(ExceptionType.MARKDOWN, `Take ownership request will be processed for ${alertURL}`);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.ownership.exception', { url: alertURL }));
     }
 
     const data: AlertAssign = {
@@ -68,6 +70,6 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
             username: mattermostUser.email
         }
     };
-    await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `Take ownership request will be processed for ${alertURL}`;
+    await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('forms.ownership.response', { url: alertURL });
 }

@@ -1,20 +1,21 @@
 import {
-    Alert, AlertAck,
-    AlertWebhook,
-    AppCallAction,
-    AppCallRequest,
-    AppCallValues, 
-    AppContextAction,
-    Identifier,
-    IdentifierType,
-    PostCreate,
-    PostEphemeralCreate,
-    PostResponse,
-    ResponseResultWithData,
+		Alert, AlertAck,
+		AlertWebhook,
+		AppCallAction,
+		AppCallRequest,
+		AppCallValues, AppContext,
+		AppContextAction,
+		Identifier,
+		IdentifierType,
+		PostCreate,
+		PostEphemeralCreate,
+		PostResponse,
+		ResponseResultWithData,
 } from '../types';
 import {AckAlertForm, ActionsEvents, ExceptionType, options_alert, Routes, StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
+import {configureI18n} from "../utils/translations";
 import {getAlertLink, tryPromise} from '../utils/utils';
 import {Exception} from "../utils/exception";
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
@@ -25,6 +26,7 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
+		const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
 
@@ -45,22 +47,22 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = response.data;
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.acknowledged) {
-        throw new Exception(ExceptionType.MARKDOWN, `You already have acknowledged ${alertURL}`);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }));
     }
 
     const data: AlertAck = {
         user: username
     };
-    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `You have acknowledged ${alertURL}`;
+    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('forms.response-ack', { url: alertURL });
 }
 
-export async function ackAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
+export async function ackAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<string> {
     let message: string;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
@@ -75,6 +77,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
         accessToken: <string>botAccessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+		const i18nObj = configureI18n(context);
 
     try {
         const options: KVStoreOptions = {
@@ -94,43 +97,44 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
             identifier: alertTinyId,
             identifierType: IdentifierType.TINY
         };
-        const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         const alert: Alert = response.data;
         if (alert.acknowledged) {
-            throw new Error(`You already have acknowledged #${alert.tinyId}`);
+            throw new Error(i18nObj.__('forms.response-ack', { url: alert.tinyId }));
         }
 
         const data: AlertAck = {
             user: username
         };
-        await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
-        message = `You have acknowledged #${alert.tinyId}`;
+        await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        message = i18nObj.__('forms.message-ack', { alert: alert.tinyId });
     } catch (error: any) {
         acknowledged = true;
-        message = 'Unexpected error: ' + error.message;
+        message = i18nObj.__('forms.error-ack', { message: error.message });
     }
 
-    await mattermostClient.updatePost(postId, await bodyPostUpdate(call, acknowledged));
+    await mattermostClient.updatePost(postId, await bodyPostUpdate(call, acknowledged, context));
     return message;
 }
 
-export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, acknowledged: boolean) => {
+export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, acknowledged: boolean, context: AppContext) => {
     const alert: AppCallValues | undefined = call.context.alert;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const postId = call.post_id;
+		const i18nObj = configureI18n(context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
         accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(options);
-    const originalPost: PostResponse = await tryPromise(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, 'Mattermost post update failed');
+    const originalPost: PostResponse = await tryPromise(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.mattermost-error'));
     
     const attach = originalPost.props.attachments[0];
     const ackAction = {
         id: acknowledged ? ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT : ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
-        name: acknowledged ? 'Acknowledged' : 'Unacknowledged',
+        name: acknowledged ? i18nObj.__('forms.acknowledged') : i18nObj.__('forms.unacknowledged'),
         integrationUrl: acknowledged ? `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedAction}` : `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledgeAction}`
     };
 
@@ -162,7 +166,7 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                         },
                         {
                             id: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
-                            name: 'Close',
+                            name: i18nObj.__('forms.name-close'),
                             type: 'button',
                             style: 'success',
                             integration: {
@@ -181,7 +185,7 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                         },
                         {
                             id: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
-                            name: 'Other actions...',
+                            name: i18nObj.__('forms.name-other-action'),
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {

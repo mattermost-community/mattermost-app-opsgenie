@@ -123,6 +123,69 @@
       "description-alert": "Lista de alertas"
     }
   },
+  "forms": {
+    "error": "OpsGenie falló",
+    "exception-ack": "Ya has reconocido {{ url }}",
+    "response-ack": "Has reconocido {{ url }}",
+    "message-ack": "Has reconocido #{{ alert }}",
+    "error-ack": "Error inesperado: {{ message }}",
+    "mattermost-error": "La actualización de la publicación de Mattermost falló",
+    "acknowledged": "Admitido",
+    "unacknowledged": "No reconocido",
+    "name-close": "Cerrar",
+    "name-other-action": "Otras acciones...",
+    "message-note": "Acción ejecutada a través del complemento Mattermost",
+    "response-assign-alert": "Asigna alertas {{ url }} propiedad de {{ email }} será procesado",
+    "close-alert": {
+      "error-close-alert": "Ya has cerrado {{ url }}",
+      "response-close-alert": "Alerta {{ url }} esta cerrada",
+      "exception-close-alert": "Has cerrado #{{ alert }}"
+    },
+    "configure-admin": {
+      "title": "Configurar OpsGenie",
+      "header": "Configure la aplicación OpsGenie con la siguiente información.",
+      "label": "Clave API",
+      "description": "Integración de API Clave de API de OpsGenie",
+      "exception": "Your opsgenie setup has no api integration"
+    },
+    "create-alert": {
+      "message": "Nueva alerta \"{{ message }}\" se creará",
+      "response": "Note will be added for {{ url }}"
+    },
+    "create-snooze": {
+      "response": "Alerta {{ url }} será pospuesta por {{ time }}"
+    },
+    "actions": {
+      "title-note": "Añadir la nota",
+      "label-note": "Agregar",
+      "display-note": "Nota",
+      "placeholder-note": "Tu nota aquí...",
+      "title-list-user": "Elija un usuario para asignarle la alerta",
+      "name-list-user": "Elige un usuario",
+      "name-close": "Cerrar",
+      "title-snooze": "Durante cuánto tiempo desea posponer las notificaciones de esta alerta",
+      "name-snooze": "Elija el tiempo de repetición",
+      "exception-owner": "Ya eres propietario de la alerta #{{ alert }}",
+      "response-owner": "La solicitud de toma de propiedad se procesará para #{{ alert }}"
+    },
+    "priority": {
+      "exception": "La prioridad {{ url }} de la alerta ya está {{ priority }}",
+      "response": "Prioridad {{ url }} actualizada a {{ priority }}"
+    },
+    "subcription-add": {
+      "exception": "team [${team.name}] is already associated with channel [${channelName}]"
+    },
+    "ownership": {
+      "exception": "La solicitud de toma de propiedad se procesará para {{ url }}",
+      "response": "La solicitud de toma de propiedad se procesará para {{ url }}"
+    },
+    "unack": {
+      "response-unack": "Te has desentendido {{ url }}",
+      "response-ack": "Te has desentendido #{{ alert }}",
+      "exception-unack": "La solicitud de no reconocimiento será procesada para {{ url }}",
+      "exception-ack": "No has reconocido la alerta #{{ alert }}"
+    }
+  },
    "bindings-descriptions": {
       "bindings": "Administrar la App de OpsGenie"
    }

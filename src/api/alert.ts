@@ -102,7 +102,7 @@ export const closeAlertModal = async (request: Request, response: Response) => {
 		const i18nObj = configureI18n(call.context);
 
     try {
-        await closeAlertAction(request.body);
+        await closeAlertAction(request.body, call.context);
         callResponse = newOKCallResponse();
 
         response.json(callResponse);
@@ -142,7 +142,7 @@ export const ackAlertModal = async (request: Request, response: Response) => {
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     console.log(call);
     try {
-        const message = await ackAlertAction(request.body);
+        const message = await ackAlertAction(request.body, callR.context);
         post = {
             post: {
                 message: message,
@@ -193,7 +193,7 @@ export const unackAlertModal = async (request: Request, response: Response) => {
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     try {
-        const message = await unackAlertAction(request.body);
+        const message = await unackAlertAction(request.body, callR.context);
         post = {
             post: {
                 message: message,
@@ -273,7 +273,7 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
-        const alert: Alert = await addNoteToAlertAction(request.body); 
+        const alert: Alert = await addNoteToAlertAction(request.body, callR.context);
         const message = i18nObj.__('api.list-alert.message-add-note', { alert: alert.tinyId });
         const post: PostEphemeralCreate = {
             post: {
@@ -330,7 +330,7 @@ export const assignAlertModal = async (request: Request, response: Response) => 
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
-        const alert: Alert = await assignAlertAction(request.body);
+        const alert: Alert = await assignAlertAction(request.body, callR.context);
         const post: PostEphemeralCreate = {
             post: {
                 message: i18nObj.__('api.list-alert.message-assign', { alert: alert.tinyId }),
@@ -384,7 +384,7 @@ export const snoozeAlertModal = async (request: Request, response: Response) => 
 		const i18nObj = configureI18n(callR.context);
 
     try {
-        await createSnoozeAlertAction(request.body);
+        await createSnoozeAlertAction(request.body, callR.context);
         const post: PostEphemeralCreate = {
             post: {
                 message: i18nObj.__('api.list-alert.message-alert-snoozed'),

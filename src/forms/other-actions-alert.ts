@@ -1,16 +1,16 @@
 import {
-    Alert,
-    AlertAssign,
-    AppCallAction,
-    AppCallResponse,
-    AppContextAction,
-    DialogProps,
-    Identifier,
-    IdentifierType,
-    PostCreate,
-    PostEphemeralCreate,
-    ResponseResultWithData,
-    User
+		Alert,
+		AlertAssign,
+		AppCallAction,
+		AppCallResponse, AppContext,
+		AppContextAction,
+		DialogProps,
+		Identifier,
+		IdentifierType,
+		PostCreate,
+		PostEphemeralCreate,
+		ResponseResultWithData,
+		User
 } from '../types';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {
@@ -27,16 +27,18 @@ import {
 } from '../constant';
 import config from '../config';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
+import {configureI18n} from "../utils/translations";
 import { tryPromise } from '../utils/utils';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { Exception } from '../utils/exception';
 import { newErrorCallResponseWithMessage } from '../utils/call-responses';
 
-async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
+async function showModalNoteToAlert(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const triggerId: string = call.trigger_id;
     const accessToken: string = call.context.bot_access_token;
     const alertTinyId: string = call.context.alert.tinyId;
+		const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -48,16 +50,16 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
         trigger_id: triggerId,
         url: `${config.APP.HOST}${Routes.App.CallPathNoteToAlertAction}`,
         dialog: {
-            title: 'Add Note',
+            title: i18nObj.__('forms.actions.title-note'),
             icon_url: `${config.APP.HOST}/static/opsgenie.png`,
-            submit_label: 'Add',
+            submit_label: i18nObj.__('forms.actions.label-note'),
             state: JSON.stringify(call.context),
             elements: [
                 {
-                    display_name: 'Note',
+                    display_name: i18nObj.__('forms.actions.display-note'),
                     type: 'textarea',
                     name: NoteModalForm.NOTE_MESSAGE,
-                    placeholder: 'Your note here...',
+                    placeholder: i18nObj.__('forms.actions.placeholder-note'),
                     optional: false,
                     max_length: 25000
                 }
@@ -67,11 +69,12 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
     await mattermostClient.showDialog(dialogProps);
 }
 
-async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<void> {
+async function showPostOfListUsers(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const alert: any = call.context.alert;
+		const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -85,11 +88,11 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
         props: {
             attachments: [
                 {
-                    title: `Choose a user to assign the alert to`,
+                    title: i18nObj.__('forms.actions.title-list-user'),
                     actions: [
                         {
                             id: ActionsEvents.USER_SELECT_EVENT,
-                            name: "Choose a user",
+                            name: i18nObj.__('forms.actions.name-list-user'),
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAssignAlertAction}`,
                                 context: {
@@ -104,7 +107,7 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
                         },
                         {
                             id: ActionsEvents.CANCEL_BUTTON_EVENT,
-                            name: 'Close',
+                            name: i18nObj.__('forms.actions.name-close'),
                             type: 'button',
                             style: 'default',
                             integration: {
@@ -124,10 +127,11 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
     await mattermostClient.createPost(postCreate);
 }
 
-async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<void> {
+async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
+		const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -141,11 +145,11 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
         props: {
             attachments: [
                 {
-                    title: `For how long do you want to snooze notifications for this alert`,
+                    title: i18nObj.__('forms.actions.title-snooze'),
                     actions: [
                         {
                             id: ActionsEvents.TIME_SELECT_EVENT,
-                            name: "Choose snooze time",
+                            name: i18nObj.__('forms.actions.name-snooze'),
                             type: 'select',
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlertAction}`,
@@ -160,7 +164,7 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
                         },
                         {
                             id: ActionsEvents.CANCEL_BUTTON_EVENT,
-                            name: 'Close',
+                            name: i18nObj.__('forms.actions.name-close'),
                             type: 'button',
                             style: 'default',
                             integration: {
@@ -180,11 +184,12 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
     await mattermostClient.createPost(postCreate);
 }
 
-async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
+async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let message: string;
+		const i18nObj = configureI18n(context);
     
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -216,17 +221,17 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Pro
             identifierType: IdentifierType.USERNAME
         }
         
-        await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     
         const identifier: Identifier = {
             identifier: alertTinyId,
             identifierType: IdentifierType.TINY
         };
-        const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         const alert: Alert = responseAlert.data;
     
         if (alert.owner === mattermostUser.email) {
-            throw new Exception(ExceptionType.MARKDOWN, `You already are alert #${alert.tinyId} owner`);
+            throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.actions.exception-owner', { alert: alert.tinyId }));
         }
     
         const data: AlertAssign = {
@@ -236,11 +241,11 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Pro
             }
         };
         
-        await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         
-        message = `Take ownership request will be processed for #${alert.tinyId}`;
+        message = i18nObj.__('forms.actions.response-owner', { alert: alert.tinyId });
     } catch (error: any) {
-        message = 'Unexpected error: ' + error.message;
+        message = i18nObj.__('forms.error-ack', { message: error.message });
     }
 
     const post: PostEphemeralCreate = {
