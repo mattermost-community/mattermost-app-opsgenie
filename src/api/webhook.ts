@@ -27,6 +27,7 @@ import {
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import config from '../config';
+import {configureI18n} from "../utils/translations";
 import {getAlertDetailUrl} from '../utils/utils';
 import {hyperlink} from '../utils/markdown';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
@@ -37,6 +38,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AlertWebhook> = webhookRequest.data;
     const alert: AlertWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -79,19 +81,19 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                     fields: [
                         {
                             short: true,
-                            title: 'Priority',
+                            title: i18nObj.__('api.webhook.title-priority'),
                             value: alert.priority
                         },
                         {
                             short: true,
-                            title: 'Routed Teams',
+                            title: i18nObj.__('api.webhook.title-team'),
                             value: teamsName.join(', ')
                         }
                     ],
                     actions: [
                         {
                             id: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
-                            name: 'Acknowledged',
+                            name: i18nObj.__('api.webhook.name-acknowledged'),
                             type: 'button',
                             style: 'default',
                             integration: {
@@ -110,7 +112,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                         },
                         {
                             id: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
-                            name: 'Close',
+                            name: i18nObj.__('api.webhook.name-close'),
                             type: 'button',
                             style: 'success',
                             integration: {
@@ -129,7 +131,7 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                         },
                         {
                             id: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
-                            name: 'Other actions...',
+                            name: i18nObj.__('api.webhook.name-other'),
                             integration: {
                                 url: `${config.APP.HOST}${Routes.App.CallPathAlertOtherActions}`,
                                 context: {
@@ -166,6 +168,7 @@ async function notifyNoteCreated(webhookRequest: WebhookRequest<NoteWebhook>, co
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<NoteWebhook> = webhookRequest.data;
     const alert: NoteWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -191,7 +194,7 @@ async function notifyNoteCreated(webhookRequest: WebhookRequest<NoteWebhook>, co
         props: {
             attachments: [
                 {
-                    text: `${alert.username} added note "${alert.note}" to alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}"`,
+                    text: i18nObj.__('api.webhook.message-note', { username: alert.username, note: alert.note, message: hyperlink(`#${alert.tinyId}`, url) }),
                 }
             ]
         }
@@ -211,6 +214,7 @@ async function notifyCloseAlert(webhookRequest: WebhookRequest<AlertWebhook>, co
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AlertWebhook> = webhookRequest.data;
     const alert: AlertWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -236,7 +240,7 @@ async function notifyCloseAlert(webhookRequest: WebhookRequest<AlertWebhook>, co
         props: {
             attachments: [
                 {
-                    text: `${alert.username} closed alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}"`,
+                    text: i18nObj.__('api.webhook.message-notify', { username: alert.username, url: hyperlink(`#${alert.tinyId}`, url), message: alert.message }),
                 }
             ]
         }
@@ -256,6 +260,7 @@ async function notifyAckAlert(webhookRequest: WebhookRequest<AlertWebhook>, cont
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AlertWebhook> = webhookRequest.data;
     const alert: AlertWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -281,7 +286,7 @@ async function notifyAckAlert(webhookRequest: WebhookRequest<AlertWebhook>, cont
         props: {
             attachments: [
                 {
-                    text: `${alert.username} acknowledged alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}"`,
+                    text: i18nObj.__('api.webhook.message-notify-ack', { username: alert.username, url: hyperlink(`#${alert.tinyId}`, url), message: alert.message }),
                 }
             ]
         }
@@ -301,6 +306,7 @@ async function notifyUnackAlert(webhookRequest: WebhookRequest<AlertWebhook>, co
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AlertWebhook> = webhookRequest.data;
     const alert: AlertWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -326,7 +332,7 @@ async function notifyUnackAlert(webhookRequest: WebhookRequest<AlertWebhook>, co
         props: {
             attachments: [
                 {
-                    text: `${alert.username} un-acknowledged alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}"`,
+                    text: i18nObj.__('api.webhook.message-notify-unack', { username: alert.username, url: hyperlink(`#${alert.tinyId}`, url), message: alert.message }),
                 }
             ]
         }
@@ -346,6 +352,7 @@ async function notifySnoozeAlert(webhookRequest: WebhookRequest<SnoozeWebhook>, 
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<SnoozeWebhook> = webhookRequest.data;
     const alert: SnoozeWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -371,7 +378,7 @@ async function notifySnoozeAlert(webhookRequest: WebhookRequest<SnoozeWebhook>, 
         props: {
             attachments: [
                 {
-                    text: `${alert.username} snoozed alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}" until ${alert.snoozeEndDate}`,
+                    text: i18nObj.__('api.webhook.message-snooze', { username: alert.username, url: hyperlink(`#${alert.tinyId}`, url), date: alert.snoozeEndDate }),
                 }
             ]
         },
@@ -391,6 +398,7 @@ async function notifySnoozeEndedAlert(webhookRequest: WebhookRequest<AlertWebhoo
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AlertWebhook> = webhookRequest.data;
     const alert: AlertWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -416,7 +424,7 @@ async function notifySnoozeEndedAlert(webhookRequest: WebhookRequest<AlertWebhoo
         props: {
             attachments: [
                 {
-                    text: `Snooze expired for the alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}"`,
+                    text: i18nObj.__('api.webhook.message-snooze-alert', { url: hyperlink(`#${alert.tinyId}`, url), message: alert.message }),
                 }
             ]
         },
@@ -436,6 +444,7 @@ async function notifyAssignOwnershipAlert(webhookRequest: WebhookRequest<AssignW
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AssignWebhook> = webhookRequest.data;
     const alert: AssignWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -467,7 +476,7 @@ async function notifyAssignOwnershipAlert(webhookRequest: WebhookRequest<AssignW
         props: {
             attachments: [
                 {
-                    text: `${alert.username} assigned ownership of the alert ${hyperlink(`#${alert.tinyId}`, url)} to ${user.data.fullName} "${alert.message}"`,
+                    text: i18nObj.__('api.webhook.message-assign', { username: alert.username, url: hyperlink(`#${alert.tinyId}`, url), fullName: user.data.fullName, message:alert.message }),
                 }
             ]
         }
@@ -487,6 +496,7 @@ async function notifyUpdatePriorityAlert(webhookRequest: WebhookRequest<AssignWe
     const rawQuery: string = webhookRequest.rawQuery;
     const event: WebhookData<AssignWebhook> = webhookRequest.data;
     const alert: AssignWebhook = event.alert;
+		const i18nObj = configureI18n(context);
 
     const kvOptions: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -512,7 +522,7 @@ async function notifyUpdatePriorityAlert(webhookRequest: WebhookRequest<AssignWe
         props: {
             attachments: [
                 {
-                    text: `${alert.username} changed the priority of the alert ${hyperlink(`#${alert.tinyId}`, url)} "${alert.message}" from ${alert.oldPriority} to ${alert.priority}`,
+                    text: i18nObj.__('api.webhook.message-update', { username: alert.username, url: hyperlink(`#${alert.tinyId}`, url), message: alert.message, oldPriority: alert.oldPriority, priority: alert.priority }),
                 }
             ]
         }
@@ -541,6 +551,7 @@ const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
 export const incomingWebhook = async (request: Request, response: Response) => {
     const webhookRequest: WebhookRequest<any> = request.body.values;
     const context: AppContext = request.body.context;
+		const i18nObj = configureI18n(context);
 
     let callResponse: AppCallResponse;
     try {
@@ -552,7 +563,7 @@ export const incomingWebhook = async (request: Request, response: Response) => {
         callResponse = newOKCallResponse();
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Error webhook: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.webhook.error', { message: error.message }));
         response.json(callResponse);
     }
 };

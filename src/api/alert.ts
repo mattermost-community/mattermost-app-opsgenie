@@ -1,13 +1,13 @@
 import {Request, Response} from 'express';
 import {
-    Alert,
-    AlertOption,
-    AlertStatus,
-    AppCallAction,
-    AppCallDialog,
-    AppCallResponse,
-    AppContextAction,
-    PostEphemeralCreate
+		Alert,
+		AlertOption,
+		AlertStatus,
+		AppCallAction,
+		AppCallDialog, AppCallRequest,
+		AppCallResponse,
+		AppContextAction,
+		PostEphemeralCreate
 } from '../types';
 import {
     newErrorCallResponseWithMessage,
@@ -30,9 +30,12 @@ import {AppsOpsGenie, Routes} from '../constant';
 import {replace, showMessageToMattermost} from '../utils/utils';
 import {priorityAlertCall} from '../forms/priority-alert';
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
+import { configureI18n } from '../utils/translations';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
+		const call: AppCallRequest = request.body;
+		const i18nObj = configureI18n(call.context);
 
     try {
         const [alerts, account] = await getAllAlertCall(request.body);
@@ -42,7 +45,7 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
         const url: string = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
 
         const teamsText: string = [
-            h6(`Alert List: Found ${alertsUnacked} unacked alerts out of ${alertsWithStatusOpen.length} open alerts. [Total: ${alerts.length}]`),
+						h6(i18nObj.__('api.list-alert.message', { alerts: alertsUnacked.toString(), openalert: alertsWithStatusOpen.length.toString(), length: alerts.length.toString() })),
             `${joinLines(
                 alerts.map((alert: Alert) => {
                     const alertDetailUrl: string = replace(
@@ -55,7 +58,7 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
                         alert.id
                     );
                     const status: string = alert.acknowledged ? AlertOption.ASKED : AlertOption.UNACKED;
-                    return `- #${alert.tinyId}: "${alert.message}" [${status}] - ${hyperlink('View details', alertDetailUrl)}.`;
+                    return `- #${alert.tinyId}: "${alert.message}" [${status}] - ${hyperlink(i18nObj.__('api.list-alert.detail'), alertDetailUrl)}.`;
                 }).join('\n')
             )}\n`
         ].join('');
@@ -95,6 +98,8 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
 };
 export const closeAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
+		const call: AppCallRequest = request.body;
+		const i18nObj = configureI18n(call.context);
 
     try {
         await closeAlertAction(request.body);
@@ -102,7 +107,7 @@ export const closeAlertModal = async (request: Request, response: Response) => {
 
         response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
         response.json(callResponse);
     }
 };
@@ -127,6 +132,8 @@ export const ackAlertModal = async (request: Request, response: Response) => {
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let post: PostEphemeralCreate;
+		const callR: AppCallRequest = request.body;
+		const i18nObj = configureI18n(callR.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -146,7 +153,7 @@ export const ackAlertModal = async (request: Request, response: Response) => {
     } catch (error: any) {
         post = {
             post: {
-                message: 'Unexpected error: ' + error.message,
+                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
             user_id: call.user_id,
@@ -177,6 +184,8 @@ export const unackAlertModal = async (request: Request, response: Response) => {
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let post: PostEphemeralCreate;
+		const callR: AppCallRequest = request.body;
+		const i18nObj = configureI18n(callR.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -195,7 +204,7 @@ export const unackAlertModal = async (request: Request, response: Response) => {
     } catch (error: any) {
         post = {
             post: {
-                message: 'Unexpected error: ' + error.message,
+                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
             user_id: call.user_id,
@@ -254,6 +263,8 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
+		const callR: AppCallRequest = request.body;
+		const i18nObj = configureI18n(callR.context);
     
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -263,7 +274,7 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
 
     try {
         const alert: Alert = await addNoteToAlertAction(request.body); 
-        const message = `Note will be added for #${alert.tinyId}`;
+        const message = i18nObj.__('api.list-alert.message-add-note', { alert: alert.tinyId });
         const post: PostEphemeralCreate = {
             post: {
                 message: message,
@@ -278,13 +289,13 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     } catch (error: any) {
         const post: PostEphemeralCreate = {
             post: {
-                message: 'Unexpected error: ' + error.message,
+                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
             user_id: call.user_id,
         };
         await mattermostClient.createEphemeralPost(post);
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
         response.json(callResponse);
     }
 }
@@ -309,6 +320,8 @@ export const assignAlertModal = async (request: Request, response: Response) => 
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
+		const callR: AppCallRequest = request.body;
+		const i18nObj = configureI18n(callR.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -320,25 +333,25 @@ export const assignAlertModal = async (request: Request, response: Response) => 
         const alert: Alert = await assignAlertAction(request.body);
         const post: PostEphemeralCreate = {
             post: {
-                message: `Assign ownership request will be processed for #${alert.tinyId}`,
+                message: i18nObj.__('api.list-alert.message-assign', { alert: alert.tinyId }),
                 channel_id: channelId,
             },
             user_id: call.user_id,
         };
         await mattermostClient.createEphemeralPost(post);
-        callResponse = newOKCallResponseWithMarkdown(`Assign ownership request will be processed for #${alert.tinyId}`);
+        callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.list-alert.message-assign-response', { alert: alert.tinyId }));
         response.json(callResponse);
     } catch (error: any) {
         const post: PostEphemeralCreate = {
             post: {
-                message: 'Unexpected error: ' + error.message,
+                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
             user_id: call.user_id,
         };
         await mattermostClient.createEphemeralPost(post);
 
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
         response.json(callResponse);
     }
 };
@@ -367,29 +380,32 @@ export const snoozeAlertModal = async (request: Request, response: Response) => 
         accessToken: <string>botAccessToken
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
+		const callR: AppCallRequest = request.body;
+		const i18nObj = configureI18n(callR.context);
+
     try {
         await createSnoozeAlertAction(request.body);
         const post: PostEphemeralCreate = {
             post: {
-                message: "Alert will be snoozed",
+                message: i18nObj.__('api.list-alert.message-alert-snoozed'),
                 channel_id: channelId,
             },
             user_id: call.user_id,
         };
         await mattermostClient.createEphemeralPost(post);
-        callResponse = newOKCallResponseWithMarkdown("Alert will be snoozed");
+        callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.list-alert.message-alert-snoozed'));
         response.json(callResponse);
     } catch (error: any) {
         const post: PostEphemeralCreate = {
             post: {
-                message: 'Unexpected error: ' + error.message,
+                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
             user_id: call.user_id,
         };
         await mattermostClient.createEphemeralPost(post);
         
-        callResponse = newErrorCallResponseWithMessage('Unexpected error: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
         response.json(callResponse);
     }
 };
