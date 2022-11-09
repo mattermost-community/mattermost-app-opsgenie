@@ -51,19 +51,19 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
         Commands.HELP
     ];
 
-    bindings.push(getHelpBinding());
+    bindings.push(getHelpBinding(context));
 
     if (isUserSystemAdmin(<AppActingUser>actingUser)) {
-        bindings.push(getConfigureBinding());
+        bindings.push(getConfigureBinding(context));
         commands.push(Commands.CONFIGURE);
     }  
     if (await existsKvOpsGenieConfig(kvClient)) {
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
         commands.push(Commands.LIST);
-        bindings.push(subscriptionBinding());
-        bindings.push(alertBinding());
-        bindings.push(getAllBinding());
+        bindings.push(subscriptionBinding(context));
+        bindings.push(alertBinding(context));
+        bindings.push(getAllBinding(context));
     }
 
     return newCommandBindings(context, bindings, commands);
