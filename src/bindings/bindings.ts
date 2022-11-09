@@ -1,4 +1,4 @@
-import {AppBinding} from '../types';
+import {AppBinding, AppContext} from '../types';
 import {
     AppExpandLevels,
     OpsGenieIcon,
@@ -20,12 +20,15 @@ import {
     SubscriptionCreateForm,
     SubscriptionDeleteForm
 } from '../constant';
+import {configureI18n} from "../utils/translations";
 
-export const getHelpBinding = (): any => {
+export const getHelpBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.HELP,
         icon: OpsGenieIcon,
-        description: 'Show OpsGenie Help',
+        description: i18nObj.__('binding.binding.command-help'),
         form: {
             icon: OpsGenieIcon,
             submit: {
@@ -38,13 +41,15 @@ export const getHelpBinding = (): any => {
     };
 };
 
-export const getConfigureBinding = (): any => {
+export const getConfigureBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         icon: OpsGenieIcon,
         label: Commands.CONFIGURE,
-        description: 'Setup OpsGenie Admin Account',
+        description: i18nObj.__('binding.binding.command-configure'),
         form: {
-            title: "Setup OpsGenie",
+            title: i18nObj.__('binding.binding.command-configure-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathConfigForm,
@@ -60,33 +65,36 @@ export const getConfigureBinding = (): any => {
     }
 };
 
-export const connectAccountBinding = (): any => {
+export const connectAccountBinding = (context: AppContext): any => {
     const subCommands: string[] = [
         Commands.LOGIN,
         Commands.LOGOUT
     ];
+		const i18nObj = configureI18n(context);
 
     const bindings: AppBinding[] = [];
 
-    bindings.push(accountLoginBinding());
-    bindings.push(accountLogoutBinding());
+    bindings.push(accountLoginBinding(context));
+    bindings.push(accountLogoutBinding(context));
 
     return {
         icon: OpsGenieIcon,
         label: Commands.ACCOUNT,
-        description: 'Connect your OpsGenie account',
+        description: i18nObj.__('binding.binding.command-account-description'),
         hint: `[${subCommands.join(' | ')}]`,
         bindings
     }
 };
 
-export const accountLoginBinding = (): any => {
+export const accountLoginBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         icon: OpsGenieIcon,
         label: Commands.LOGIN,
-        description: 'Connect your OpsGenie account',
+        description: i18nObj.__('binding.binding.command-login'),
         form: {
-            title: "Account login",
+            title: i18nObj.__('binding.binding.command-login-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
@@ -98,13 +106,15 @@ export const accountLoginBinding = (): any => {
     }
 };
 
-export const accountLogoutBinding = (): any => {
+export const accountLogoutBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         icon: OpsGenieIcon,
         label: Commands.LOGIN,
-        description: 'Connect your OpsGenie account',
+        description: i18nObj.__('binding.binding.command-account-description'),
         form: {
-            title: "Account logout",
+            title: i18nObj.__('binding.binding.command-logout-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
@@ -116,7 +126,9 @@ export const accountLogoutBinding = (): any => {
     }
 };
 
-export const subscriptionBinding = (): AppBinding => {
+export const subscriptionBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     const subCommands: string[] = [
         Commands.ADD,
         Commands.DELETE,
@@ -125,26 +137,28 @@ export const subscriptionBinding = (): AppBinding => {
 
     const bindings: AppBinding[] = [];
 
-    bindings.push(subscriptionAddBinding());
-    bindings.push(subscriptionDeleteBinding());
-    bindings.push(subscriptionListBinding());
+    bindings.push(subscriptionAddBinding(context));
+    bindings.push(subscriptionDeleteBinding(context));
+    bindings.push(subscriptionListBinding(context));
 
     return {
         icon: OpsGenieIcon,
         label: Commands.SUBSCRIPTION,
-        description: 'Subscription teams of OpsGenie to Mattermost channel',
+        description: i18nObj.__('binding.binding.command-subcription-description'),
         hint: `[${subCommands.join(' | ')}]`,
         bindings
     }
 };
 
-export const subscriptionAddBinding = (): any => {
+export const subscriptionAddBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         icon: OpsGenieIcon,
         label: Commands.ADD,
-        description: 'Add a team subscription to a channel',
+        description: i18nObj.__('binding.binding.command-add-description'),
         form: {
-            title: "Add a team subscription to a channel",
+            title: i18nObj.__('binding.binding.command-add-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathSubscriptionAddSubmit,
@@ -156,7 +170,7 @@ export const subscriptionAddBinding = (): any => {
             },
             fields: [
                 {
-                    modal_label: 'Team name',
+                    modal_label: i18nObj.__('binding.binding.name-team'),
                     name: SubscriptionCreateForm.TEAM_NAME,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -164,7 +178,7 @@ export const subscriptionAddBinding = (): any => {
                     max_length: 100
                 },
                 {
-                    modal_label: 'Channel',
+                    modal_label: i18nObj.__('binding.binding.name-channel'),
                     name: SubscriptionCreateForm.CHANNEL_ID,
                     type: AppFieldTypes.CHANNEL,
                     is_required: true,
@@ -175,13 +189,15 @@ export const subscriptionAddBinding = (): any => {
     }
 };
 
-export const subscriptionDeleteBinding = (): any => {
+export const subscriptionDeleteBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         icon: OpsGenieIcon,
         label: Commands.DELETE,
-        description: 'Unsubscribe team from channel',
+        description: i18nObj.__('binding.binding.command-delete-description'),
         form: {
-            title: "Unsubscribe team from channel",
+            title: i18nObj.__('binding.binding.command-delete-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathSubscriptionDeleteSubmit,
@@ -191,7 +207,7 @@ export const subscriptionDeleteBinding = (): any => {
             },
             fields: [
                 {
-                    modal_label: 'Subscription ID',
+                    modal_label: i18nObj.__('binding.binding.label-delete'),
                     name: SubscriptionDeleteForm.SUBSCRIPTION_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -204,13 +220,15 @@ export const subscriptionDeleteBinding = (): any => {
     }
 };
 
-export const subscriptionListBinding = (): any => {
+export const subscriptionListBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     return {
         icon: OpsGenieIcon,
         label: Commands.LIST,
-        description: 'List of teams subscribed to channels',
+        description: i18nObj.__('binding.binding.command-list-description'),
         form: {
-            title: "List of teams subscribed to channels",
+            title: i18nObj.__('binding.binding.command-list-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathSubscriptionListSubmit,
@@ -222,7 +240,9 @@ export const subscriptionListBinding = (): any => {
     }
 };
 
-export const alertBinding = (): AppBinding => {
+export const alertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     const subCommands: string[] = [
         Commands.CREATE,
         Commands.NOTE,
@@ -237,33 +257,35 @@ export const alertBinding = (): AppBinding => {
 
     const bindings: AppBinding[] = [];
 
-    bindings.push(createAlertBinding());
-    bindings.push(addNoteToAlertBinding());
-    bindings.push(closeAlertBinding());
-    bindings.push(ackAlertBinding());
-    bindings.push(unackAlertBinding());
-    bindings.push(snoozeAlertBinding());
-    bindings.push(assignAlertBinding());
-    bindings.push(ownAlertBinding());
-    bindings.push(updatePriorityAlertBinding());
+    bindings.push(createAlertBinding(context));
+    bindings.push(addNoteToAlertBinding(context));
+    bindings.push(closeAlertBinding(context));
+    bindings.push(ackAlertBinding(context));
+    bindings.push(unackAlertBinding(context));
+    bindings.push(snoozeAlertBinding(context));
+    bindings.push(assignAlertBinding(context));
+    bindings.push(ownAlertBinding(context));
+    bindings.push(updatePriorityAlertBinding(context));
 
     return {
         label: Commands.ALERT,
         icon: OpsGenieIcon,
-        description: 'Config Alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-alert-description'),
         hint: `[${subCommands.join(' | ')}]`,
         bindings
     }
 }
 
-const createAlertBinding = (): AppBinding => {
+const createAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return (
         {
             label: Commands.CREATE,
             icon: OpsGenieIcon,
-            description: 'Create Alert in OpsGenie',
+            description: i18nObj.__('binding.binding.command-create-description'),
             form: {
-                title: 'Create alert',
+                title: i18nObj.__('binding.binding.command-create-title'),
                 icon: OpsGenieIcon,
                 submit: {
                     path: Routes.App.CallPathAlertCreate,
@@ -271,7 +293,7 @@ const createAlertBinding = (): AppBinding => {
                 },
                 fields: [
                     {
-                        modal_label: 'Alert message',
+                        modal_label: i18nObj.__('binding.binding.label-alert'),
                         name: AlertCreateForm.ALERT_MESSAGE,
                         subtype: 'textarea',
                         type: AppFieldTypes.TEXT,
@@ -280,7 +302,7 @@ const createAlertBinding = (): AppBinding => {
                         max_length: 130
                     },
                     {
-                        modal_label: 'Team name',
+                        modal_label: i18nObj.__('binding.binding.label-team'),
                         name: AlertCreateForm.TEAM_NAME,
                         type: AppFieldTypes.TEXT,
                         is_required: true,
@@ -288,7 +310,7 @@ const createAlertBinding = (): AppBinding => {
                         max_length: 100
                     },
                     {
-                        modal_label: 'Priority',
+                        modal_label: 'binding.binding.label-priority',
                         name: AlertCreateForm.ALERT_PRIORITY,
                         type: AppFieldTypes.STATIC_SELECT,
                         is_required: false,
@@ -302,13 +324,15 @@ const createAlertBinding = (): AppBinding => {
     );
 };
 
-const addNoteToAlertBinding = (): AppBinding => {
+const addNoteToAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.NOTE,
         icon: OpsGenieIcon,
-        description: 'Add note to Alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-note-description'),
         form: {
-            title: "Add Note To Alert",
+            title: i18nObj.__('binding.binding.command-note-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathNoteToAlertSubmit,
@@ -318,7 +342,7 @@ const addNoteToAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Note message',
+                    modal_label: i18nObj.__('binding.binding.label-note'),
                     name: NoteCreateForm.NOTE_MESSAGE,
                     subtype: 'textarea',
                     type: AppFieldTypes.TEXT,
@@ -327,7 +351,7 @@ const addNoteToAlertBinding = (): AppBinding => {
                     max_length: 25000
                 },
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: NoteCreateForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -338,13 +362,15 @@ const addNoteToAlertBinding = (): AppBinding => {
     }
 }
 
-const closeAlertBinding = (): AppBinding => {
+const closeAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.CLOSE,
         icon: OpsGenieIcon,
-        description: 'Close Alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-close-description'),
         form: {
-            title: "Close Alert",
+            title: i18nObj.__('binding.binding.command-close-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertCloseSubmit,
@@ -354,7 +380,7 @@ const closeAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: CloseAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -365,13 +391,15 @@ const closeAlertBinding = (): AppBinding => {
     }
 }
 
-const ackAlertBinding = (): AppBinding => {
+const ackAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.ACK,
         icon: OpsGenieIcon,
-        description: 'Acknowledge alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-ack-description'),
         form: {
-            title: 'Acknowledge the alerts',
+            title: i18nObj.__('binding.binding.command-ack-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertAcknowledgedSubmit,
@@ -381,7 +409,7 @@ const ackAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: AckAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -392,13 +420,15 @@ const ackAlertBinding = (): AppBinding => {
     }
 }
 
-const unackAlertBinding = (): AppBinding => {
+const unackAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.UNACK,
         icon: OpsGenieIcon,
-        description: 'UnAcknowledge alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-unack-description'),
         form: {
-            title: 'UnAcknowledge the alerts',
+            title: i18nObj.__('binding.binding.command-unack-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAlertUnacknowledge,
@@ -408,7 +438,7 @@ const unackAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: UnackAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -419,13 +449,15 @@ const unackAlertBinding = (): AppBinding => {
     }
 }
 
-const snoozeAlertBinding = (): AppBinding => {
+const snoozeAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.SNOOZE,
         icon: OpsGenieIcon,
-        description: 'Snooze alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-snooze-description'),
         form: {
-            title: 'Snooze the alerts',
+            title: i18nObj.__('binding.binding.command-snooze-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathSnoozeAlert,
@@ -435,14 +467,14 @@ const snoozeAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: SnoozeAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,
                 },
                 {
-                    modal_label: 'Time Amount',
+                    modal_label: i18nObj.__('binding.binding.label-time'),
                     name: SnoozeAlertForm.TIME_AMOUNT,
                     type: AppFieldTypes.STATIC_SELECT,
                     is_required: true,
@@ -454,13 +486,15 @@ const snoozeAlertBinding = (): AppBinding => {
     }
 }
 
-const assignAlertBinding = (): AppBinding => {
+const assignAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.ASSIGN,
         icon: OpsGenieIcon,
-        description: 'Assign alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-assign-desctiption'),
         form: {
-            title: 'Assign the alerts',
+            title: i18nObj.__('binding.binding.command-assign-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathAssignAlertSubmit,
@@ -470,14 +504,14 @@ const assignAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: AssignAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,
                 },
                 {
-                    modal_label: 'User',
+                    modal_label:i18nObj.__('binding.binding.label-user'),
                     name: AssignAlertForm.USER_ID,
                     type: AppFieldTypes.USER,
                     is_required: true,
@@ -488,13 +522,15 @@ const assignAlertBinding = (): AppBinding => {
     }
 }
 
-const ownAlertBinding = (): AppBinding => {
+const ownAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.OWN,
         icon: OpsGenieIcon,
-        description: 'Take ownership alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-own-description'),
         form: {
-            title: 'Take ownership of the alerts',
+            title: i18nObj.__('binding.binding.command-own-title"'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathTakeOwnershipAlertSubmit,
@@ -504,7 +540,7 @@ const ownAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: TakeOwnershipAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
@@ -515,13 +551,15 @@ const ownAlertBinding = (): AppBinding => {
     }
 }
 
-const updatePriorityAlertBinding = (): AppBinding => {
+const updatePriorityAlertBinding = (context: AppContext): AppBinding => {
+		const i18nObj = configureI18n(context);
+
     return {
         label: Commands.PRIORITY,
         icon: OpsGenieIcon,
-        description: 'Update priority of alert in OpsGenie',
+        description: i18nObj.__('binding.binding.command-priority-description'),
         form: {
-            title: 'Update priority of th alert',
+            title: i18nObj.__('binding.binding.command-priority-title'),
             icon: OpsGenieIcon,
             submit: {
                 path: Routes.App.CallPathUpdatePriorityAlertSubmit,
@@ -531,14 +569,14 @@ const updatePriorityAlertBinding = (): AppBinding => {
             },
             fields: [
                 {
-                    modal_label: 'Tiny ID',
+                    modal_label: i18nObj.__('binding.binding.label-tiny'),
                     name: PriorityAlertForm.NOTE_TINY_ID,
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,
                 },
                 {
-                    modal_label: 'Priority',
+                    modal_label: i18nObj.__('binding.binding.label-priority'),
                     name: PriorityAlertForm.ALERT_PRIORITY,
                     type: AppFieldTypes.STATIC_SELECT,
                     is_required: true,
@@ -550,7 +588,9 @@ const updatePriorityAlertBinding = (): AppBinding => {
     }
 }
 
-export const getAllBinding = (): any => {
+export const getAllBinding = (context: AppContext): any => {
+		const i18nObj = configureI18n(context);
+
     const commands: string[] = [
         Commands.TEAM,
         Commands.ALERT
@@ -559,13 +599,13 @@ export const getAllBinding = (): any => {
     return {
         icon: OpsGenieIcon,
         label: Commands.LIST,
-        description: 'Show info of OpsGenie',
+        description: i18nObj.__('binding.binding.command-list-all-description'),
         hint: `[${commands.join(' | ')}]`,
         bindings: [
             {
                 icon: OpsGenieIcon,
                 label: Commands.TEAM,
-                description: 'List teams',
+                description: i18nObj.__('binding.binding.command-list-all-title'),
                 form: {
                     title: "",
                     icon: OpsGenieIcon,
@@ -578,7 +618,7 @@ export const getAllBinding = (): any => {
             {
                 icon: OpsGenieIcon,
                 label: Commands.ALERT,
-                description: 'List alerts',
+                description: i18nObj.__('binding.binding.description-alert'),
                 form: {
                     title: "",
                     icon: OpsGenieIcon,
