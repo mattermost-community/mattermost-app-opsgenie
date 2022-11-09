@@ -1,23 +1,28 @@
 import {Request, Response} from 'express';
 import manifest from '../manifest.json';
 import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
-import {AppActingUser, AppCallRequest, AppCallResponse, ExpandedBotActingUser} from '../types';
+import {AppActingUser, AppCallRequest, AppCallResponse, AppContext, ExpandedBotActingUser} from '../types';
 import {addBulletSlashCommand, h5, joinLines} from '../utils/markdown';
+import {configureI18n} from "../utils/translations";
 import {existsKvOpsGenieConfig, isUserSystemAdmin} from '../utils/utils';
 import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { Commands } from '../constant';
 
 export const getHelp = async (request: Request, response: Response) => {
+		const call: AppCallRequest = request.body;
+
     const helpText: string = [
-        getHeader(),
+        getHeader(call.context),
         await getCommands(request.body)
     ].join('');
     const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
     response.json(callResponse);
 };
 
-function getHeader(): string {
-    return h5(`Mattermost OpsGenie Plugin - Slash Command Help`);
+function getHeader(context: AppContext): string {
+		const i18nObj = configureI18n(context);
+
+    return h5(i18nObj.__('api.help.title'));
 }
 
 async function getCommands(call: AppCallRequest): Promise<string> {
@@ -28,6 +33,7 @@ async function getCommands(call: AppCallRequest): Promise<string> {
     const actingUser: AppActingUser | undefined = context.acting_user;
     const actingUserID: string | undefined = actingUser.id;
     const commands: string[] = [];
+		const i18nObj = configureI18n(call.context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -35,28 +41,28 @@ async function getCommands(call: AppCallRequest): Promise<string> {
     };
     const kvClient = new KVStoreClient(options);
 
-    commands.push(addBulletSlashCommand(Commands.HELP, `Launch the OpsGenie plugin command line help syntax, check out the [documentation](${homepageUrl}).`));
+    commands.push(addBulletSlashCommand(Commands.HELP, i18nObj.__('api.help.command-help', { url: homepageUrl })));
     if (isUserSystemAdmin(<AppActingUser>actingUser)) {
-        commands.push(addBulletSlashCommand(Commands.CONFIGURE, `Configure OpsGenie.`));
+        commands.push(addBulletSlashCommand(Commands.CONFIGURE, i18nObj.__('api.help.command-configure')));
     }
     if (await existsKvOpsGenieConfig(kvClient)) {
         //commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGIN}`, `Connect your OpsGenie account.`));
         //commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGOUT}`, `Disconnect from your OpsGenie account.`));
 
-        commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.ADD} [Team name] [Mattermost Channel]`, `Add subscription of team to channel.`));
-        commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.DELETE} [SubscriptionId]`, `Delete subscription of channel.`));
-        commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.LIST}`, `List subscriptions open.`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.CREATE} [Alert message] [Team name] [Priority]`, `Create an alert with the message for the specified responders.`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.NOTE} [Note message] [Alert TinyId]`, `Add [note] to the alerts with IDs [tinyID tinyID2..].`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.SNOOZE} [Alert TinyID] [Time amount [m/h/d]]`, `Snooze the alerts with IDs [tinyID tinyID2..] for the specified time.`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.ACK} [Alert TinyID]`, `Acknowledge the alerts with IDs [tinyID tinyID2..].`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.UNACK} [Alert TinyID]`, `UnAcknowledge the alerts with IDs [tinyID tinyID2..].`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.ASSIGN} [Alert TinyID] [Mattermost User]`, `Assign alerts with IDs [tinyID tinyID2..] to [user].`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.CLOSE} [Alert TinyID] [Mattermost User]`, `Close the alerts, incidents, mass notifications with IDs [tinyID tinyID2..].`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.OWN} [Alert TinyID]`, `Take ownership of the alerts with IDs [tinyID tinyID2..].`));
-        commands.push(addBulletSlashCommand(`${Commands.ALERT} ${Commands.PRIORITY} [Alert TinyID] [Priority]`, `Update priority of the alert with [tinyID].`));
-        commands.push(addBulletSlashCommand(`${Commands.LIST} ${Commands.TEAM}`, 'List teams.'));
-        commands.push(addBulletSlashCommand(`${Commands.LIST} ${Commands.ALERT}`, 'List alerts.'));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-add-command', { command: Commands.SUBSCRIPTION, add: Commands.ADD }), i18nObj.__('api.help.command-add-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-delete-command', { command: Commands.SUBSCRIPTION, delete: Commands.DELETE }), i18nObj.__('api.help.command-delete-description')));
+        commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.LIST}`, i18nObj.__('api.help.command-list-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-create-command', { command: Commands.ALERT, create: Commands.CREATE }), i18nObj.__('api.help.command-create-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-note-command', { command: Commands.ALERT, note: Commands.NOTE }), i18nObj.__('api.help.command-note-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-snooze-command', { command: Commands.ALERT, snooze: Commands.SNOOZE }), i18nObj.__('api.help.command-snooze-decription')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-ask-command', { command: Commands.ALERT, ack: Commands.ACK }), i18nObj.__('api.help.command-ack-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-unack-command', { command: Commands.ALERT, unack: Commands.UNACK  }), i18nObj.__('api.help.command-unack-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-assign-command', { command: Commands.ALERT, assign: Commands.ASSIGN }), i18nObj.__('api.help.command-assign-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-close-command', { command: Commands.ALERT, close: Commands.CLOSE }), i18nObj.__('api.help.command-close-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-own-command', { command: Commands.ALERT, own: Commands.OWN }), i18nObj.__('api.help.command-own-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-priority-command', { command: Commands.ALERT, priority: Commands.PRIORITY }), i18nObj.__('api.help.command-priority-description')));
+        commands.push(addBulletSlashCommand(`${Commands.LIST} ${Commands.TEAM}`, i18nObj.__('api.help.command-team-description')));
+        commands.push(addBulletSlashCommand(`${Commands.LIST} ${Commands.ALERT}`, i18nObj.__('api.help.command-alert-decription')));
     }
     
     return `${joinLines(...commands)}`;

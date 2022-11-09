@@ -11,27 +11,32 @@ import {Request, Response} from "express";
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from "../clients/kvstore";
 import {OpsGenieClient, OpsGenieOptions} from "../clients/opsgenie";
 import {StoreKeys} from "../constant";
+import {configureI18n} from "../utils/translations";
 import {showMessageToMattermost} from "../utils/utils";
 
 export const configureAdminAccountForm: CallResponseHandler = async (req: Request, res: Response) => {
     let callResponse: AppCallResponse;
+		const call: AppCallRequest = req.body;
+		const i18nObj = configureI18n(call.context);
 
     try {
         const form = await opsGenieConfigForm(req.body);
         callResponse = newFormCallResponse(form);
         res.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage('Unable to open configuration form: ' + error.message);
+        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.configure.error-response', { message: error.message }));
         res.json(callResponse);
     }
 };
 
 export const configureAdminAccountSubmit: CallResponseHandler = async (req: Request, res: Response) => {
     let callResponse: AppCallResponse;
+		const call: AppCallRequest = req.body;
+		const i18nObj = configureI18n(call.context);
 
     try {
         await opsGenieConfigSubmit(req.body);
-        callResponse = newOKCallResponseWithMarkdown('Successfully updated OpsGenie configuration');
+        callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.configure.success-response'));
         res.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
@@ -42,8 +47,9 @@ export const configureAdminAccountSubmit: CallResponseHandler = async (req: Requ
 export const connectAccountLoginSubmit: CallResponseHandler = async (req: Request, res: Response) => {
     const call: AppCallRequest = req.body;
     const connectUrl: string = call.context.oauth2.connect_url;
+		const i18nObj = configureI18n(call.context);
 
-    const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(`Follow this ${hyperlink('link', connectUrl)} to connect Mattermost to your OpsGenie Account.`);
+    const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.configure.follow-response', { url: hyperlink('link', connectUrl) }));
     res.json(callResponse);
 };
 
