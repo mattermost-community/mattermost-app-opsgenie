@@ -106,7 +106,8 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                                         tinyId: alert.tinyId
                                     },
                                     bot_access_token: botAccessToken,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+																		locale: context.locale
                                 } as AppContextAction
                             }
                         },
@@ -125,7 +126,8 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                                         tinyId: alert.tinyId
                                     },
                                     bot_access_token: botAccessToken,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+																		locale: context.locale
                                 } as AppContextAction
                             }
                         },
@@ -142,7 +144,8 @@ async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, 
                                         tinyId: alert.tinyId
                                     },
                                     bot_access_token: botAccessToken,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+																		locale: context.locale
                                 } as AppContextAction
                             },
                             type: 'select',

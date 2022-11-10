@@ -159,6 +159,7 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                                         message: alert.message,
                                         tinyId: alert.tinyId
                                     },
+																		locale: context.locale,
                                     bot_access_token: botAccessToken,
                                     mattermost_site_url: mattermostUrl
                                 } as AppContextAction
@@ -178,6 +179,7 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                                         message: alert.message,
                                         tinyId: alert.tinyId
                                     },
+																		locale: context.locale,
                                     bot_access_token: botAccessToken,
                                     mattermost_site_url: mattermostUrl
                                 } as AppContextAction
@@ -193,8 +195,9 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                                     alert: {
                                         id: alert.alertId,
                                         message: alert.message,
-                                        tinyId: alert.tinyId
+                                        tinyId: alert.tinyId,
                                     },
+																		locale: context.locale,
                                     bot_access_token: botAccessToken,
                                     mattermost_site_url: mattermostUrl
                                 } as AppContextAction

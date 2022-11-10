@@ -296,5 +296,6 @@ export type AppContextAction = {
     mattermost_site_url: string;
     bot_access_token: string;
     selected_option?: string;
+		locale: string;
 }
 

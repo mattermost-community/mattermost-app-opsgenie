@@ -99,7 +99,8 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
                                     action: ActionsEvents.USER_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
-                                    alert
+                                    alert,
+																		locale: context.locale
                                 } as AppContextAction
                             },
                             type: 'select',
@@ -115,7 +116,8 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
                                 context: {
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+																		locale: context.locale,
                                 } as AppContextAction
                             }
                         }
@@ -157,7 +159,8 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
                                     action: ActionsEvents.TIME_SELECT_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
-                                    alert: call.context.alert
+                                    alert: call.context.alert,
+																		locale: context.locale
                                 } as AppContextAction
                             },
                             options: options_times
@@ -172,7 +175,8 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
                                 context: {
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl
+                                    mattermost_site_url: mattermostUrl,
+																		locale: context.locale
                                 } as AppContextAction
                             }
                         }
