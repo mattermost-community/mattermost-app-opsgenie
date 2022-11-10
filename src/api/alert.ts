@@ -263,8 +263,8 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
-		const callR: AppCallRequest = request.body;
-		const i18nObj = configureI18n(callR.context);
+		const callRequest: AppCallRequest = request.body;
+		const i18nObj = configureI18n(callRequest.context);
     
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -273,7 +273,7 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
-        const alert: Alert = await addNoteToAlertAction(request.body, callR.context);
+        const alert: Alert = await addNoteToAlertAction(request.body, callRequest.context);
         const message = i18nObj.__('api.list-alert.message-add-note', { alert: alert.tinyId });
         const post: PostEphemeralCreate = {
             post: {
