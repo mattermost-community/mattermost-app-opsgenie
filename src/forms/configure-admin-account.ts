@@ -11,10 +11,12 @@ import {AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, Store
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {Exception} from "../utils/exception";
+import {configureI18n} from "../utils/translations";
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+		const i18nObj = configureI18n(call.context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -25,16 +27,16 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const form: AppForm = {
-        title: 'Configure OpsGenie',
-        header: 'Configure the OpsGenie app with the following information.',
+        title: i18nObj.__('forms.configure-admin.title'),
+        header: i18nObj.__('forms.configure-admin.header'),
         icon: OpsGenieIcon,
         fields: [
             {
                 type: AppFieldTypes.TEXT,
                 name: ConfigureForm.API_KEY,
-                modal_label: 'API Key',
+                modal_label: i18nObj.__('forms.configure-admin.label'),
                 value: config.opsgenie_apikey,
-                description: 'API integration OpsGenie api key',
+                description: i18nObj.__('forms.configure-admin.description'),
                 is_required: true,
             }
         ],
@@ -50,6 +52,7 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> 
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues = <any>call.values;
+		const i18nObj = configureI18n(call.context);
 
     const opsGenieApiKey: string = values[ConfigureForm.API_KEY];
 
@@ -63,7 +66,7 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> 
     }
     const integrations: ResponseResultWithData<Integrations[]> = await opsgenieClient.listIntegrations(params);
     if (!integrations.data.length) {
-        throw new Exception(ExceptionType.MARKDOWN, 'Your opsgenie setup has no api integration');
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.exception'));
     }
 
     const options: KVStoreOptions = {

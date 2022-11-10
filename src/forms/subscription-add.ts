@@ -15,6 +15,7 @@ import {
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {ExceptionType, Routes, StoreKeys, SubscriptionCreateForm} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from "../clients/opsgenie";
+import {configureI18n} from "../utils/translations";
 import {tryPromise} from "../utils/utils";
 import {Exception} from "../utils/exception";
 
@@ -24,6 +25,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const appPath: string | undefined = call.context.app_path;
     const whSecret: string | undefined = call.context.app?.webhook_secret;
     const values: AppCallValues | undefined  = call.values;
+		const i18nObj = configureI18n(call.context);
 
     const teamName: string = values?.[SubscriptionCreateForm.TEAM_NAME];
     const channelId: string = values?.[SubscriptionCreateForm.CHANNEL_ID].value;
@@ -53,7 +55,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
         identifier: teamName,
         identifierType: IdentifierType.NAME
     };
-    const responseTeam: ResponseResultWithData<Team> = await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const responseTeam: ResponseResultWithData<Team> = await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const team: Team = responseTeam.data;
 
     const paramsIntegrations: ListIntegrationsParams = {
@@ -61,17 +63,17 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
         teamId: team.id,
         teamName: team.name
     };
-    const responseIntegrations: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(paramsIntegrations), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const responseIntegrations: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(paramsIntegrations), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const integrations: Integrations[] = responseIntegrations.data;
 
     for (const integration of integrations) {
-        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, 'OpsGenie failed');
+        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         const auxIntegration: Integration = responseIntegration.data;
         const queryParams: ParsedUrl = queryString.parseUrl(auxIntegration.url);
         const params: ParsedQuery = queryParams.query;
 
         if (<string>params['channelId'] === channelId) {
-            throw new Exception(ExceptionType.MARKDOWN, `team [${team.name}] is already associated with channel [${channelName}]`);
+            throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.subcription-add.exception', { name: team.name, channelName: channelName }));
         }
     }
 
@@ -87,5 +89,5 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
         url
     };
     
-    await tryPromise(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    await tryPromise(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 }

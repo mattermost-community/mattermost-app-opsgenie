@@ -2,12 +2,14 @@ import {AlertCreate, AlertResponderType, AppCallRequest, AppCallValues, Identifi
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {AlertCreateForm, ExceptionType, option_alert_priority_p3, StoreKeys} from '../constant';
+import {configureI18n} from "../utils/translations";
 import { tryPromise } from '../utils/utils';
 
 export async function createAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues | undefined = call.values;
+		const i18nObj = configureI18n(call.context);
 
     const message: string = values?.[AlertCreateForm.ALERT_MESSAGE];
     const priority: string = values?.[AlertCreateForm.ALERT_PRIORITY]?.value || option_alert_priority_p3;
@@ -30,7 +32,7 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
         identifier: teamName,
         identifierType: IdentifierType.NAME,
     };
-    await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const alertCreate: AlertCreate = {
         message,
@@ -42,6 +44,6 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
             }
         ]
     };
-    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `New alert "${message}" will be created`
+    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('forms.create-alert.message', { message: message })
 }

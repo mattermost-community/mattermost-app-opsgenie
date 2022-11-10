@@ -1,14 +1,14 @@
 import {addHours, addMinutes, addDays, format, endOfDay} from 'date-fns';
 import {
-    Alert,
-    AlertSnooze,
-    AppCallAction,
-    AppCallRequest,
-    AppCallValues,
-    AppContextAction,
-    Identifier,
-    IdentifierType,
-    ResponseResultWithData
+		Alert,
+		AlertSnooze,
+		AppCallAction,
+		AppCallRequest,
+		AppCallValues, AppContext,
+		AppContextAction,
+		Identifier,
+		IdentifierType,
+		ResponseResultWithData
 } from '../types';
 import {
     ExceptionType,
@@ -25,6 +25,7 @@ import {
 } from '../constant';
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
+import {configureI18n} from "../utils/translations";
 import {getAlertLink, tryPromise} from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
@@ -33,6 +34,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
+		const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[SnoozeAlertForm.NOTE_TINY_ID];
     const timeAmount: string = values?.[SnoozeAlertForm.TIME_AMOUNT].value;
@@ -54,7 +56,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = response.data;
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
@@ -76,15 +78,16 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         endTime,
         user: username
     };
-    await tryPromise(opsGenieClient.snoozeAlert(identifier, data),  ExceptionType.MARKDOWN, 'OpsGenie failed');
-    return `Alert ${alertURL} will be snoozed for ${timeAmount}`
+    await tryPromise(opsGenieClient.snoozeAlert(identifier, data),  ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('forms.create-snooze.response', { url: alertURL, time: timeAmount })
 }
 
-export async function createSnoozeAlertAction(call: AppCallAction<AppContextAction>): Promise<Alert> {
+export async function createSnoozeAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<Alert> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const postId: string = call.post_id;
     const username: string | undefined = call.user_name;
+		const i18nObj = configureI18n(context);
 
     const alertTinyId: string | undefined = call.context.alert.tinyId;
     const timeAmount: string | undefined = call.context.selected_option;
@@ -112,7 +115,7 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const currentDate: Date = new Date();
     const date: { [key: string]: Date } = {
@@ -131,7 +134,7 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
         endTime,
         user: username
     };
-    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     await mattermostClient.deletePost(postId);
     
     return responseAlert.data;

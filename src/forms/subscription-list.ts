@@ -11,6 +11,7 @@ import {
 import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
 import {ExceptionType, StoreKeys} from '../constant';
 import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
+import {configureI18n} from "../utils/translations";
 import {tryPromise} from '../utils/utils';
 import queryString, {ParsedQuery, ParsedUrl} from "query-string";
 import {MattermostClient, MattermostOptions} from '../clients/mattermost';
@@ -18,6 +19,7 @@ import {MattermostClient, MattermostOptions} from '../clients/mattermost';
 export async function subscriptionListCall(call: AppCallRequest): Promise<Subscription[]> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
+		const i18nObj = configureI18n(call.context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -35,7 +37,7 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
     const params: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
     };
-    const responseIntegration: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(params), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const responseIntegration: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(params), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -45,7 +47,7 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
 
     const promises: Promise<Subscription>[] = responseIntegration.data.map((int: Integrations) => {
         return new Promise(async (resolve, reject) => {
-            const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, 'OpsGenie failed');
+            const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
             const integration: Integration = responseIntegration.data;
 
             const queryParams: ParsedUrl = queryString.parseUrl(integration.url);

@@ -123,6 +123,69 @@
       "description-alert": "List alerts"
     }
   },
+  "forms": {
+    "error": "OpsGenie failed",
+    "exception-ack": "You already have acknowledged {{ url }}",
+    "response-ack": "You have acknowledged {{ url }}",
+    "message-ack": "You have acknowledged #{{ alert }}",
+    "error-ack": "Unexpected error: {{ message }}",
+    "mattermost-error": "Mattermost post update failed",
+    "acknowledged": "Acknowledged",
+    "unacknowledged": "Unacknowledged",
+    "name-close": "Close",
+    "name-other-action": "Other actions...",
+    "message-note": "Action executed via Mattermost Plugin",
+    "response-assign-alert": "Assign alert's {{ url }} ownership to {{ email }} will be processed",
+    "close-alert": {
+      "error-close-alert": "You already have closed {{ url }}",
+      "response-close-alert": "Alert {{ url }} will be closed",
+      "exception-close-alert": "You have closed #{{ alert }}"
+    },
+    "configure-admin": {
+      "title": "Configure OpsGenie",
+      "header": "Configure the OpsGenie app with the following information.",
+      "label": "API Key",
+      "description": "API integration OpsGenie api key",
+      "exception": "Your opsgenie setup has no api integration"
+    },
+    "create-alert": {
+      "message": "New alert \"{{ message }}\" will be created",
+      "response": "Note will be added for {{ url }}"
+    },
+    "create-snooze": {
+      "response": "Alert {{url }} will be snoozed for {{ time }}"
+    },
+    "actions": {
+      "title-note": "Add Note",
+      "label-note": "Add",
+      "display-note": "Note",
+      "placeholder-note": "Your note here...",
+      "title-list-user": "Choose a user to assign the alert to",
+      "name-list-user": "Choose a user",
+      "name-close": "Close",
+      "title-snooze": "For how long do you want to snooze notifications for this alert",
+      "name-snooze": "Choose snooze time",
+      "exception-owner": "You already are alert #{{ alert }} owner",
+      "response-owner": "Take ownership request will be processed for #{{ alert }}"
+    },
+    "priority": {
+      "exception": "Alert's {{ url }} priority is already {{ priority }}",
+      "response": "Updated {{ url }} priority to {{ priority }}"
+    },
+    "subcription-add": {
+      "exception": "el equipo [{{ name }}] ya está asociado con el canal [{{ channelName }]"
+    },
+    "ownership": {
+      "exception": "Take ownership request will be processed for {{ url }}",
+      "response": "Take ownership request will be processed for {{ url }}"
+    },
+    "unack": {
+      "response-unack": "You have unacknowledged {{ url }}",
+      "response-ack": "You have unacknowledged #{{ alert }}",
+      "exception-unack": "Unacknowledge request will be processed for {{ url }}",
+      "exception-ack": "You haven't acknowledge alert #{{ alert }}"
+    }
+  },
   "bindings-descriptions": {
     "bindings": "Manage OpsGenie App"
   }
