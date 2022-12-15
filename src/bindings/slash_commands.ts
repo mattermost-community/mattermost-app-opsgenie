@@ -12,10 +12,9 @@ import { configureI18n } from '../utils/translations';
 
 import {
     alertBinding,
-    connectAccountBinding,
-    getAllBinding,
     getConfigureBinding,
     getHelpBinding,
+    getTeamBinding,
     subscriptionBinding,
 } from './bindings';
 
@@ -61,10 +60,10 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
     if (await existsKvOpsGenieConfig(kvClient)) {
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
-        commands.push(Commands.LIST);
+        commands.push(Commands.TEAM);
         bindings.push(subscriptionBinding(context));
         bindings.push(alertBinding(context));
-        bindings.push(getAllBinding(context));
+        bindings.push(getTeamBinding(context));
     }
 
     return newCommandBindings(context, bindings, commands);

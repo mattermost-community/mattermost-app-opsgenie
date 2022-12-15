@@ -118,6 +118,7 @@
       "command-own-title": "Tomar posesión de las alertas",
       "command-priority-description": "Actualizar prioridad de alerta en OpsGenie",
       "command-priority-title": "Actualizar la prioridad de la alerta",
+      "command-teams": "Maneja tus equipos de OpsGenie",
       "command-list-all-description": "Mostrar información de OpsGenie",
       "command-list-all-title": "Listar equipos",
       "description-alert": "Lista de alertas"

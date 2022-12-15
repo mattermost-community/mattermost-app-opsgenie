@@ -253,6 +253,7 @@ export const alertBinding = (context: AppContext): AppBinding => {
         Commands.ASSIGN,
         Commands.OWN,
         Commands.PRIORITY,
+        Commands.LIST
     ];
 
     const bindings: AppBinding[] = [];
@@ -266,6 +267,7 @@ export const alertBinding = (context: AppContext): AppBinding => {
     bindings.push(assignAlertBinding(context));
     bindings.push(ownAlertBinding(context));
     bindings.push(updatePriorityAlertBinding(context));
+    bindings.push(listAlertBindig(context));
 
     return {
         label: Commands.ALERT,
@@ -588,47 +590,49 @@ const updatePriorityAlertBinding = (context: AppContext): AppBinding => {
     };
 };
 
-export const getAllBinding = (context: AppContext): any => {
+const listAlertBindig = (context: AppContext): AppBinding => {
     const i18nObj = configureI18n(context);
 
-    const commands: string[] = [
-        Commands.TEAM,
-        Commands.ALERT,
-    ];
+    return {
+        label: Commands.LIST,
+        icon: OpsGenieIcon,
+        description: i18nObj.__('binding.binding.description-alert'),
+        form: {
+            title: i18nObj.__('binding.binding.description-alert'),
+            icon: OpsGenieIcon,
+            fields: [],
+            submit: {
+                path: Routes.App.CallPathAlertsListSubmit,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
+};
+
+export const getTeamBinding = (context: AppContext): any => {
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
-        label: Commands.LIST,
-        description: i18nObj.__('binding.binding.command-list-all-description'),
-        hint: `[${commands.join(' | ')}]`,
+        label: Commands.TEAM,
+        description: i18nObj.__('binding.binding.command-teams'),
+        hint: `[${Commands.LIST}]`,
         bindings: [
             {
                 icon: OpsGenieIcon,
-                label: Commands.TEAM,
+                label: Commands.LIST,
                 description: i18nObj.__('binding.binding.command-list-all-title'),
                 form: {
                     title: '',
                     icon: OpsGenieIcon,
                     submit: {
                         path: Routes.App.CallPathTeamsListSubmit,
-                        expand: { },
+                        expand: {},
                     },
                 },
-            },
-            {
-                icon: OpsGenieIcon,
-                label: Commands.ALERT,
-                description: i18nObj.__('binding.binding.description-alert'),
-                form: {
-                    title: '',
-                    icon: OpsGenieIcon,
-                    submit: {
-                        path: Routes.App.CallPathAlertsListSubmit,
-                        expand: { },
-                    },
-                },
-            },
+            }
         ],
     };
 };
-
