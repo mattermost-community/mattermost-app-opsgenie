@@ -8,15 +8,165 @@ export type AppManifest = {
     root_url?: string;
 }
 
+export type AppExpandLevel = string;
+
+export type AppCallValues = {
+    [name: string]: any;
+};
+
+export type AppCallType = string;
+
+export type AppExpand = {
+    app?: AppExpandLevel;
+    acting_user?: AppExpandLevel;
+    acting_user_access_token?: AppExpandLevel;
+    admin_access_token?: AppExpandLevel;
+    channel?: AppExpandLevel;
+    post?: AppExpandLevel;
+    root_post?: AppExpandLevel;
+    team?: AppExpandLevel;
+    user?: AppExpandLevel;
+    oauth2_app?: AppExpandLevel;
+    oauth2_user?: AppExpandLevel;
+    locale?: AppExpandLevel;
+};
+
+export type AppCall = {
+    path: string;
+    expand?: AppExpand;
+    state?: any;
+};
+
+export type AppSelectOption = {
+    label: string;
+    value: string;
+    icon_data?: string;
+};
+
+export type AppFormValue = string | AppSelectOption | boolean | null;
+
+export type AppFormValues = { [name: string]: AppFormValue };
+
+export type AppFieldType = string;
+
+// This should go in mattermost-redux
+export type AppField = {
+    name: string;
+    type: AppFieldType;
+    is_required?: boolean;
+    readonly?: boolean;
+    value?: AppFormValue;
+    description?: string;
+    label?: string;
+    hint?: string;
+    position?: number;
+    modal_label?: string;
+    refresh?: boolean;
+    options?: AppSelectOption[];
+    multiselect?: boolean;
+    subtype?: string;
+    min_length?: number;
+    max_length?: number;
+};
+
+export type AppFormSubmit = {
+    path: string;
+    expand: AppExpand;
+}
+
+export type AppForm = {
+    title?: string;
+    header?: string;
+    footer?: string;
+    icon?: string;
+    submit: AppFormSubmit;
+    fields: AppField[];
+    call?: AppCall;
+    depends_on?: string[];
+};
+
+export type AppActingUser = {
+    id: string,
+    delete_at: number,
+    username: string,
+    auth_service: string,
+    email: string,
+    nickname: string,
+    first_name: string,
+    last_name: string,
+    position: string,
+    roles: string,
+    locale: string,
+    timezone: any,
+    disable_welcome_email: boolean
+}
+
+export type AppChannel = {
+    id: string;
+    create_at: number;
+    update_at: number;
+    delete_at: number;
+    team_id: string;
+    type: string;
+    display_name: string;
+    name: string;
+    header: string;
+    purpose: string;
+    last_post_at: number;
+    total_msg_count: number;
+    extra_update_at: number;
+    creator_id: string;
+    scheme_id: string;
+    props: any;
+    group_constrained: boolean;
+    shared: any;
+    total_msg_count_root: number;
+    policy_id: any;
+    last_root_post_at: number;
+}
+
+export type AppAppConext = {
+    SchemaVersion: string;
+    app_id: string;
+    version: string;
+    homepage_url: string;
+    deploy_type: string;
+    webhook_secret: string;
+    bot_user_id: string;
+    bot_username: string;
+    remote_oauth2: any;
+}
+
+export type AppContext = {
+    app_id: string;
+    location?: string;
+    locale?: string;
+    user_agent?: string;
+    track_as_submit?: boolean;
+    mattermost_site_url?: string;
+    developer_mode?: boolean;
+    app_path?: string;
+    bot_user_id?: string;
+    bot_access_token?: string;
+    app?: AppAppConext;
+    channel?: AppChannel;
+    acting_user?: AppActingUser;
+    acting_user_access_token?: string;
+    oauth2: any;
+};
+
+export type AppCallRequest = AppCall & {
+    context: AppContext;
+    values?: AppCallValues;
+    raw_command?: string;
+    selected_field?: string;
+    query?: string;
+};
+
 export type AppModalState = {
     form: AppForm;
     call: AppCallRequest;
 }
-
-export type AppsState = {
-    location: string;
-    bindings: AppBinding[];
-};
 
 export type AppBinding = {
     location?: string;
@@ -44,24 +194,9 @@ export type AppBinding = {
     form?: AppForm;
 };
 
-export type AppCallValues = {
-    [name: string]: any;
-};
-
-export type AppCallType = string;
-
-export type AppCall = {
-    path: string;
-    expand?: AppExpand;
-    state?: any;
-};
-
-export type AppCallRequest = AppCall & {
-    context: AppContext;
-    values?: AppCallValues;
-    raw_command?: string;
-    selected_field?: string;
-    query?: string;
+export type AppsState = {
+    location: string;
+    bindings: AppBinding[];
 };
 
 export type AppCallDialog<T> = {
@@ -102,56 +237,6 @@ export type AppCallResponse<Res = unknown> = {
     form?: AppForm;
 };
 
-export type AppContext = {
-    app_id: string;
-    location?: string;
-    locale?: string;
-    user_agent?: string;
-    track_as_submit?: boolean;
-    mattermost_site_url?: string;
-    developer_mode?: boolean;
-    app_path?: string;
-    bot_user_id?: string;
-    bot_access_token?: string;
-    app?: {
-        SchemaVersion: string;
-        app_id: string;
-        version: string;
-        homepage_url: string;
-        deploy_type: string;
-        webhook_secret: string;
-        bot_user_id: string;
-        bot_username: string;
-        remote_oauth2: any;
-    },
-    channel?: {
-        id: string;
-        create_at: number;
-        update_at: number;
-        delete_at: number;
-        team_id: string;
-        type: string;
-        display_name: string;
-        name: string;
-        header: string;
-        purpose: string;
-        last_post_at: number;
-        total_msg_count: number;
-        extra_update_at: number;
-        creator_id: string;
-        scheme_id: string;
-        props: any;
-        group_constrained: boolean;
-        shared: any;
-        total_msg_count_root: number;
-        policy_id: any;
-        last_root_post_at: number;
-    }
-    acting_user?: AppActingUser;
-    acting_user_access_token?: string;
-    oauth2: any;
-};
-
 export type AppContextProps = {
     [name: string]: string;
 };
@@ -162,97 +247,6 @@ export type ExpandedBotActingUser = AppContext & {
     bot_user_id: string,
     bot_access_token: string,
 }
-
-export type AppExpandLevel = string;
-
-export type AppActingUser = {
-    id: string,
-    delete_at: number,
-    username: string,
-    auth_service: string,
-    email: string,
-    nickname: string,
-    first_name: string,
-    last_name: string,
-    position: string,
-    roles: string,
-    locale: string,
-    timezone: any,
-    disable_welcome_email: boolean
-}
-
-export type AppExpand = {
-    app?: AppExpandLevel;
-    acting_user?: AppExpandLevel;
-    acting_user_access_token?: AppExpandLevel;
-    admin_access_token?: AppExpandLevel;
-    channel?: AppExpandLevel;
-    post?: AppExpandLevel;
-    root_post?: AppExpandLevel;
-    team?: AppExpandLevel;
-    user?: AppExpandLevel;
-    oauth2_app?: AppExpandLevel;
-    oauth2_user?: AppExpandLevel;
-    locale?: AppExpandLevel;
-};
-
-export type AppFormSubmit = {
-    path: string;
-    expand: AppExpand;
-}
-
-export type AppForm = {
-    title?: string;
-    header?: string;
-    footer?: string;
-    icon?: string;
-    submit: AppFormSubmit;
-    fields: AppField[];
-    call?: AppCall;
-    depends_on?: string[];
-};
-
-export type AppFormValue = string | AppSelectOption | boolean | null;
-export type AppFormValues = {[name: string]: AppFormValue};
-
-export type AppSelectOption = {
-    label: string;
-    value: string;
-    icon_data?: string;
-};
-
-export type AppFieldType = string;
-
-// This should go in mattermost-redux
-export type AppField = {
-
-    // Name is the name of the JSON field to use.
-    name: string;
-    type: AppFieldType;
-    is_required?: boolean;
-    readonly?: boolean;
-
-    // Present (default) value of the field
-    value?: AppFormValue;
-
-    description?: string;
-
-    label?: string;
-    hint?: string;
-    position?: number;
-
-    modal_label?: string;
-
-    // Select props
-    refresh?: boolean;
-    options?: AppSelectOption[];
-    multiselect?: boolean;
-
-    // Text props
-    subtype?: string;
-    min_length?: number;
-    max_length?: number;
-};
 
 export type AutocompleteSuggestion = {
     suggestion: string;

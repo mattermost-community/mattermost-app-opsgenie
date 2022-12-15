@@ -35,10 +35,10 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
-    const params: ListIntegrationsParams = {
+    const integrationParams: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
     };
-    const responseIntegration: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(params), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const integrationsResult: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -46,7 +46,7 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const promises: Promise<Subscription>[] = responseIntegration.data.map((int: Integrations) => {
+    const promises: Promise<Subscription>[] = integrationsResult.data.map((int: Integrations) => {
         return new Promise(async (resolve, reject) => {
             const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
             const integration: Integration = responseIntegration.data;
@@ -64,5 +64,5 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
         });
     });
 
-    return await Promise.all(promises);
+    return Promise.all(promises);
 }

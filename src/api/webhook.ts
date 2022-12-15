@@ -32,6 +32,7 @@ import { configureI18n } from '../utils/translations';
 import { getAlertDetailUrl } from '../utils/utils';
 import { hyperlink } from '../utils/markdown';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { WebhookFunction } from '../types/functions';
 
 async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
@@ -540,7 +541,7 @@ async function notifyUpdatePriorityAlert(webhookRequest: WebhookRequest<AssignWe
     await mattermostClient.createPost(payload);
 }
 
-const WEBHOOKS_ACTIONS: { [key: string]: Function } = {
+const WEBHOOKS_ACTIONS: { [key: string]: WebhookFunction } = {
     Create: notifyAlertCreated,
     AddNote: notifyNoteCreated,
     Close: notifyCloseAlert,
@@ -560,7 +561,7 @@ export const incomingWebhook = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
     try {
         console.log('data', webhookRequest.data);
-        const action: Function = WEBHOOKS_ACTIONS[webhookRequest.data.action];
+        const action: WebhookFunction = WEBHOOKS_ACTIONS[webhookRequest.data.action];
         if (action) {
             await action(webhookRequest, context);
         }

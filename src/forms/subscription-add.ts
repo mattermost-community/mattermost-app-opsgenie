@@ -68,12 +68,12 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     const integrations: Integrations[] = responseIntegrations.data;
 
     for (const integration of integrations) {
-        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error')); // eslint-disable-line no-await-in-loop
         const auxIntegration: Integration = responseIntegration.data;
-        const queryParams: ParsedUrl = queryString.parseUrl(auxIntegration.url);
-        const params: ParsedQuery = queryParams.query;
+        const parsedQuery: ParsedUrl = queryString.parseUrl(auxIntegration.url);
+        const queryParams: ParsedQuery = parsedQuery.query;
 
-        if (<string>params.channelId === channelId) {
+        if (<string>queryParams.channelId === channelId) {
             throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.subcription-add.exception', { name: team.name, channelName }));
         }
     }

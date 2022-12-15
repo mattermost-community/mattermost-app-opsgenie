@@ -1,14 +1,11 @@
 import {
     Alert, AlertAck,
-    AlertWebhook,
     AppCallAction,
     AppCallRequest,
     AppCallValues, AppContext,
     AppContextAction,
     Identifier,
     IdentifierType,
-    PostCreate,
-    PostEphemeralCreate,
     PostResponse,
     ResponseResultWithData,
 } from '../types';
@@ -36,10 +33,10 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     };
     const kvStoreClient = new KVStoreClient(options);
 
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+    const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: kvConfig.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -86,10 +83,10 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>, cont
         };
         const kvStoreClient = new KVStoreClient(options);
 
-        const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+        const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
         const optionsOpsgenie: OpsGenieOptions = {
-            api_key: config.opsgenie_apikey,
+            api_key: kvConfig.opsgenie_apikey,
         };
         const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
