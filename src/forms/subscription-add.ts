@@ -3,6 +3,9 @@ import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 import {
     AppCallRequest,
     AppCallValues,
+    AppForm,
+    AppFormValue,
+    AppSelectOption,
     Identifier,
     IdentifierType,
     Integration,
@@ -12,9 +15,6 @@ import {
     ListIntegrationsParams,
     ResponseResultWithData,
     Team,
-    AppForm,
-    AppSelectOption,
-    AppFormValue,
 } from '../types';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys, SubscriptionCreateForm } from '../constant';
@@ -22,6 +22,7 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
+
 import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
@@ -98,21 +99,20 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     return i18nObj.__('api.subcription.message-created');
 }
 
-
 export async function subscriptionAddFormCall(call: AppCallRequest): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
     const currChannel = call.context.channel;
     const channelOption: AppFormValue = {
         label: <string>currChannel?.name,
-        value: <string>currChannel?.id
-    }
+        value: <string>currChannel?.id,
+    };
 
-    const teams = await getAllTeamsCall(call)
-    const teamOptions: AppSelectOption[] = teams.map(team => {
+    const teams = await getAllTeamsCall(call);
+    const teamOptions: AppSelectOption[] = teams.map((team) => {
         return {
             label: team.name,
-            value: team.id
-        } as AppSelectOption
+            value: team.id,
+        } as AppSelectOption;
     });
 
     const form: AppForm = {
@@ -133,7 +133,7 @@ export async function subscriptionAddFormCall(call: AppCallRequest): Promise<App
                 type: AppFieldTypes.STATIC_SELECT,
                 is_required: true,
                 position: 1,
-                options: teamOptions
+                options: teamOptions,
             },
             {
                 modal_label: i18nObj.__('binding.binding.name-channel'),
@@ -141,7 +141,7 @@ export async function subscriptionAddFormCall(call: AppCallRequest): Promise<App
                 type: AppFieldTypes.CHANNEL,
                 is_required: true,
                 position: 2,
-                value: channelOption
+                value: channelOption,
             },
         ],
     };

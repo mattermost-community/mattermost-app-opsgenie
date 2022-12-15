@@ -1,10 +1,10 @@
 import {
+    AppActingUser,
     AppCallRequest,
     AppCallValues,
     AppForm,
     IntegrationType,
     ListIntegrationsParams,
-    AppActingUser,
 } from '../types';
 import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
@@ -24,7 +24,7 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
     }
 
     const options: KVStoreOptions = {
-        mattermostUrl: mattermostUrl,
+        mattermostUrl,
         accessToken: botAccessToken,
     };
     const kvStoreClient = new KVStoreClient(options);
@@ -80,7 +80,7 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string
     await tryPromise(opsgenieClient.listIntegrations(params), ExceptionType.TEXT_ERROR, i18nObj.__('forms.configure-admin.exception'));
 
     const options: KVStoreOptions = {
-        mattermostUrl: mattermostUrl,
+        mattermostUrl,
         accessToken: botAccessToken,
     };
     const kvStoreClient = new KVStoreClient(options);

@@ -1,5 +1,7 @@
+import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
+
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, Channel, Integration, Integrations, IntegrationType, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
+import { Account, AppActingUser, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 
@@ -7,12 +9,12 @@ import config from '../config';
 
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+
 import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 
-import { hyperlink } from './markdown'; 
-import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
-import { MattermostOptions, MattermostClient } from '../clients/mattermost';
+import { hyperlink } from './markdown';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -101,7 +103,6 @@ export const getAlertLink = async (alertTinyId: string, alertID: string, opsGeni
 };
 
 export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any) => {
-
     const kvStore: KVStoreClient = new KVStoreClient(options);
 
     const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
@@ -141,7 +142,7 @@ export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any)
 
     const integrations: Subscription[] = webhookSubscriptionArray(await Promise.all(promises));
     return integrations;
-}
+};
 
 export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
     return array.filter((el): el is Subscription => typeof (el) !== 'undefined');

@@ -166,7 +166,7 @@ export const subscriptionAddBinding = (context: AppContext): any => {
                     oauth2_user: AppExpandLevels.EXPAND_ALL,
                     channel: AppExpandLevels.EXPAND_SUMMARY,
                 },
-            }
+            },
         },
     };
 };
@@ -225,7 +225,7 @@ export const alertBinding = (context: AppContext): AppBinding => {
         Commands.ASSIGN,
         Commands.OWN,
         Commands.PRIORITY,
-        Commands.LIST
+        Commands.LIST,
     ];
 
     const bindings: AppBinding[] = [];
@@ -604,7 +604,7 @@ export const getTeamBinding = (context: AppContext): any => {
                         expand: {},
                     },
                 },
-            }
+            },
         ],
     };
 };

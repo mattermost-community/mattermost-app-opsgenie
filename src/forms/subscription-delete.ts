@@ -46,13 +46,13 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
     if (!integrations.length) {
         throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-subscriptions'));
     }
-    
-    const subscriptionOptions: AppSelectOption[] = integrations.map(integration => {
+
+    const subscriptionOptions: AppSelectOption[] = integrations.map((integration) => {
         return {
             label: i18nObj.__('binding.binding.command-delete-value', { integration: integration.integrationId, name: integration.ownerTeam.name, channelName: integration.channelName }),
-            value: integration.integrationId
-        } as AppSelectOption
-    })
+            value: integration.integrationId,
+        } as AppSelectOption;
+    });
 
     const form: AppForm = {
         title: i18nObj.__('binding.binding.command-delete-title'),
@@ -72,7 +72,7 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
                 type: AppFieldTypes.STATIC_SELECT,
                 is_required: true,
                 position: 1,
-                options: subscriptionOptions
+                options: subscriptionOptions,
             },
         ],
     };
