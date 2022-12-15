@@ -1,5 +1,6 @@
-import axios, {AxiosResponse} from 'axios';
-import {AppsPluginName, Routes} from '../constant';
+import axios, { AxiosResponse } from 'axios';
+
+import { AppsPluginName, Routes } from '../constant';
 
 export interface KVStoreOptions {
     mattermostUrl: string;

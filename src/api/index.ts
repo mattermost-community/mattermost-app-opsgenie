@@ -1,5 +1,7 @@
-import express, {Router} from 'express';
-import {Routes} from '../constant';
+import express, { Router } from 'express';
+
+import { Routes } from '../constant';
+
 import * as cManifest from './manifest';
 import * as cBindings from './bindings';
 import * as cInstall from './install';
@@ -9,7 +11,7 @@ import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cSubscription from './subscription';
 import * as cWebhook from './webhook';
-import {connectAccountLoginSubmit} from "./configure";
+import { connectAccountLoginSubmit } from './configure';
 
 const router: Router = express.Router();
 

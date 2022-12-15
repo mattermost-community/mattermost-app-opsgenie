@@ -1,36 +1,37 @@
+import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
+
 import {
     AppCallRequest,
     Channel,
     Integration,
-    Integrations,
     IntegrationType,
+    Integrations,
     ListIntegrationsParams,
     ResponseResultWithData,
     Subscription,
 } from '../types';
-import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {ExceptionType, StoreKeys} from '../constant';
-import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {configureI18n} from "../utils/translations";
-import {tryPromise} from '../utils/utils';
-import queryString, {ParsedQuery, ParsedUrl} from "query-string";
-import {MattermostClient, MattermostOptions} from '../clients/mattermost';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { ExceptionType, StoreKeys } from '../constant';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
+import { configureI18n } from '../utils/translations';
+import { tryPromise } from '../utils/utils';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
 export async function subscriptionListCall(call: AppCallRequest): Promise<Subscription[]> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-		const i18nObj = configureI18n(call.context);
+    const i18nObj = configureI18n(call.context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken
+        accessToken: <string>botAccessToken,
     };
     const kvStore: KVStoreClient = new KVStoreClient(options);
 
     const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
 
     const optionsOps: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey
+        api_key: configStore.opsgenie_apikey,
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
@@ -41,7 +42,7 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken
+        accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
@@ -52,13 +53,13 @@ export async function subscriptionListCall(call: AppCallRequest): Promise<Subscr
 
             const queryParams: ParsedUrl = queryString.parseUrl(integration.url);
             const params: ParsedQuery = queryParams.query;
-            const channel: Channel = await mattermostClient.getChannel(<string>params['channelId']);
+            const channel: Channel = await mattermostClient.getChannel(<string>params.channelId);
 
             resolve({
                 integrationId: int.id,
                 ...responseIntegration.data,
                 channelId: channel.id,
-                channelName: channel.name
+                channelName: channel.name,
             } as Subscription);
         });
     });

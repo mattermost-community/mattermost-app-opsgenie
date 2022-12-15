@@ -1,17 +1,20 @@
-import {addHours, addMinutes, addDays, format, endOfDay} from 'date-fns';
+import { addDays, addHours, addMinutes, endOfDay, format } from 'date-fns';
+
 import {
-		Alert,
-		AlertSnooze,
-		AppCallAction,
-		AppCallRequest,
-		AppCallValues, AppContext,
-		AppContextAction,
-		Identifier,
-		IdentifierType,
-		ResponseResultWithData
+    Alert,
+    AlertSnooze,
+    AppCallAction,
+    AppCallRequest,
+    AppCallValues, AppContext,
+    AppContextAction,
+    Identifier,
+    IdentifierType,
+    ResponseResultWithData,
 } from '../types';
 import {
     ExceptionType,
+    SnoozeAlertForm,
+    StoreKeys,
     option_time_10m,
     option_time_15m,
     option_time_1d,
@@ -20,13 +23,11 @@ import {
     option_time_30m,
     option_time_5m,
     option_time_6h,
-    SnoozeAlertForm,
-    StoreKeys
 } from '../constant';
-import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {configureI18n} from "../utils/translations";
-import {getAlertLink, tryPromise} from '../utils/utils';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
+import { configureI18n } from '../utils/translations';
+import { getAlertLink, tryPromise } from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
 export async function createSnoozeAlertCall(call: AppCallRequest): Promise<string> {
@@ -34,7 +35,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
-		const i18nObj = configureI18n(call.context);
+    const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[SnoozeAlertForm.NOTE_TINY_ID];
     const timeAmount: string = values?.[SnoozeAlertForm.TIME_AMOUNT].value;
@@ -48,18 +49,17 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey
+        api_key: config.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
+        identifierType: IdentifierType.TINY,
     };
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = response.data;
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
-
 
     const currentDate: Date = new Date();
     const date: { [key: string]: Date } = {
@@ -76,10 +76,10 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
     const endTime: string = date[timeAmount].toISOString();
     const data: AlertSnooze = {
         endTime,
-        user: username
+        user: username,
     };
-    await tryPromise(opsGenieClient.snoozeAlert(identifier, data),  ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    return i18nObj.__('forms.create-snooze.response', { url: alertURL, time: timeAmount })
+    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('forms.create-snooze.response', { url: alertURL, time: timeAmount });
 }
 
 export async function createSnoozeAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<Alert> {
@@ -87,7 +87,7 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const postId: string = call.post_id;
     const username: string | undefined = call.user_name;
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const alertTinyId: string | undefined = call.context.alert.tinyId;
     const timeAmount: string | undefined = call.context.selected_option;
@@ -102,18 +102,18 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: botAccessToken
+        accessToken: botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey
+        api_key: config.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
+        identifierType: IdentifierType.TINY,
     };
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
@@ -132,10 +132,10 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
     const endTime: string = format(endOfDay(date[<string>timeAmount]), 'yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
     const data: AlertSnooze = {
         endTime,
-        user: username
+        user: username,
     };
     await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     await mattermostClient.deletePost(postId);
-    
+
     return responseAlert.data;
 }

@@ -1,4 +1,4 @@
-import {UserProfile} from "./mattermost";
+import { UserProfile } from './mattermost';
 
 export type AppManifest = {
     app_id: string;
@@ -225,6 +225,7 @@ export type AppFieldType = string;
 
 // This should go in mattermost-redux
 export type AppField = {
+
     // Name is the name of the JSON field to use.
     name: string;
     type: AppFieldType;
@@ -296,6 +297,6 @@ export type AppContextAction = {
     mattermost_site_url: string;
     bot_access_token: string;
     selected_option?: string;
-		locale: string;
+    locale: string;
 }
 

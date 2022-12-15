@@ -6,15 +6,15 @@ import {
     Identifier,
     IdentifierType,
     ResponseResultWithData,
-    User
+    User,
 } from '../types';
-import {ExceptionType, StoreKeys, TakeOwnershipAlertForm} from '../constant';
-import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {configureI18n} from "../utils/translations";
-import {getAlertLink, tryPromise} from '../utils/utils';
-import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {Exception} from "../utils/exception";
+import { ExceptionType, StoreKeys, TakeOwnershipAlertForm } from '../constant';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
+import { configureI18n } from '../utils/translations';
+import { getAlertLink, tryPromise } from '../utils/utils';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+import { Exception } from '../utils/exception';
 
 export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -22,7 +22,7 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
     const username: string | undefined = call.context.acting_user?.username;
     const userId: string | undefined = call.context.acting_user?.id;
     const values: AppCallValues | undefined = call.values;
-		const i18nObj = configureI18n(call.context);
+    const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[TakeOwnershipAlertForm.NOTE_TINY_ID];
 
@@ -35,28 +35,28 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey
+        api_key: config.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: botAccessToken
+        accessToken: botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     const mattermostUser: User = await mattermostClient.getUser(<string>userId);
 
     const identifierUser: Identifier = {
         identifier: mattermostUser.email,
-        identifierType: IdentifierType.USERNAME
-    }
+        identifierType: IdentifierType.USERNAME,
+    };
     await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
+        identifierType: IdentifierType.TINY,
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier),  ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = responseAlert.data;
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
@@ -67,8 +67,8 @@ export async function takeOwnershipAlertCall(call: AppCallRequest): Promise<stri
     const data: AlertAssign = {
         user: username,
         owner: {
-            username: mattermostUser.email
-        }
+            username: mattermostUser.email,
+        },
     };
     await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.ownership.response', { url: alertURL });

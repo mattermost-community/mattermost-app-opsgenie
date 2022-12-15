@@ -1,22 +1,23 @@
-import {
-		Alert,
-		AlertAck,
-		AlertClose,
-		AlertStatus, AlertWebhook, AppCallAction,
-		AppCallRequest,
-		AppCallValues, AppContext, AppContextAction,
-		Identifier,
-		IdentifierType,
-		PostUpdate,
-		ResponseResultWithData
-} from '../types';
-import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {AckAlertForm, CloseAlertForm, ExceptionType, StoreKeys} from '../constant';
-import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {configureI18n} from "../utils/translations";
-import {getAlertLink, tryPromise} from '../utils/utils';
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import * as _ from 'lodash';
+
+import {
+    Alert,
+    AlertAck,
+    AlertClose,
+    AlertStatus, AlertWebhook, AppCallAction,
+    AppCallRequest,
+    AppCallValues, AppContext, AppContextAction,
+    Identifier,
+    IdentifierType,
+    PostUpdate,
+    ResponseResultWithData,
+} from '../types';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
+import { AckAlertForm, CloseAlertForm, ExceptionType, StoreKeys } from '../constant';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { configureI18n } from '../utils/translations';
+import { getAlertLink, tryPromise } from '../utils/utils';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { Exception } from '../utils/exception';
 
 export async function closeAlertCall(call: AppCallRequest): Promise<string> {
@@ -24,7 +25,7 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
-		const i18nObj = configureI18n(call.context);
+    const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[CloseAlertForm.NOTE_TINY_ID];
 
@@ -37,26 +38,26 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey
+        api_key: config.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
+        identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN,  i18nObj.__('forms.error'));
+    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = response.data;
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.status === AlertStatus.CLOSED) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }), );
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }),);
     }
 
     const data: AlertClose = {
-        user: username
+        user: username,
     };
-    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN,  i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.close-alert.response-close-alert');
 }
 
@@ -66,11 +67,11 @@ export async function closeAlertAction(call: AppCallAction<AppContextAction>, co
     const username: string | undefined = call.user_name;
     const values: AppCallValues | undefined = call.context.alert;
     const postId: string = call.post_id;
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken
+        accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
@@ -83,13 +84,13 @@ export async function closeAlertAction(call: AppCallAction<AppContextAction>, co
     const kvStoreClient = new KVStoreClient(options);
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey
+        api_key: config.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
+        identifierType: IdentifierType.TINY,
     };
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = response.data;
@@ -99,23 +100,23 @@ export async function closeAlertAction(call: AppCallAction<AppContextAction>, co
     }
 
     const data: AlertAck = {
-        user: username
+        user: username,
     };
     await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     await updatePostCloseAlert(mattermostClient, postId, context);
 }
 
 async function updatePostCloseAlert(mattermostClient: MattermostClient, postId: string, context: AppContext) {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const currentPost = await tryPromise(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const newProps = _.cloneDeep(currentPost.props);
     newProps.attachments[0].actions = [];
-    newProps.attachments[0].color = "#AD251C";
+    newProps.attachments[0].color = '#AD251C';
     const updatePost: PostUpdate = {
         id: postId,
-        props: newProps
-    }
+        props: newProps,
+    };
     await mattermostClient.updatePost(postId, updatePost);
 }

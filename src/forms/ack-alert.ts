@@ -1,23 +1,23 @@
 import {
-		Alert, AlertAck,
-		AlertWebhook,
-		AppCallAction,
-		AppCallRequest,
-		AppCallValues, AppContext,
-		AppContextAction,
-		Identifier,
-		IdentifierType,
-		PostCreate,
-		PostEphemeralCreate,
-		PostResponse,
-		ResponseResultWithData,
+    Alert, AlertAck,
+    AlertWebhook,
+    AppCallAction,
+    AppCallRequest,
+    AppCallValues, AppContext,
+    AppContextAction,
+    Identifier,
+    IdentifierType,
+    PostCreate,
+    PostEphemeralCreate,
+    PostResponse,
+    ResponseResultWithData,
 } from '../types';
-import {AckAlertForm, ActionsEvents, ExceptionType, options_alert, Routes, StoreKeys} from '../constant';
-import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {ConfigStoreProps, KVStoreClient, KVStoreOptions} from '../clients/kvstore';
-import {configureI18n} from "../utils/translations";
-import {getAlertLink, tryPromise} from '../utils/utils';
-import {Exception} from "../utils/exception";
+import { AckAlertForm, ActionsEvents, ExceptionType, Routes, StoreKeys, options_alert } from '../constant';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { configureI18n } from '../utils/translations';
+import { getAlertLink, tryPromise } from '../utils/utils';
+import { Exception } from '../utils/exception';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import config from '../config';
 
@@ -26,7 +26,7 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
-		const i18nObj = configureI18n(call.context);
+    const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
 
@@ -39,13 +39,13 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey
+        api_key: config.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
-        identifierType: IdentifierType.TINY
+        identifierType: IdentifierType.TINY,
     };
     const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const alert: Alert = response.data;
@@ -56,7 +56,7 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     }
 
     const data: AlertAck = {
-        user: username
+        user: username,
     };
     await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.response-ack', { url: alertURL });
@@ -71,13 +71,13 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>, cont
     const channelId: string | undefined = call.channel_id;
     const alertTinyId: string = values?.[AckAlertForm.TINY_ID];
     const postId: string = call.post_id;
-    let acknowledged: boolean = false;
+    let acknowledged = false;
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken
+        accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     try {
         const options: KVStoreOptions = {
@@ -89,13 +89,13 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>, cont
         const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
         const optionsOpsgenie: OpsGenieOptions = {
-            api_key: config.opsgenie_apikey
+            api_key: config.opsgenie_apikey,
         };
         const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
         const identifier: Identifier = {
             identifier: alertTinyId,
-            identifierType: IdentifierType.TINY
+            identifierType: IdentifierType.TINY,
         };
         const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         const alert: Alert = response.data;
@@ -104,7 +104,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>, cont
         }
 
         const data: AlertAck = {
-            user: username
+            user: username,
         };
         await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         message = i18nObj.__('forms.message-ack', { alert: alert.tinyId });
@@ -122,7 +122,7 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const postId = call.post_id;
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -130,12 +130,12 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
     };
     const mattermostClient: MattermostClient = new MattermostClient(options);
     const originalPost: PostResponse = await tryPromise(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.mattermost-error'));
-    
+
     const attach = originalPost.props.attachments[0];
     const ackAction = {
         id: acknowledged ? ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT : ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT,
         name: acknowledged ? i18nObj.__('forms.acknowledged') : i18nObj.__('forms.unacknowledged'),
-        integrationUrl: acknowledged ? `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedAction}` : `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledgeAction}`
+        integrationUrl: acknowledged ? `${config.APP.HOST}${Routes.App.CallPathAlertAcknowledgedAction}` : `${config.APP.HOST}${Routes.App.CallPathAlertUnacknowledgeAction}`,
     };
 
     return {
@@ -157,13 +157,13 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                                     alert: {
                                         id: alert.alertId,
                                         message: alert.message,
-                                        tinyId: alert.tinyId
+                                        tinyId: alert.tinyId,
                                     },
-																		locale: context.locale,
+                                    locale: context.locale,
                                     bot_access_token: botAccessToken,
-                                    mattermost_site_url: mattermostUrl
-                                } as AppContextAction
-                            }
+                                    mattermost_site_url: mattermostUrl,
+                                } as AppContextAction,
+                            },
                         },
                         {
                             id: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
@@ -177,13 +177,13 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                                     alert: {
                                         id: alert.alertId,
                                         message: alert.message,
-                                        tinyId: alert.tinyId
+                                        tinyId: alert.tinyId,
                                     },
-																		locale: context.locale,
+                                    locale: context.locale,
                                     bot_access_token: botAccessToken,
-                                    mattermost_site_url: mattermostUrl
-                                } as AppContextAction
-                            }
+                                    mattermost_site_url: mattermostUrl,
+                                } as AppContextAction,
+                            },
                         },
                         {
                             id: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
@@ -197,17 +197,17 @@ export const bodyPostUpdate = async (call: AppCallAction<AppContextAction>, ackn
                                         message: alert.message,
                                         tinyId: alert.tinyId,
                                     },
-																		locale: context.locale,
+                                    locale: context.locale,
                                     bot_access_token: botAccessToken,
-                                    mattermost_site_url: mattermostUrl
-                                } as AppContextAction
+                                    mattermost_site_url: mattermostUrl,
+                                } as AppContextAction,
                             },
                             type: 'select',
-                            options: options_alert
-                        }
-                    ]
-                }
-            ]
-        }
+                            options: options_alert,
+                        },
+                    ],
+                },
+            ],
+        },
     };
-}
+};

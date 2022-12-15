@@ -1,33 +1,33 @@
 import {
-		Alert,
-		AlertAssign,
-		AppCallAction,
-		AppCallResponse, AppContext,
-		AppContextAction,
-		DialogProps,
-		Identifier,
-		IdentifierType,
-		PostCreate,
-		PostEphemeralCreate,
-		ResponseResultWithData,
-		User
+    Alert,
+    AlertAssign,
+    AppCallAction,
+    AppCallResponse, AppContext,
+    AppContextAction,
+    DialogProps,
+    Identifier,
+    IdentifierType,
+    PostCreate,
+    PostEphemeralCreate,
+    ResponseResultWithData,
+    User,
 } from '../types';
-import {MattermostClient, MattermostOptions} from '../clients/mattermost';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import {
     ActionsEvents,
-    option_alert_assign,
-    option_alert_add_note,
-    option_alert_take_ownership,
-    option_alert_snooze,
-    options_times,
-    Routes,
-    NoteModalForm,
     ExceptionType,
-    StoreKeys
+    NoteModalForm,
+    Routes,
+    StoreKeys,
+    option_alert_add_note,
+    option_alert_assign,
+    option_alert_snooze,
+    option_alert_take_ownership,
+    options_times,
 } from '../constant';
 import config from '../config';
-import {OpsGenieClient, OpsGenieOptions} from '../clients/opsgenie';
-import {configureI18n} from "../utils/translations";
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
+import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { Exception } from '../utils/exception';
@@ -38,11 +38,11 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>, conte
     const triggerId: string = call.trigger_id;
     const accessToken: string = call.context.bot_access_token;
     const alertTinyId: string = call.context.alert.tinyId;
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
-        accessToken
+        accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
@@ -61,10 +61,10 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>, conte
                     name: NoteModalForm.NOTE_MESSAGE,
                     placeholder: i18nObj.__('forms.actions.placeholder-note'),
                     optional: false,
-                    max_length: 25000
-                }
+                    max_length: 25000,
+                },
             ],
-        }
+        },
     };
     await mattermostClient.showDialog(dialogProps);
 }
@@ -74,11 +74,11 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const alert: any = call.context.alert;
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
-        accessToken: <string>accessToken
+        accessToken: <string>accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
@@ -100,11 +100,11 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
                                     alert,
-																		locale: context.locale
-                                } as AppContextAction
+                                    locale: context.locale,
+                                } as AppContextAction,
                             },
                             type: 'select',
-                            data_source: 'users'
+                            data_source: 'users',
                         },
                         {
                             id: ActionsEvents.CANCEL_BUTTON_EVENT,
@@ -117,14 +117,14 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
-																		locale: context.locale,
-                                } as AppContextAction
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
+                                    locale: context.locale,
+                                } as AppContextAction,
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
     };
     await mattermostClient.createPost(postCreate);
 }
@@ -133,11 +133,11 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
-        accessToken: <string>accessToken
+        accessToken: <string>accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
@@ -160,10 +160,10 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
                                     alert: call.context.alert,
-																		locale: context.locale
-                                } as AppContextAction
+                                    locale: context.locale,
+                                } as AppContextAction,
                             },
-                            options: options_times
+                            options: options_times,
                         },
                         {
                             id: ActionsEvents.CANCEL_BUTTON_EVENT,
@@ -176,14 +176,14 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
-																		locale: context.locale
-                                } as AppContextAction
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
+                                    locale: context.locale,
+                                } as AppContextAction,
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
     };
     await mattermostClient.createPost(postCreate);
 }
@@ -193,16 +193,16 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, cont
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let message: string;
-		const i18nObj = configureI18n(context);
-    
+    const i18nObj = configureI18n(context);
+
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken
+        accessToken: <string>botAccessToken,
     };
 
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    try{
+    try {
         const alertTinyId: string = call.context.alert.tinyId;
         const userId: string | undefined = call.user_id;
         const username: string | undefined = call.user_name;
@@ -211,42 +211,42 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, cont
             accessToken: <string>botAccessToken,
         };
         const kvStoreClient = new KVStoreClient(options);
-    
+
         const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
         const opsGenieOpt: OpsGenieOptions = {
-            api_key: config.opsgenie_apikey
+            api_key: config.opsgenie_apikey,
         };
         const opsGenieClient = new OpsGenieClient(opsGenieOpt);
-    
+
         const mattermostUser: User = await mattermostClient.getUser(<string>userId);
-    
+
         const identifierUser: Identifier = {
             identifier: mattermostUser.email,
-            identifierType: IdentifierType.USERNAME
-        }
-        
+            identifierType: IdentifierType.USERNAME,
+        };
+
         await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    
+
         const identifier: Identifier = {
             identifier: alertTinyId,
-            identifierType: IdentifierType.TINY
+            identifierType: IdentifierType.TINY,
         };
         const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
         const alert: Alert = responseAlert.data;
-    
+
         if (alert.owner === mattermostUser.email) {
             throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.actions.exception-owner', { alert: alert.tinyId }));
         }
-    
+
         const data: AlertAssign = {
             user: username,
             owner: {
-                username: mattermostUser.email
-            }
+                username: mattermostUser.email,
+            },
         };
-        
+
         await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-        
+
         message = i18nObj.__('forms.actions.response-owner', { alert: alert.tinyId });
     } catch (error: any) {
         message = i18nObj.__('forms.error-ack', { message: error.message });
@@ -254,7 +254,7 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, cont
 
     const post: PostEphemeralCreate = {
         post: {
-            message: message,
+            message,
             channel_id: channelId,
         },
         user_id: call.user_id,
@@ -268,7 +268,7 @@ const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
         [option_alert_add_note]: showModalNoteToAlert,
         [option_alert_take_ownership]: showPostTakeOwnership,
         [option_alert_snooze]: showPostOfTimes,
-    }
+    },
 };
 
 export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
