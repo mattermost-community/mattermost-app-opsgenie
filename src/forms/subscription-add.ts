@@ -20,7 +20,7 @@ import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
 
-export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
+export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const appPath: string | undefined = call.context.app_path;
@@ -91,4 +91,5 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<void> {
     };
 
     await tryPromise(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('api.subcription.message-created');
 }

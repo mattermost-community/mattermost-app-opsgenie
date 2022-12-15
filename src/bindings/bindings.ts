@@ -54,11 +54,11 @@ export const getConfigureBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConfigForm,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                    acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
-                    app: AppExpandLevels.EXPAND_SUMMARY,
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    oauth2_user: AppExpandLevels.EXPAND_ALL,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -99,7 +99,7 @@ export const accountLoginBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -119,7 +119,7 @@ export const accountLogoutBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -163,9 +163,9 @@ export const subscriptionAddBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionAddSubmit,
                 expand: {
-                    app: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
+                    app: AppExpandLevels.EXPAND_ALL,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    oauth2_user: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -202,7 +202,7 @@ export const subscriptionDeleteBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionDeleteSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -233,7 +233,7 @@ export const subscriptionListBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionListSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },

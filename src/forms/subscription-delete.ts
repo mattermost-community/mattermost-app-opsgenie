@@ -5,7 +5,7 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 
-export async function subscriptionDeleteCall(call: AppCallRequest): Promise<void> {
+export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues | undefined = call.values;
@@ -27,4 +27,5 @@ export async function subscriptionDeleteCall(call: AppCallRequest): Promise<void
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
     await tryPromise(opsGenieClient.deleteIntegration(subscriptionId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return i18nObj.__('api.subcription.message-delete');
 }
