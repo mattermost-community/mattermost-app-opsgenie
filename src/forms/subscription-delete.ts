@@ -4,6 +4,7 @@ import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, St
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getIntegrationsList, tryPromise } from '../utils/utils';
+import { Exception } from '../utils/exception';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string = call.context.mattermost_site_url!;
@@ -41,6 +42,10 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
     };
 
     const integrations: Subscription[] = await getIntegrationsList(options, i18nObj);
+
+    if (!integrations.length) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-subscriptions'));
+    }
     
     const subscriptionOptions: AppSelectOption[] = integrations.map(integration => {
         return {

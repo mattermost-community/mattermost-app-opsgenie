@@ -90,6 +90,7 @@
 			"command-delete-description": "Unsubscribe team from channel",
 			"command-delete-title": "Unsubscribe team from channel",
 			"command-delete-value": "- Team Name \"{{ name }}\" - Channel Name \"{{ channelName }}\"",
+			"command-delete-no-subscriptions": "Subscription list is empty",
 			"label-delete": "Subscription to delete",
 			"command-list-description": "List of teams subscribed to channels",
 			"command-list-title": "List of teams subscribed to channels",

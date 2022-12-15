@@ -91,6 +91,7 @@
       "command-delete-title": "Dar de baja al equipo del canal",
       "label-delete": "Suscripción a eliminar",
       "command-delete-value": "- Nombre de equipo \"{{ name }}\" - Canal \"{{ channelName }}\"",
+      "command-delete-no-subscriptions": "No hay subscripciones",
       "command-list-description": "Lista de equipos suscritos a los canales",
       "command-list-title": "Lista de equipos suscritos a los canales",
       "command-alert-description": "Alerta de configuración en OpsGenie",
