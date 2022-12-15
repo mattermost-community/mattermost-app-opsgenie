@@ -8,7 +8,7 @@ import {
 import { AppCallResponse, AppForm } from '../types';
 import { subscriptionAddCall, subscriptionAddFormCall } from '../forms/subscription-add';
 import { subscriptionListCall } from '../forms/subscription-list';
-import { subscriptionDeleteCall } from '../forms/subscription-delete';
+import { subscriptionDeleteCall, subscriptionDeleteFormCall } from '../forms/subscription-delete';
 import { showMessageToMattermost } from '../utils/utils';
 
 export const subscriptionAddForm: CallResponseHandler = async (request: Request, response: Response) => {
@@ -29,6 +29,18 @@ export const subscriptionAddSubmit: CallResponseHandler = async (request: Reques
     try {
         const message = await subscriptionAddCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
+    } catch (error: any) {
+        callResponse = showMessageToMattermost(error);
+    }
+    response.json(callResponse);
+};
+
+export const subscriptionDeleteForm: CallResponseHandler = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        const form: AppForm = await subscriptionDeleteFormCall(request.body);
+        callResponse = newFormCallResponse(form);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }

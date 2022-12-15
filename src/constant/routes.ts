@@ -21,6 +21,7 @@ const AppPaths = {
 
     CallPathSubscriptionAddForm: '/subscription/add/form',
     CallPathSubscriptionAddSubmit: '/subscription/add/submit',
+    CallPathSubscriptionDeleteForm: '/subscription/delete/form',
     CallPathSubscriptionDeleteSubmit: '/subscription/delete/submit',
     CallPathSubscriptionListSubmit: '/subscription/list/submit',
 

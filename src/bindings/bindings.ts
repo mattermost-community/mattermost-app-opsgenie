@@ -184,7 +184,7 @@ export const subscriptionDeleteBinding = (context: AppContext): any => {
             title: i18nObj.__('binding.binding.command-delete-title'),
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathSubscriptionDeleteSubmit,
+                path: Routes.App.CallPathSubscriptionDeleteForm,
                 expand: {
                     oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
