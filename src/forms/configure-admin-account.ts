@@ -3,28 +3,33 @@ import {
     AppCallValues,
     AppForm,
     IntegrationType,
-    Integrations,
     ListIntegrationsParams,
-    ResponseResultWithData,
+    AppActingUser,
 } from '../types';
-import { AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys } from '../constant';
+import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { Exception } from '../utils/exception';
 import { configureI18n } from '../utils/translations';
+import { isUserSystemAdmin, tryPromise } from '../utils/utils';
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const mattermostUrl: string = call.context.mattermost_site_url!;
+    const botAccessToken: string = call.context.bot_access_token!;
     const i18nObj = configureI18n(call.context);
+    const actingUser: AppActingUser = call.context.acting_user!;
+
+    if (!isUserSystemAdmin(actingUser)) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'));
+    }
 
     const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
+        mattermostUrl: mattermostUrl,
+        accessToken: botAccessToken,
     };
     const kvStoreClient = new KVStoreClient(options);
 
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+    const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const form: AppForm = {
         title: i18nObj.__('forms.configure-admin.title'),
@@ -35,24 +40,32 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
                 type: AppFieldTypes.TEXT,
                 name: ConfigureForm.API_KEY,
                 modal_label: i18nObj.__('forms.configure-admin.label'),
-                value: config.opsgenie_apikey,
+                value: kvConfig.opsgenie_apikey,
                 description: i18nObj.__('forms.configure-admin.description'),
                 is_required: true,
             },
         ],
         submit: {
             path: Routes.App.CallPathConfigSubmit,
-            expand: {},
+            expand: {
+                acting_user: AppExpandLevels.EXPAND_SUMMARY,
+                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
+            },
         },
     };
     return form;
 }
 
-export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
+export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string> {
+    const mattermostUrl: string = call.context.mattermost_site_url!;
+    const botAccessToken: string = call.context.bot_access_token!;
     const values: AppCallValues = <any>call.values;
     const i18nObj = configureI18n(call.context);
+    const actingUser: AppActingUser = call.context.acting_user!;
+
+    if (!isUserSystemAdmin(actingUser)) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'));
+    }
 
     const opsGenieApiKey: string = values[ConfigureForm.API_KEY];
 
@@ -64,20 +77,18 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<void> 
     const params: ListIntegrationsParams = {
         type: IntegrationType.API,
     };
-    const integrations: ResponseResultWithData<Integrations[]> = await opsgenieClient.listIntegrations(params);
-    if (!integrations.data.length) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.exception'));
-    }
+    await tryPromise(opsgenieClient.listIntegrations(params), ExceptionType.TEXT_ERROR, i18nObj.__('forms.configure-admin.exception'));
 
     const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
+        mattermostUrl: mattermostUrl,
+        accessToken: botAccessToken,
     };
     const kvStoreClient = new KVStoreClient(options);
 
-    const config: ConfigStoreProps = {
+    const kvConfig: ConfigStoreProps = {
         opsgenie_apikey: opsGenieApiKey,
     };
-    await kvStoreClient.kvSet(StoreKeys.config, config);
+    await kvStoreClient.kvSet(StoreKeys.config, kvConfig);
+    return i18nObj.__('api.configure.success-response');
 }
 

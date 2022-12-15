@@ -146,7 +146,8 @@
       "header": "Configure la aplicación OpsGenie con la siguiente información.",
       "label": "Clave API",
       "description": "Integración de API Clave de API de OpsGenie",
-      "exception": "Your opsgenie setup has no api integration"
+      "exception": "Clave API incorrecta: ",
+      "system-admin": "Error: Este comando únicamente esta habilidato a usuarios Mattertmost System Admin"
     },
     "create-alert": {
       "message": "Nueva alerta \"{{ message }}\" se creará",
