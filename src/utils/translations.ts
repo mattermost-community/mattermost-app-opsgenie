@@ -3,11 +3,11 @@ import path from 'path';
 import { I18n } from 'i18n';
 
 import { LOCALES } from '../constant/locales';
-import { AppContext } from '../types';
+import { AppContext, AppContextAction } from '../types';
 
 let i18n = require('i18n');
 
-export const configureI18n = (context?: AppContext) => {
+export const configureI18n = (context?: AppContext | AppContextAction) => {
     const locale = context?.locale || LOCALES.ENGLISH;
 
     i18n = new I18n({

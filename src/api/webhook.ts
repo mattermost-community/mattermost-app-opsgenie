@@ -560,7 +560,7 @@ export const incomingWebhook = async (request: Request, response: Response) => {
 
     let callResponse: AppCallResponse;
     try {
-        console.log('data', webhookRequest.data);
+        //console.log('data', webhookRequest.data);
         const action: WebhookFunction = WEBHOOKS_ACTIONS[webhookRequest.data.action];
         if (action) {
             await action(webhookRequest, context);

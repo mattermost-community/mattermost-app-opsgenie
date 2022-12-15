@@ -31,14 +31,14 @@ import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { Exception } from '../utils/exception';
-import { newErrorCallResponseWithMessage } from '../utils/call-responses';
+import { OtherActionsFunction } from '../types/functions';
 
-async function showModalNoteToAlert(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
+async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const triggerId: string = call.trigger_id;
     const accessToken: string = call.context.bot_access_token;
     const alertTinyId: string = call.context.alert.tinyId;
-    const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(call.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -69,12 +69,12 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>, conte
     await mattermostClient.showDialog(dialogProps);
 }
 
-async function showPostOfListUsers(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
+async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const alert: any = call.context.alert;
-    const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(call.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -100,7 +100,7 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
                                     alert,
-                                    locale: context.locale,
+                                    locale: call.context.locale,
                                 } as AppContextAction,
                             },
                             type: 'select',
@@ -117,7 +117,7 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
-                                    locale: context.locale,
+                                    locale: call.context.locale,
                                 } as AppContextAction,
                             },
                         },
@@ -129,11 +129,11 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>, contex
     await mattermostClient.createPost(postCreate);
 }
 
-async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
+async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
     const channelId: string = call.channel_id;
     const accessToken: string = call.context.bot_access_token;
-    const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(call.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl,
@@ -160,7 +160,7 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
                                     alert: call.context.alert,
-                                    locale: context.locale,
+                                    locale: call.context.locale,
                                 } as AppContextAction,
                             },
                             options: options_times,
@@ -176,7 +176,7 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
                                     action: ActionsEvents.CANCEL_BUTTON_EVENT,
                                     bot_access_token: call.context.bot_access_token,
                                     mattermost_site_url: mattermostUrl,
-                                    locale: context.locale,
+                                    locale: call.context.locale,
                                 } as AppContextAction,
                             },
                         },
@@ -188,12 +188,12 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>, context: A
     await mattermostClient.createPost(postCreate);
 }
 
-async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
+async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
     let message: string;
-    const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(call.context);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -212,9 +212,9 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, cont
         };
         const kvStoreClient = new KVStoreClient(options);
 
-        const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+        const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
         const opsGenieOpt: OpsGenieOptions = {
-            api_key: config.opsgenie_apikey,
+            api_key: kvConfig.opsgenie_apikey,
         };
         const opsGenieClient = new OpsGenieClient(opsGenieOpt);
 
@@ -262,26 +262,18 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>, cont
     await mattermostClient.createEphemeralPost(post);
 }
 
-const ACTIONS_EVENT: { [key: string]: Function|{[key: string]: Function} } = {
-    [ActionsEvents.OTHER_OPTIONS_SELECT_EVENT]: {
-        [option_alert_assign]: showPostOfListUsers,
-        [option_alert_add_note]: showModalNoteToAlert,
-        [option_alert_take_ownership]: showPostTakeOwnership,
-        [option_alert_snooze]: showPostOfTimes,
-    },
+const ACTIONS_EVENT: { [key: string]: OtherActionsFunction } = {
+    [option_alert_assign]: showPostOfListUsers,
+    [option_alert_add_note]: showModalNoteToAlert,
+    [option_alert_take_ownership]: showPostTakeOwnership,
+    [option_alert_snooze]: showPostOfTimes,
 };
 
 export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
-    const action: string = call.context.action;
-    const selectedOption: string|undefined = call.context.selected_option;
+    const selectedOption: string = call.context.selected_option!;
 
-    const handle: Function|{[key: string]: Function} = ACTIONS_EVENT[action];
-    if (handle && typeof handle === 'object') {
-        const subHandle: Function = handle[<string>selectedOption];
-        if (subHandle) {
-            await subHandle(call);
-        }
-    } else if (handle && typeof handle === 'function') {
+    const handle: OtherActionsFunction = ACTIONS_EVENT[selectedOption];
+    if (handle && typeof handle === 'function') {
         await handle(call);
     }
 }
