@@ -2,13 +2,26 @@ import { Request, Response } from 'express';
 
 import {
     CallResponseHandler,
+    newFormCallResponse,
     newOKCallResponseWithMarkdown,
 } from '../utils/call-responses';
-import { AppCallResponse } from '../types';
-import { subscriptionAddCall } from '../forms/subscription-add';
+import { AppCallResponse, AppForm } from '../types';
+import { subscriptionAddCall, subscriptionAddFormCall } from '../forms/subscription-add';
 import { subscriptionListCall } from '../forms/subscription-list';
 import { subscriptionDeleteCall } from '../forms/subscription-delete';
 import { showMessageToMattermost } from '../utils/utils';
+
+export const subscriptionAddForm: CallResponseHandler = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
+    try {
+        const form: AppForm = await subscriptionAddFormCall(request.body);
+        callResponse = newFormCallResponse(form);
+    } catch (error: any) {
+        callResponse = showMessageToMattermost(error);
+    }
+    response.json(callResponse);
+};
 
 export const subscriptionAddSubmit: CallResponseHandler = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;

@@ -19,6 +19,7 @@ const AppPaths = {
     OAuthCompletePath: '/oauth2/complete',
     OAuthConnectPath: '/oauth2/connect',
 
+    CallPathSubscriptionAddForm: '/subscription/add/form',
     CallPathSubscriptionAddSubmit: '/subscription/add/submit',
     CallPathSubscriptionDeleteSubmit: '/subscription/delete/submit',
     CallPathSubscriptionListSubmit: '/subscription/list/submit',

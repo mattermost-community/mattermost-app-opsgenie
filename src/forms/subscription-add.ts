@@ -12,13 +12,17 @@ import {
     ListIntegrationsParams,
     ResponseResultWithData,
     Team,
+    AppForm,
+    AppSelectOption,
+    AppFormValue,
 } from '../types';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
-import { ExceptionType, Routes, StoreKeys, SubscriptionCreateForm } from '../constant';
+import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys, SubscriptionCreateForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
+import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -28,7 +32,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
 
-    const teamName: string = values?.[SubscriptionCreateForm.TEAM_NAME];
+    const teamId: string = values?.[SubscriptionCreateForm.TEAM_NAME].value;
     const channelId: string = values?.[SubscriptionCreateForm.CHANNEL_ID].value;
     const channelName: string = values?.[SubscriptionCreateForm.CHANNEL_ID].label;
 
@@ -53,8 +57,8 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
     const identifier: Identifier = {
-        identifier: teamName,
-        identifierType: IdentifierType.NAME,
+        identifier: teamId,
+        identifierType: IdentifierType.ID,
     };
     const responseTeam: ResponseResultWithData<Team> = await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     const team: Team = responseTeam.data;
@@ -73,8 +77,8 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
         const parsedQuery: ParsedUrl = queryString.parseUrl(auxIntegration.url);
         const queryParams: ParsedQuery = parsedQuery.query;
 
-        if (<string>queryParams.channelId === channelId) {
-            throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.subcription-add.exception', { name: team.name, channelName }));
+        if (queryParams.channelId === channelId) {
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('forms.subcription-add.exception', { name: team.name, channelName }));
         }
     }
 
@@ -92,4 +96,55 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
 
     await tryPromise(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('api.subcription.message-created');
+}
+
+
+export async function subscriptionAddFormCall(call: AppCallRequest): Promise<AppForm> {
+    const i18nObj = configureI18n(call.context);
+    const currChannel = call.context.channel;
+    const channelOption: AppFormValue = {
+        label: <string>currChannel?.name,
+        value: <string>currChannel?.id
+    }
+
+    const teams = await getAllTeamsCall(call)
+    const teamOptions: AppSelectOption[] = teams.map(team => {
+        return {
+            label: team.name,
+            value: team.id
+        } as AppSelectOption
+    });
+
+    const form: AppForm = {
+        title: i18nObj.__('binding.binding.command-add-title'),
+        icon: OpsGenieIcon,
+        submit: {
+            path: Routes.App.CallPathSubscriptionAddSubmit,
+            expand: {
+                app: AppExpandLevels.EXPAND_ALL,
+                oauth2_app: AppExpandLevels.EXPAND_ALL,
+                oauth2_user: AppExpandLevels.EXPAND_ALL,
+            },
+        },
+        fields: [
+            {
+                modal_label: i18nObj.__('binding.binding.name-team'),
+                name: SubscriptionCreateForm.TEAM_NAME,
+                type: AppFieldTypes.STATIC_SELECT,
+                is_required: true,
+                position: 1,
+                options: teamOptions
+            },
+            {
+                modal_label: i18nObj.__('binding.binding.name-channel'),
+                name: SubscriptionCreateForm.CHANNEL_ID,
+                type: AppFieldTypes.CHANNEL,
+                is_required: true,
+                position: 2,
+                value: channelOption
+            },
+        ],
+    };
+
+    return form;
 }

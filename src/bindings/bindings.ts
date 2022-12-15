@@ -161,30 +161,14 @@ export const subscriptionAddBinding = (context: AppContext): any => {
             title: i18nObj.__('binding.binding.command-add-title'),
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathSubscriptionAddSubmit,
+                path: Routes.App.CallPathSubscriptionAddForm,
                 expand: {
                     app: AppExpandLevels.EXPAND_ALL,
                     oauth2_app: AppExpandLevels.EXPAND_ALL,
                     oauth2_user: AppExpandLevels.EXPAND_ALL,
+                    channel: AppExpandLevels.EXPAND_SUMMARY,
                 },
-            },
-            fields: [
-                {
-                    modal_label: i18nObj.__('binding.binding.name-team'),
-                    name: SubscriptionCreateForm.TEAM_NAME,
-                    type: AppFieldTypes.TEXT,
-                    is_required: true,
-                    position: 1,
-                    max_length: 100,
-                },
-                {
-                    modal_label: i18nObj.__('binding.binding.name-channel'),
-                    name: SubscriptionCreateForm.CHANNEL_ID,
-                    type: AppFieldTypes.CHANNEL,
-                    is_required: true,
-                    position: 2,
-                },
-            ],
+            }
         },
     };
 };

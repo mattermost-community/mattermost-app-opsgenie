@@ -176,7 +176,7 @@
 			"response": "Updated {{ url }} priority to {{ priority }}"
 		},
 		"subcription-add": {
-			"exception": "el equipo [{{ name }}] ya está asociado con el canal [{{ channelName }]"
+			"exception": "Team [{{name}}] is already associated with channel [{{channelName}}]"
 		},
 		"ownership": {
 			"exception": "Take ownership request will be processed for {{ url }}",

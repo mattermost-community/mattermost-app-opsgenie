@@ -23,6 +23,7 @@ router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
 router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
 
+router.post(`${Routes.App.CallPathSubscriptionAddForm}`, cSubscription.subscriptionAddForm);
 router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, cSubscription.subscriptionAddSubmit);
 router.post(`${Routes.App.CallPathSubscriptionDeleteSubmit}`, cSubscription.subscriptionDeleteSubmit);
 router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, cSubscription.subscriptionListSubmit);
