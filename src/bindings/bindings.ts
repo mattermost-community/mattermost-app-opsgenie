@@ -12,8 +12,6 @@ import {
     PriorityAlertForm,
     Routes,
     SnoozeAlertForm,
-    SubscriptionCreateForm,
-    SubscriptionDeleteForm,
     TakeOwnershipAlertForm,
     UnackAlertForm,
     option_alert_priority_p3,
@@ -189,17 +187,7 @@ export const subscriptionDeleteBinding = (context: AppContext): any => {
                     oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
             },
-            fields: [
-                {
-                    modal_label: i18nObj.__('binding.binding.label-delete'),
-                    name: SubscriptionDeleteForm.SUBSCRIPTION_ID,
-                    type: AppFieldTypes.TEXT,
-                    is_required: true,
-                    position: 1,
-                    max_length: 36,
-                    min_length: 36,
-                },
-            ],
+            fields: [],
         },
     };
 };

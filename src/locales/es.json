@@ -51,7 +51,7 @@
       "message-created": "Se creará la suscripción",
       "message-delete": "Se eliminará la suscripción.",
       "message-list": "Lista de suscripciones: se encontraron {{ integrations }} suscripciones abiertas.",
-      "detail-list": "- ID de suscripción: \"{{ integration }}\" - Nombre del equipo \"{{ name }}\" - Nombre del canal \"{{ channelName }}\""
+      "detail-list": "- Nombre del equipo \"{{ name }}\" - Nombre del canal \"{{ channelName }}\""
     },
     "team": {
       "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
@@ -89,7 +89,8 @@
       "name-channel": "Canal",
       "command-delete-description": "Dar de baja al equipo del canal",
       "command-delete-title": "Dar de baja al equipo del canal",
-      "label-delete": "ID de suscripción",
+      "label-delete": "Suscripción a eliminar",
+      "command-delete-value": "- Nombre de equipo \"{{ name }}\" - Canal \"{{ channelName }}\"",
       "command-list-description": "Lista de equipos suscritos a los canales",
       "command-list-title": "Lista de equipos suscritos a los canales",
       "command-alert-description": "Alerta de configuración en OpsGenie",

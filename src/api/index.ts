@@ -25,6 +25,7 @@ router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccou
 
 router.post(`${Routes.App.CallPathSubscriptionAddForm}`, cSubscription.subscriptionAddForm);
 router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, cSubscription.subscriptionAddSubmit);
+router.post(`${Routes.App.CallPathSubscriptionDeleteForm}`, cSubscription.subscriptionDeleteForm);
 router.post(`${Routes.App.CallPathSubscriptionDeleteSubmit}`, cSubscription.subscriptionDeleteSubmit);
 router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, cSubscription.subscriptionListSubmit);
 

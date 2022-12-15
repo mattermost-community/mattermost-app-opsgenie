@@ -1,16 +1,18 @@
 import GeneralConstants from '../constant/general';
-import { Account, Alert, AppActingUser, AppCallResponse, Identifier, IdentifierType, ResponseResultWithData } from '../types';
+import { Account, AppActingUser, AppCallResponse, Channel, Integration, Integrations, IntegrationType, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
-import { ConfigStoreProps, KVStoreClient } from '../clients/kvstore';
+import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 
 import config from '../config';
 
-import { OpsGenieClient } from '../clients/opsgenie';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 
 import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 
-import { hyperlink } from './markdown';
+import { hyperlink } from './markdown'; 
+import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
+import { MattermostOptions, MattermostClient } from '../clients/mattermost';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -97,3 +99,50 @@ export const getAlertLink = async (alertTinyId: string, alertID: string, opsGeni
     );
     return `${hyperlink(`#${alertTinyId}`, alertDetailUrl)}`;
 };
+
+export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any) => {
+
+    const kvStore: KVStoreClient = new KVStoreClient(options);
+
+    const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
+
+    const optionsOps: OpsGenieOptions = {
+        api_key: configStore.opsgenie_apikey,
+    };
+    const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
+
+    const integrationParams: ListIntegrationsParams = {
+        type: IntegrationType.WEBHOOK,
+    };
+    const integrationsResult: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+    const mattermostClient: MattermostClient = new MattermostClient(options);
+
+    const promises: Promise<Subscription | undefined>[] = integrationsResult.data.map(async (int: Integrations) => {
+        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        const integration: Integration = responseIntegration.data;
+
+        const queryParams: ParsedUrl = queryString.parseUrl(integration.url);
+        const params: ParsedQuery = queryParams.query;
+        try {
+            const channel: Channel = await mattermostClient.getChannel(<string>params.channelId);
+            return new Promise((resolve, reject) => {
+                resolve({
+                    integrationId: int.id,
+                    ...responseIntegration.data,
+                    channelId: channel.id,
+                    channelName: channel.name,
+                } as Subscription);
+            });
+        } catch (error) {
+            return Promise.resolve(undefined);
+        }
+    });
+
+    const integrations: Subscription[] = webhookSubscriptionArray(await Promise.all(promises));
+    return integrations;
+}
+
+export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
+    return array.filter((el): el is Subscription => typeof (el) !== 'undefined');
+}
