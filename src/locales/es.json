@@ -134,7 +134,7 @@
     }
   },
   "forms": {
-    "error": "OpsGenie falló",
+    "error": "OpsGenie falló: ",
     "exception-ack": "Ya has reconocido {{ url }}",
     "response-ack": "Has reconocido {{ url }}",
     "message-ack": "Has reconocido #{{ alert }}",

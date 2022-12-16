@@ -135,7 +135,7 @@
 		}
 	},
 	"forms": {
-		"error": "OpsGenie failed",
+		"error": "OpsGenie failed: ",
 		"exception-ack": "You already have acknowledged {{ url }}",
 		"response-ack": "You have acknowledged {{ url }}",
 		"message-ack": "You have acknowledged #{{ alert }}",

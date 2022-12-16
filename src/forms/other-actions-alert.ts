@@ -68,64 +68,31 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
     return form;
 }
 
-async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<void> {
-    const mattermostUrl: string = call.context.mattermost_site_url;
-    const channelId: string = call.context.post.channel_id;
-    const accessToken: string = call.context.bot_access_token;
-    const alert: any = call.context.alert;
+async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
-
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl,
-        accessToken: <string>accessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-
-    const postCreate: PostCreate = {
-        channel_id: channelId,
-        message: '',
-        props: {
-            attachments: [
-                {
-                    title: i18nObj.__('forms.actions.title-list-user'),
-                    actions: [
-                        {
-                            id: ActionsEvents.USER_SELECT_EVENT,
-                            name: i18nObj.__('forms.actions.name-list-user'),
-                            integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathAssignAlertAction}`,
-                                context: {
-                                    action: ActionsEvents.USER_SELECT_EVENT,
-                                    bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl,
-                                    alert,
-                                    locale: call.context.locale,
-                                } as AppContextAction,
-                            },
-                            type: 'select',
-                            data_source: 'users',
-                        },
-                        {
-                            id: ActionsEvents.CANCEL_BUTTON_EVENT,
-                            name: i18nObj.__('forms.actions.name-close'),
-                            type: 'button',
-                            style: 'default',
-                            integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
-                                context: {
-                                    action: ActionsEvents.CANCEL_BUTTON_EVENT,
-                                    bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl,
-                                    locale: call.context.locale,
-                                } as AppContextAction,
-                            },
-                        },
-                    ],
-                },
-            ],
+    
+    const form: AppForm = {
+        title: i18nObj.__('forms.actions.title-list-user'),
+        icon: OpsGenieIcon,
+        fields: [
+            {
+                type: AppFieldTypes.USER,
+                name: ActionsEvents.USER_SELECT_EVENT,
+                modal_label: i18nObj.__('forms.actions.name-list-user'),
+                is_required: true,
+            },
+        ],
+        submit: {
+            path: Routes.App.CallPathAssignAlertAction,
+            expand: {
+                acting_user: AppExpandLevels.EXPAND_SUMMARY,
+                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
+                locale: AppExpandLevels.EXPAND_ALL
+            },
+            state: call.state
         },
     };
-    await mattermostClient.createPost(postCreate);
+    return form;
 }
 
 async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<void> {

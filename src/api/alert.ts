@@ -238,45 +238,14 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
 
 export const assignAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
-    const call: AppCallAction<AppContextAction> = request.body;
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string = call.context.post.channel_id as string;
-    const userId: string = call.context.acting_user.id as string;
-    const callR: AppCallRequest = request.body;
-    const i18nObj = configureI18n(callR.context);
-
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
-        const alert: Alert = await assignAlertAction(request.body, callR.context);
-        const post: PostEphemeralCreate = {
-            post: {
-                message: i18nObj.__('api.list-alert.message-assign', { alert: alert.tinyId }),
-                channel_id: channelId,
-            },
-            user_id: userId,
-        };
-        await mattermostClient.createEphemeralPost(post);
-        callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.list-alert.message-assign-response', { alert: alert.tinyId }));
-        response.json(callResponse);
+        const message = await assignAlertAction(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
     } catch (error: any) {
-        const post: PostEphemeralCreate = {
-            post: {
-                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
-                channel_id: channelId,
-            },
-            user_id: userId
-        };
-        await mattermostClient.createEphemeralPost(post);
-
-        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
-        response.json(callResponse);
+        callResponse = showMessageToMattermost(error);
     }
+    response.json(callResponse);
 };
 
 export const snoozeAlertSubmit = async (request: Request, response: Response) => {

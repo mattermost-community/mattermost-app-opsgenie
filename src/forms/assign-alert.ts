@@ -72,14 +72,14 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
     return i18nObj.__('forms.response-assign-alert', { url: alertURL, email: mattermostUser.email });
 }
 
-export async function assignAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<Alert> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
-    const username: string | undefined = call.context.acting_user.username;
-    const postId: string | undefined = call.context.post.id;
-    const userId: string | undefined = call.context.acting_user.id;
-    const alert: any = call.context.alert;
-    const i18nObj = configureI18n(context);
+export async function assignAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
+    console.log(call);
+    const mattermostUrl: string = call.context.mattermost_site_url;
+    const botAccessToken: string = call.context.bot_access_token;
+    const username: string = call.context.acting_user.username;
+    const assignUserSelected: string = call.values['userselectevent']?.value;
+    const alertTinyId: string = call.state.alert.tinyId as string;
+    const i18nObj = configureI18n(call.context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -99,7 +99,8 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>, c
         accessToken: botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-    const mattermostUser: User = await mattermostClient.getUser(<string>userId);
+    const mattermostUser: User = await mattermostClient.getUser(<string>assignUserSelected);
+    console.log(mattermostUser);
 
     const identifierUser: Identifier = {
         identifier: mattermostUser.email,
@@ -108,7 +109,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>, c
     await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const identifierAlert: Identifier = {
-        identifier: alert.tinyId,
+        identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifierAlert), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
@@ -121,7 +122,5 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>, c
     };
     await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
-    await mattermostClient.deletePost(postId);
-
-    return responseAlert.data;
+    return i18nObj.__('api.list-alert.message-assign', { alert: alertTinyId });
 }
