@@ -12,6 +12,7 @@ import {
 } from '../types';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import {
+    AckAlertForm,
     ActionsEvents,
     AppExpandLevels,
     AppFieldSubTypes,
@@ -26,7 +27,6 @@ import {
     option_alert_snooze,
     option_alert_take_ownership,
     options_alert_time,
-    AckAlertForm,
 } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
@@ -34,6 +34,7 @@ import { getAlertLink, tryPromise } from '../utils/utils';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { Exception } from '../utils/exception';
 import { OtherActionsFunction } from '../types/functions';
+
 import { takeOwnershipAlertCall } from './take-ownership-alert';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<AppForm> {
