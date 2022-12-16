@@ -64,9 +64,9 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
 export async function closeAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const username: string | undefined = call.user_name;
+    const username: string | undefined = call.context.acting_user.username;
     const values: AppCallValues | undefined = call.context.alert;
-    const postId: string = call.post_id;
+    const postId: string = call.context.post.id;
     const i18nObj = configureI18n(context);
 
     const mattermostOptions: MattermostOptions = {

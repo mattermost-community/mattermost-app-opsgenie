@@ -75,9 +75,9 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
 export async function assignAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<Alert> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const username: string | undefined = call.user_name;
-    const postId: string | undefined = call.post_id;
-    const userId: string | undefined = call.context.selected_option;
+    const username: string | undefined = call.context.acting_user.username;
+    const postId: string | undefined = call.context.post.id;
+    const userId: string | undefined = call.context.acting_user.id;
     const alert: any = call.context.alert;
     const i18nObj = configureI18n(context);
 

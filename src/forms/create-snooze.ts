@@ -85,12 +85,12 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
 export async function createSnoozeAlertAction(call: AppCallAction<AppContextAction>, context: AppContext): Promise<Alert> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const postId: string = call.post_id;
-    const username: string | undefined = call.user_name;
+    const postId: string = call.context.post.id;
+    const username: string | undefined = call.context.acting_user.username;
     const i18nObj = configureI18n(context);
 
     const alertTinyId: string | undefined = call.context.alert.tinyId;
-    const timeAmount: string | undefined = call.context.selected_option;
+    const timeAmount: string | undefined = call.state.action;
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,

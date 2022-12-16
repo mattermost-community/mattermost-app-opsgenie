@@ -35,7 +35,7 @@ import { OtherActionsFunction } from '../types/functions';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
-    const triggerId: string = call.trigger_id;
+    const triggerId: string = 'triggerId';
     const accessToken: string = call.context.bot_access_token;
     const alertTinyId: string = call.context.alert.tinyId;
     const i18nObj = configureI18n(call.context);
@@ -71,7 +71,7 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
 
 async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
-    const channelId: string = call.channel_id;
+    const channelId: string = call.context.post.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const alert: any = call.context.alert;
     const i18nObj = configureI18n(call.context);
@@ -131,7 +131,7 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
 
 async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string = call.context.mattermost_site_url;
-    const channelId: string = call.channel_id;
+    const channelId: string = call.context.post.channel_id;
     const accessToken: string = call.context.bot_access_token;
     const i18nObj = configureI18n(call.context);
 
@@ -191,7 +191,8 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<v
 async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<void> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string | undefined = call.channel_id;
+    const channelId: string | undefined = call.context.post.channel_id;
+    const userId: string | undefined = call.context.acting_user.id;
     let message: string;
     const i18nObj = configureI18n(call.context);
 
@@ -204,8 +205,7 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Pro
 
     try {
         const alertTinyId: string = call.context.alert.tinyId;
-        const userId: string | undefined = call.user_id;
-        const username: string | undefined = call.user_name;
+        const username: string | undefined = call.context.acting_user.username;
         const options: KVStoreOptions = {
             mattermostUrl: <string>mattermostUrl,
             accessToken: <string>botAccessToken,
@@ -257,7 +257,7 @@ async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Pro
             message,
             channel_id: channelId,
         },
-        user_id: call.user_id,
+        user_id: userId
     };
     await mattermostClient.createEphemeralPost(post);
 }
@@ -270,7 +270,7 @@ const ACTIONS_EVENT: { [key: string]: OtherActionsFunction } = {
 };
 
 export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
-    const selectedOption: string = call.context.selected_option!;
+    const selectedOption: string = 'call.context.selected_option!';
 
     const handle: OtherActionsFunction = ACTIONS_EVENT[selectedOption];
     if (handle && typeof handle === 'function') {

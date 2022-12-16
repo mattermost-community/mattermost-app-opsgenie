@@ -149,7 +149,7 @@ export type PostCreate = {
     file_ids?: string[];
     props?: {
         attachments?: Attachment[];
-        app_bindings?: PostBindings[]
+        app_bindings?: PostBindings[];
     }
 }
 
@@ -179,7 +179,8 @@ export type PostUpdate = {
     message?: string;
     has_reactions?: boolean;
     props?: {
-        attachments: Attachment[];
+        attachments?: Attachment[];
+        app_bindings?: PostBindings[];
     }
 }
 

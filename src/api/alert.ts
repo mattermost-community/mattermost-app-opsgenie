@@ -126,42 +126,18 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
         response.json(callResponse);
     }
 };
-export const ackAlertModal = async (request: Request, response: Response) => {
-    const call: AppCallAction<AppContextAction> = request.body;
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string | undefined = call.channel_id;
-    let post: PostEphemeralCreate;
-    const callR: AppCallRequest = request.body;
-    const i18nObj = configureI18n(callR.context);
 
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-    console.log(call);
+export const ackAlertModal = async (request: Request, response: Response) => {
+    let callResponse: AppCallResponse;
+
     try {
-        const message = await ackAlertAction(request.body, callR.context);
-        post = {
-            post: {
-                message,
-                channel_id: channelId,
-            },
-            user_id: call.user_id,
-        };
+        const message = await ackAlertAction(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
     } catch (error: any) {
-        post = {
-            post: {
-                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
-                channel_id: channelId,
-            },
-            user_id: call.user_id,
-        };
+        callResponse = showMessageToMattermost(error);
     }
 
-    await mattermostClient.createEphemeralPost(post);
-    response.json();
+    response.json(callResponse);
 };
 
 export const unackAlertSubmit = async (request: Request, response: Response) => {
@@ -179,40 +155,16 @@ export const unackAlertSubmit = async (request: Request, response: Response) => 
 };
 
 export const unackAlertModal = async (request: Request, response: Response) => {
-    const call: AppCallAction<AppContextAction> = request.body;
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string | undefined = call.channel_id;
-    let post: PostEphemeralCreate;
-    const callR: AppCallRequest = request.body;
-    const i18nObj = configureI18n(callR.context);
+    let callResponse: AppCallResponse;
 
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     try {
-        const message = await unackAlertAction(request.body, callR.context);
-        post = {
-            post: {
-                message,
-                channel_id: channelId,
-            },
-            user_id: call.user_id,
-        };
+        const message = await unackAlertAction(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
     } catch (error: any) {
-        post = {
-            post: {
-                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
-                channel_id: channelId,
-            },
-            user_id: call.user_id,
-        };
+        callResponse = showMessageToMattermost(error);
     }
 
-    await mattermostClient.createEphemeralPost(post);
-    response.json();
+    response.json(callResponse);
 };
 
 export const otherActionsAlert = async (request: Request, response: Response) => {
@@ -263,6 +215,7 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
     const channelId: string | undefined = call.channel_id;
+    const userId: string = context.acting_user.id;
     const i18nObj = configureI18n(request.body);
 
     const mattermostOptions: MattermostOptions = {
@@ -279,7 +232,7 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
                 message,
                 channel_id: channelId,
             },
-            user_id: call.user_id,
+            user_id: userId
         };
         await mattermostClient.createEphemeralPost(post);
 
@@ -318,7 +271,8 @@ export const assignAlertModal = async (request: Request, response: Response) => 
     const call: AppCallAction<AppContextAction> = request.body;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string | undefined = call.channel_id;
+    const channelId: string = call.context.post.channel_id as string;
+    const userId: string = call.context.acting_user.id as string;
     const callR: AppCallRequest = request.body;
     const i18nObj = configureI18n(callR.context);
 
@@ -335,7 +289,7 @@ export const assignAlertModal = async (request: Request, response: Response) => 
                 message: i18nObj.__('api.list-alert.message-assign', { alert: alert.tinyId }),
                 channel_id: channelId,
             },
-            user_id: call.user_id,
+            user_id: userId,
         };
         await mattermostClient.createEphemeralPost(post);
         callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.list-alert.message-assign-response', { alert: alert.tinyId }));
@@ -346,7 +300,7 @@ export const assignAlertModal = async (request: Request, response: Response) => 
                 message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
-            user_id: call.user_id,
+            user_id: userId
         };
         await mattermostClient.createEphemeralPost(post);
 
@@ -373,7 +327,8 @@ export const snoozeAlertModal = async (request: Request, response: Response) => 
     const call: AppCallAction<AppContextAction> = request.body;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string | undefined = call.channel_id;
+    const channelId: string | undefined = call.context.post.channel_id as string;
+    const userId: string = call.context.acting_user.id as string;
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
         accessToken: <string>botAccessToken,
@@ -389,7 +344,7 @@ export const snoozeAlertModal = async (request: Request, response: Response) => 
                 message: i18nObj.__('api.list-alert.message-alert-snoozed'),
                 channel_id: channelId,
             },
-            user_id: call.user_id,
+            user_id: userId
         };
         await mattermostClient.createEphemeralPost(post);
         callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.list-alert.message-alert-snoozed'));
@@ -400,7 +355,7 @@ export const snoozeAlertModal = async (request: Request, response: Response) => 
                 message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
                 channel_id: channelId,
             },
-            user_id: call.user_id,
+            user_id: userId,
         };
         await mattermostClient.createEphemeralPost(post);
 

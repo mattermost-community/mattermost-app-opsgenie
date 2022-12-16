@@ -101,6 +101,22 @@ export type AppActingUser = {
     disable_welcome_email: boolean
 }
 
+export type AppPost = {
+    id: string;
+    create_at: string;
+    update_at: string;
+    edit_at: string;
+    delete_at: string;
+    is_pinned: boolean,
+    user_id: string;
+    channel_id: string;
+    root_id: string;
+    original_id: string;
+    message: string;
+    type: string;
+    props: any;
+}
+
 export type AppChannel = {
     id: string;
     create_at: number;
@@ -211,17 +227,16 @@ export type AppCallDialog<T> = {
 }
 
 export type AppCallAction<T> = {
-    user_id: string;
-    user_name: string;
-    channel_id: string;
-    channel_name: string;
-    team_id: string;
-    team_domain: string;
-    post_id: string;
-    trigger_id: string;
-    type: string;
-    data_source: string;
+    path: string;
     context: T;
+    state: {
+        alert: {
+            id: string;
+            message: string;
+            tinyId: string | number;
+        },
+        action: string;
+    }
 }
 
 export type AppCallResponseType = string;
@@ -282,15 +297,21 @@ export type AppLookupResponse = {
 }
 
 export type AppContextAction = {
-    action: string;
+    app_id: string;
+    mattermost_site_url: string;
+    app_path: string;
+    bot_user_id: string;
+    bot_access_token: string;
+    acting_user: AppActingUser;
+    acting_user_access_token: string;
     alert: {
         id: string;
         message: string;
         tinyId: string;
+        action: string;
     }
-    mattermost_site_url: string;
-    bot_access_token: string;
-    selected_option?: string;
     locale: string;
+    post: AppPost;
+    action: string;
 }
 
