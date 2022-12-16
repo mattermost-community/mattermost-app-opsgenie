@@ -3,4 +3,4 @@ import { WebhookRequest } from './opsgenie';
 
 export type WebhookFunction = (webhookRequest: WebhookRequest<any>, context: AppContext) => Promise<void>;
 
-export type OtherActionsFunction = (call: AppCallAction<AppContextAction>) => Promise<AppForm | void>
+export type OtherActionsFunction = (call: AppCallAction<AppContextAction>) => Promise<AppForm | string | void>

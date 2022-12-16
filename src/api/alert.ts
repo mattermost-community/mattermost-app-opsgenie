@@ -5,7 +5,7 @@ import {
     AlertOption,
     AlertStatus,
     AppCallAction,
-    AppCallDialog, AppCallRequest,
+    AppCallRequest,
     AppCallResponse,
     AppContextAction,
     PostEphemeralCreate,
@@ -78,11 +78,11 @@ export const createAlertSubmit = async (request: Request, response: Response) =>
     try {
         const message = await createAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const closeAlertSubmit = async (request: Request, response: Response) => {
@@ -91,27 +91,24 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
     try {
         const message = await closeAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
+
 export const closeAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
     const call: AppCallRequest = request.body;
-    const i18nObj = configureI18n(call.context);
 
     try {
         await closeAlertAction(request.body, call.context);
         callResponse = newOKCallResponse();
-
-        response.json(callResponse);
     } catch (error: any) {
-        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
-        response.json(callResponse);
+        callResponse = showMessageToMattermost(error);
     }
+    response.json(callResponse);
 };
 
 export const ackAlertSubmit = async (request: Request, response: Response) => {
@@ -120,12 +117,11 @@ export const ackAlertSubmit = async (request: Request, response: Response) => {
     try {
         const message = await ackAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const ackAlertModal = async (request: Request, response: Response) => {
@@ -173,8 +169,11 @@ export const otherActionsAlert = async (request: Request, response: Response) =>
 
     try {
         const other = await otherActionsAlertCall(request.body);
-        if (other) {
+        if (typeof other === 'object') {
             callResponse = newFormCallResponse(other);
+        }
+        if (typeof other === 'string') {
+            callResponse = newOKCallResponseWithMarkdown(other);
         }
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
@@ -188,12 +187,11 @@ export const closeActionsAlert = async (request: Request, response: Response) =>
     try {
         await closeActionsAlertCall(request.body);
         callResponse = newOKCallResponse();
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const addNoteToAlertSubmit = async (request: Request, response: Response) => {
@@ -202,12 +200,11 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
     try {
         const message = await addNoteToAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const addNoteToAlertModal = async (request: Request, response: Response) => {
@@ -219,6 +216,7 @@ export const addNoteToAlertModal = async (request: Request, response: Response) 
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }
+
     response.json(callResponse);
 };
 
@@ -228,12 +226,11 @@ export const assignAlertSubmit = async (request: Request, response: Response) =>
     try {
         const message = await assignAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const assignAlertModal = async (request: Request, response: Response) => {
@@ -245,6 +242,7 @@ export const assignAlertModal = async (request: Request, response: Response) => 
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }
+    
     response.json(callResponse);
 };
 
@@ -254,11 +252,11 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
     try {
         const message = await createSnoozeAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const snoozeAlertModal = async (request: Request, response: Response) => {
@@ -309,12 +307,11 @@ export const takeOwnershipAlertSubmit = async (request: Request, response: Respo
     try {
         const message = await takeOwnershipAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
 
 export const priorityAlertSubmit = async (request: Request, response: Response) => {
@@ -323,15 +320,9 @@ export const priorityAlertSubmit = async (request: Request, response: Response) 
     try {
         const message = await priorityAlertCall(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-
-        response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+
+    response.json(callResponse);
 };
-
-function isType(other: void | import("../types").AppForm) {
-    throw new Error('Function not implemented.');
-}
-

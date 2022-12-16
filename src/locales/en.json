@@ -177,8 +177,8 @@
 			"name-close": "Close",
 			"title-snooze": "For how long do you want to snooze notifications for this alert",
 			"name-snooze": "Choose snooze time",
-			"exception-owner": "You already are alert #{{ alert }} owner",
-			"response-owner": "Take ownership request will be processed for #{{ alert }}"
+			"exception-owner": "You already are alert [#{{ alert }}]({{ url }}) owner",
+			"response-owner": "Take ownership request will be processed for [#{{ alert }}]({{ url }})"
 		},
 		"priority": {
 			"exception": "Alert's {{ url }} priority is already {{ priority }}",
