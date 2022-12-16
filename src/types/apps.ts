@@ -169,7 +169,7 @@ export type AppContext = {
     channel?: AppChannel;
     acting_user?: AppActingUser;
     acting_user_access_token?: string;
-    oauth2: any;
+    oauth2?: any;
     post?: AppPost;
 };
 

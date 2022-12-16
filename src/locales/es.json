@@ -179,8 +179,8 @@
       "name-close": "Cerrar",
       "title-snooze": "Durante cuánto tiempo desea posponer las notificaciones de esta alerta",
       "name-snooze": "Elija el tiempo de repetición",
-      "exception-owner": "Ya eres propietario de la alerta [#{{ alert }}]({{ url }})",
-      "response-owner": "La solicitud de toma de propiedad se procesará para [#{{ alert }}]({{ url }})"
+      "exception-owner": "Ya eres propietario de la alerta {{ alert }}",
+      "response-owner": "La solicitud de toma de propiedad se procesará para {{ alert }}"
     },
     "priority": {
       "exception": "La prioridad {{ url }} de la alerta ya está {{ priority }}",
