@@ -347,7 +347,7 @@ const closeAlertBinding = (context: AppContext): AppBinding => {
             title: i18nObj.__('binding.binding.command-close-title'),
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathAlertCloseSubmit,
+                path: Routes.App.CallPathAlertCloseAction,
                 expand: {
                     acting_user: AppExpandLevels.EXPAND_ALL,
                 },
