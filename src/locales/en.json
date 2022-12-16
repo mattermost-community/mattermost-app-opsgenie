@@ -57,6 +57,7 @@
 			"message": "Team List: Found {{ length }} matching teams."
 		},
 		"webhook": {
+			"title": "#[{{text}}]({{url}})",
 			"error": "Error webhook: {{ message }}",
 			"title-priority": "Priority",
 			"title-team": "Routed Teams",
@@ -70,7 +71,13 @@
 			"message-snooze": "{{ username }} snoozed alert {{ url }} \"{{ message }}\" until {{ date }}",
 			"message-snooze-alert": "Snooze expired for the alert { url }} \"{{ message }}\"",
 			"message-assign": "{{ username }} assigned ownership of the alert {{ url) } to {{ fullName }} \" {{ message }}\"",
-			"message-update": "{{ username }} changed the priority of the alert {{ url }} \"{{ message }}\" from {{ oldPriority }} to {{ priority }}"
+			"message-update": "{{ username }} changed the priority of the alert {{ url }} \"{{ message }}\" from {{ oldPriority }} to {{ priority }}",
+			"extra-options": {
+				"add-note": "Add note to alert",
+				"assign": "Assign alert",
+				"snooze": "Snooze alert",
+				"take-ownership": "Take ownership"
+			}
 		}
 	},
 	"binding": {

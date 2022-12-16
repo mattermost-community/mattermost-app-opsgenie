@@ -57,6 +57,7 @@
       "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
     },
     "webhook": {
+      "title": "#[{{text}}]({{url}})",
       "error": "Webhook de error: {{ message }}",
       "title-priority": "Prioridad",
       "title-team": "Equipos enrutados",
@@ -70,7 +71,13 @@
       "message-snooze": "{{ username }} alerta pospuesta {{ url }} \"{{ message }}\" hasta que {{ date }}",
       "message-snooze-alert": "Posponer caducó para la alerta { url }} \"{{ message }}\"",
       "message-assign": "{{ username }} propiedad asignada de la alerta {{ url) } a {{ fullName }} \" {{ message }}\"",
-      "message-update": "{{ username }} cambió la prioridad de la alerta {{ url }} \"{{ message }}\" de {{ oldPriority }} a {{ priority }}"
+      "message-update": "{{ username }} cambió la prioridad de la alerta {{ url }} \"{{ message }}\" de {{ oldPriority }} a {{ priority }}",
+      "extra-options": {
+        "add-note": "Añadir nota a alerta",
+        "assign": "Asignar alerta",
+        "snooze": "Silenciar alerta",
+        "take-ownership": "Tomar alerta"
+      }
     }
   },
   "binding": {
