@@ -18,19 +18,19 @@ TS_DIST_DIR := dist-ts
 
 ## run-server: starts the server.
 run-server:
-		@echo Running Google Drive app for development
+		@echo Running OpsGenie app for development
 		./run-server.sh
 
 ## stop-server: stops the server
 stop-server:
-		@echo Stopping Google Drive app for development
+		@echo Stopping OpsGenie app for development
 		./stop-server.sh
 
 ## restart-server: restarts the server.
 restart-server:
-		@echo Stopping Google Drive app for development
+		@echo Stopping OpsGenie app for development
 		./stop-server.sh
-		@echo Running Google Drive app for development
+		@echo Running OpsGenie app for development
 		./run-server.sh
 
 ## build: build the app
