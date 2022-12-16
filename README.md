@@ -2,15 +2,17 @@
 
 * [Feature summary](#feature-summary)
 * [Set up](#set-up)
-    * [Installation](#installation)
+    * [Installation HTTP](#installation-http)
+    * [Installation Mattermost Cloud](#installation-mattermost-cloud)
     * [Configuration](#configuration)
 * [Admin guide](#admin-guide)
     * [Slash commands](#slash-commands)
 * [End user guide](#end-user-guide)
     * [Get started](#get-started)
     * [Use /opsgenie commands](#use-genie-commands)
-* [Development](#development)
+* [Development environment](#development-environment)
     * [Manual installation](#manual-installation)
+    * [Install dependencies](#install-dependencies)
     * [Run the local development environment](#run-the-local-development-environment)
   * [Run the local development environment with Docker](#run-the-local-development-environment-with-docker)
 
@@ -22,25 +24,28 @@ This application allows you to integrate OpsGenie to your Mattermost instance, l
 
 # Set up
 
-## Installation
+## Installation HTTP
 
-This plugin requires that your Mattermost workspace has the ``/apps install`` command enabled.
+To install, as a Mattermost system admin user, run the command ``/apps install http OPSGENIE_API`` in any channel. The ``/genie`` command should be available after the configuration has been successfully installed.
 
-To install, as a super admin user, run the command ``/apps install http OPSGENIE_API_URL`` in any channel. The ``/genie`` command should be available after the configuration has been successfully installed.
+The ``OPSGENIE_API`` should be replaced with the URL where the OpsGenie API instance is running. Example: ``/apps install http https://myapp.com/manifest.json``
 
-The ``OPSGENIE_API_URL`` should be replaced with the URL where the OpsGenie API instance is running. Example: ``/apps install http https://mattermost-opsgenie-dev.ancient.mx/manifest.json``
+## Installation Mattermost Cloud
+
+To install, as a Mattermost system admin user, run the command ``/apps install listed genie`` in any channel. The ``/genie`` command should be available after the configuration has been successfully installed.
+
 
 ## Configuration
 
-1. First, install the app in your current Mattermost instance (refer to [Installation](#installation)) so that the ``/genie`` command is available.
-2. Open your OpsGenie profile to get your credentials and link to your Mattermost instance.
-3. Select the **Integrations** tab in the **Settings** menu. Then, click on the **Add Integration** button.
-4. Inside the **Add Integration** menu, select the **API** option.
-5. Update the integration name and access. Finish the **API** integration set up clicking the **Save Integration** button.
-6. Copy the given API Key.
-7. Return to Mattermost. 
-8. As a super admin user, run the ``/genie configure`` command.
-9. In the configuration modal, enter your API Key.
+After [installing](#installation)) the app:
+1. Open your OpsGenie profile to get your credentials and link to your Mattermost instance.
+2. Select the **Integrations** tab in the **Settings** menu. Then, click on the **Add Integration** button.
+3. Inside the **Add Integration** menu, select the **API** option.
+4. Update the integration name and access. Finish the **API** integration set up clicking the **Save Integration** button.
+5. Copy the given API Key.
+6. Return to Mattermost. 
+7. As a Mattermost system admin user, run the ``/genie configure`` command.
+8. In the configuration modal, enter your API Key.
 
 # Admin guide
 
@@ -64,13 +69,13 @@ The ``OPSGENIE_API_URL`` should be replaced with the URL where the OpsGenie API 
 - ``/genie alert assign``: Assign an existing to a mattermost team member.
 - ``/genie alert own``: Take ownership of an existing alert (assign alert to yourself).
 - ``/genie alert priority``: Set the priority of an existing alert.
-- ``/genie list alert``: Get a list of the existing alerts.
-- ``/genie list team``: Get a list of the existing teams.
+- ``/genie alert list``: Get a list of the existing alerts.
+- ``/genie team list``: Get a list of the existing teams.
 - ``/genie subscription add``: Creates a new subscription for notifications: choose a team and a channel and get notified of the updates in that team. You can subscribe more than one team per channel.
 - ``/genie subscription list``: Show the list of all subscriptions made in all of your channels.
 - ``/genie subscription remove``: Will allow you to remove a subscription. No more notifications from that team will be received.
 
-# Development
+# Development environment
 
 ## Manual installation
 
@@ -78,9 +83,10 @@ The ``OPSGENIE_API_URL`` should be replaced with the URL where the OpsGenie API 
 
 ### Run the local development environment
 
-* You need to have installed at least node version 12 and maximum version 18. You can download the latest lts version of node for the required operating system here https://nodejs.org/es/download/
+* You need to have installed at least node version 15 and maximum version 18. You can download the latest lts version of node for the required operating system here https://nodejs.org/es/download/
 
-*  Install libraries: ``cd`` to the project directory and execute ``npm install`` to download all dependency libraries.
+### Install dependencies
+* Move to the project directory or execute ``cd`` command to the project directory and execute ``npm install`` with a terminal to download all dependency libraries.
 
 ```
 $ npm install
@@ -93,7 +99,7 @@ file: .env
 
 PROJECT=mattermost-opsgenie-app
 PORT=4002
-HOST=https://mattermost-opsgenie-dev.ancient.mx
+HOST=http://localhost:4002
 ```
 
 Variable definition
@@ -108,6 +114,12 @@ Variable definition
 $ npm run dev
 ```
 
+Or, if you would like to use the Makefile command:
+
+```
+$ make watch
+```
+
 ### Run the local development environment with Docker
 
 * You need to have Docker installed. You can find the necessary steps to install Docker for the following operating systems:
@@ -116,10 +128,20 @@ $ npm run dev
 [Mac](https://docs.docker.com/desktop/mac/install/)
 [Windows](https://docs.docker.com/desktop/windows/install/)
 
-* Once you have Docker installed, the next step would be to run the ``./build.sh`` file to create the API container and expose it locally or on the server, depending on the case required.
+* Once you have Docker installed, the next step would be to run the ``make run-server`` command to create the API container and expose it locally or on the server, depending on the case required.
 
 ```
-$ ./build
+$ make run-server
 ```
 
-When the container is created correctly, the API will be running at the url http://127.0.0.1:4002 in such a way that the installation can be carried out in Mattermost.
+When the container is created correctly, the API will be running at the url http://127.0.0.1:4002. If Mattermost is running on the same machine, run this slash command in Mattermost to install the app:
+
+```
+/apps install http http://127.0.0.1:4002
+```
+
+To stop the container, execute:
+
+```
+$ make stop-server
+```
