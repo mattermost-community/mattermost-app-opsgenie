@@ -30,6 +30,7 @@ import {
     ConfigureForm,
     OpsGenieIcon,
     AppFieldSubTypes,
+    options_alert_time,
 } from '../constant';
 import config from '../config';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
@@ -95,67 +96,35 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
     return form;
 }
 
-async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<void> {
-    const mattermostUrl: string = call.context.mattermost_site_url;
-    const channelId: string = call.context.post.channel_id;
-    const accessToken: string = call.context.bot_access_token;
+async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
 
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl,
-        accessToken: <string>accessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-
-    const postCreate: PostCreate = {
-        channel_id: channelId,
-        message: '',
-        props: {
-            attachments: [
-                {
-                    title: i18nObj.__('forms.actions.title-snooze'),
-                    actions: [
-                        {
-                            id: ActionsEvents.TIME_SELECT_EVENT,
-                            name: i18nObj.__('forms.actions.name-snooze'),
-                            type: 'select',
-                            integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathSnoozeAlertAction}`,
-                                context: {
-                                    action: ActionsEvents.TIME_SELECT_EVENT,
-                                    bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl,
-                                    alert: call.context.alert,
-                                    locale: call.context.locale,
-                                } as AppContextAction,
-                            },
-                            options: options_times,
-                        },
-                        {
-                            id: ActionsEvents.CANCEL_BUTTON_EVENT,
-                            name: i18nObj.__('forms.actions.name-close'),
-                            type: 'button',
-                            style: 'default',
-                            integration: {
-                                url: `${config.APP.HOST}${Routes.App.CallPathCloseOptions}`,
-                                context: {
-                                    action: ActionsEvents.CANCEL_BUTTON_EVENT,
-                                    bot_access_token: call.context.bot_access_token,
-                                    mattermost_site_url: mattermostUrl,
-                                    locale: call.context.locale,
-                                } as AppContextAction,
-                            },
-                        },
-                    ],
-                },
-            ],
+    const form: AppForm = {
+        title: i18nObj.__('forms.actions.title-snooze'),
+        icon: OpsGenieIcon,
+        fields: [
+            {
+                type: AppFieldTypes.STATIC_SELECT,
+                name: ActionsEvents.TIME_SELECT_EVENT,
+                modal_label: i18nObj.__('forms.actions.name-snooze'),
+                is_required: true, 
+                options: options_alert_time,
+            },
+        ],
+        submit: {
+            path: Routes.App.CallPathSnoozeAlertAction,
+            expand: {
+                acting_user: AppExpandLevels.EXPAND_SUMMARY,
+                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
+                locale: AppExpandLevels.EXPAND_ALL
+            },
+            state: call.state
         },
     };
-    await mattermostClient.createPost(postCreate);
+    return form;
 }
 
 async function showPostTakeOwnership(call: AppCallAction<AppContextAction>): Promise<string> {
-    console.log(call);
     const mattermostUrl: string = call.context.mattermost_site_url;
     const botAccessToken: string = call.context.bot_access_token;
     const username: string = call.context.acting_user.username;

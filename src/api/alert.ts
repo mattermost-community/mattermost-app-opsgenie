@@ -261,44 +261,15 @@ export const snoozeAlertSubmit = async (request: Request, response: Response) =>
 
 export const snoozeAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
-    const call: AppCallAction<AppContextAction> = request.body;
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
-    const channelId: string | undefined = call.context.post.channel_id as string;
-    const userId: string = call.context.acting_user.id as string;
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-    const callR: AppCallRequest = request.body;
-    const i18nObj = configureI18n(callR.context);
 
     try {
-        await createSnoozeAlertAction(request.body, callR.context);
-        const post: PostEphemeralCreate = {
-            post: {
-                message: i18nObj.__('api.list-alert.message-alert-snoozed'),
-                channel_id: channelId,
-            },
-            user_id: userId
-        };
-        await mattermostClient.createEphemeralPost(post);
-        callResponse = newOKCallResponseWithMarkdown(i18nObj.__('api.list-alert.message-alert-snoozed'));
-        response.json(callResponse);
+        const message = await createSnoozeAlertAction(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
     } catch (error: any) {
-        const post: PostEphemeralCreate = {
-            post: {
-                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
-                channel_id: channelId,
-            },
-            user_id: userId,
-        };
-        await mattermostClient.createEphemeralPost(post);
-
-        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
-        response.json(callResponse);
+        callResponse = showMessageToMattermost(error);
     }
+
+    response.json(callResponse);
 };
 
 export const takeOwnershipAlertSubmit = async (request: Request, response: Response) => {

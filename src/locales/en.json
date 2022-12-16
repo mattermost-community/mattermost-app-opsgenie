@@ -7,7 +7,7 @@
 			"message-add-note": "Note will be added for #{{ alert }}",
 			"message-assign": "Assign ownership request will be processed for #{{ alert }}",
 			"message-assign-response": "Assign ownership request will be processed for #{{ alert }}",
-			"message-alert-snoozed": "Alert will be snoozed"
+			"message-alert-snoozed": "Alert {{ alert }} will be snoozed for {{ timeAmount }}"
 		},
 		"configure": {
 			"error-response": "Unable to open configuration form: {{ message }}",
