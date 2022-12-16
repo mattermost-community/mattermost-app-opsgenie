@@ -1,0 +1,47 @@
+{
+    "app_id": "opsgenie",
+    "version": "v1.0.0",
+    "homepage_url": "https://github.com/development-ancient/mattermost-app-opsengine",
+    "display_name": "OpsGenie",
+    "description": "OpsGenie cloud app for Mattermost",
+    "icon": "opsgenie.png",
+    "on_install": {
+        "expand": {
+            "app": "all",
+            "acting_user_access_token": "all"
+        },
+        "path": "/install"
+    },
+    "bindings": {
+        "path": "/bindings",
+        "expand": {
+            "acting_user": "all",
+            "oauth2_app": "all",
+            "oauth2_user": "all",
+            "locale": "all"
+        }
+    },
+    "requested_permissions": [
+        "act_as_bot",
+        "act_as_user",
+        "remote_webhooks",
+        "remote_oauth2"
+    ],
+    "requested_locations": [
+        "/command",
+        "/in_post"
+    ],
+    "http": {
+        "root_url": "https://mattermost-opsgenie-dev.ancient.mx"
+    },
+    "aws_lambda": {
+        "functions": [
+            {
+                "path": "/",
+                "name": "opsgenie",
+                "handler": "opsgenie/index.handler",
+                "runtime": "nodejs16.x"
+            }
+        ]
+    }
+}

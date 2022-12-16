@@ -1,0 +1,207 @@
+{
+	"api": {
+		"list-alert": {
+			"message": "Alert List: Found {{ alerts }} unacked alerts out of {{ openalert }} open alerts. [Total: {{ length }}]",
+			"detail": "View details",
+			"error-close-alert": "Unexpected error: {{ error }}",
+			"message-add-note": "Note will be added for #{{ alert }}",
+			"message-assign": "Assign ownership request will be processed for #{{ alert }}",
+			"message-assign-response": "Assign ownership request will be processed for #{{ alert }}",
+			"message-alert-snoozed": "Alert {{ alert }} will be snoozed for {{ timeAmount }}"
+		},
+		"configure": {
+			"error-response": "Unable to open configuration form: {{ message }}",
+			"success-response": "Successfully updated OpsGenie configuration",
+			"follow-response": "Follow this {{ url }} to connect Mattermost to your OpsGenie Account."
+		},
+		"help": {
+			"title": "Mattermost OpsGenie Plugin - Slash Command Help",
+			"command-help": "Launch the OpsGenie plugin command line help syntax, check out the [documentation]({{ url }}).",
+			"command-configure": "Configure OpsGenie.",
+			"command-add-command": "{{ command }} {{ add }} [Team name] [Mattermost Channel]",
+			"command-add-description": "Add subscription of team to channel.",
+			"command-delete-command": "{{ command }} {{ delete }} [SubscriptionId]",
+			"command-delete-description": "Delete subscription of channel.",
+			"command-list-description": "List subscriptions open.",
+			"command-create-command": "{{ command }} {{ create }} [Alert message] [Team name] [Priority]",
+			"command-create-description": "Create an alert with the message for the specified responders.",
+			"command-note-command": "{{ command }} {{ note }} [Note message] [Alert TinyId]",
+			"command-note-description": "Add [note] to the alerts with IDs [tinyID tinyID2..].",
+			"command-snooze-command": "{{ command }} {{ snooze }} [Alert TinyID] [Time amount [m/h/d]]",
+			"command-snooze-decription": "Snooze the alerts with IDs [tinyID tinyID2..] for the specified time.",
+			"command-ack-command": "{{ command }} {{ ack }} [Alert TinyID]",
+			"command-ack-description": "Acknowledge the alerts with IDs [tinyID tinyID2..].",
+			"command-unack-command": "{{ command }} {{ unack }} [Alert TinyID]",
+			"command-unack-description": "UnAcknowledge the alerts with IDs [tinyID tinyID2..]",
+			"command-assign-command": "{{ command }} {{ assign }} [Alert TinyID] [Mattermost User]",
+			"command-assign-description": "Assign alerts with IDs [tinyID tinyID2..] to [user].",
+			"command-close-command": "{{ command }} {{ close }} [Alert TinyID] [Mattermost User]",
+			"command-close-description": "Close the alerts, incidents, mass notifications with IDs [tinyID tinyID2..].",
+			"command-own-command": "{{ command }} {{ own }} [Alert TinyID]",
+			"command-own-description": "Take ownership of the alerts with IDs [tinyID tinyID2..].",
+			"command-priority-command": "{{ command }} {{ priority }} [Alert TinyID] [Priority]",
+			"command-priority-description": "Update priority of the alert with [tinyID].",
+			"command-team-description": "List teams.",
+			"command-alert-decription": "List alerts."
+		},
+		"install": {
+			"command": "To finish configuring the Opsgenie app please read the [Quick Start]({{ url }}#quick-start) section of the README"
+		},
+		"subcription": {
+			"message-created": "Subscription will be created",
+			"message-delete": "Subscription will be deleted",
+			"message-list": "Subscription List: Found {{ integrations }} open subscriptions.",
+			"detail-list": "- Team Name \"{{ name }}\" - Channel Name \"{{ channelName }}\""
+		},
+		"team": {
+			"message": "Team List: Found {{ length }} matching teams."
+		},
+		"webhook": {
+			"title": "[#{{ text }}]({{ url }})",
+			"title-closed": "[#{{ text }} [CLOSED] ]({{ url }}) ",
+			"error": "Error webhook: {{ message }}",
+			"title-priority": "Priority",
+			"title-team": "Routed Teams",
+			"name-acknowledged": "Acknowledged",
+			"name-close": "Close",
+			"name-other": "Other actions...",
+			"message-note": "{{ username }} added note \"{{ note }}\" to alert {{ url }} \" {{ message }}\"",
+			"message-notify": "{{ username }} closed alert {{ url }} \"{{ message }}\"",
+			"message-notify-ack": "{{username }} acknowledged alert {{ url }} \"{{ message }}\"",
+			"message-notify-unack": "{{ username }} un-acknowledged alert {{ url }} \"{{ message }}\"",
+			"message-snooze": "{{ username }} snoozed alert {{ url }} \"{{ message }}\" until {{ date }}",
+			"message-snooze-alert": "Snooze expired for the alert { url }} \"{{ message }}\"",
+			"message-assign": "{{ username }} assigned ownership of the alert {{ url) } to {{ fullName }} \" {{ message }}\"",
+			"message-update": "{{ username }} changed the priority of the alert {{ url }} \"{{ message }}\" from {{ oldPriority }} to {{ priority }}",
+			"extra-options": {
+				"add-note": "Add note to alert",
+				"assign": "Assign alert",
+				"snooze": "Snooze alert",
+				"take-ownership": "Take ownership"
+			}
+		}
+	},
+	"binding": {
+		"binding": {
+			"command-help": "Show OpsGenie Help",
+			"command-configure": "Setup OpsGenie Admin Account",
+			"command-configure-title": "Setup OpsGenie",
+			"command-login": "Connect your OpsGenie account",
+			"command-login-title": "Account login",
+			"command-account-description": "Connect your OpsGenie account",
+			"command-logout-title": "Account logout",
+			"command-subcription-description": "Subscription teams of OpsGenie to Mattermost channel",
+			"command-add-description": "Add a team subscription to a channel",
+			"command-add-title": "Add a team subscription to a channel",
+			"name-team": "Team name",
+			"name-channel": "Channel",
+			"command-delete-description": "Unsubscribe team from channel",
+			"command-delete-title": "Unsubscribe team from channel",
+			"command-delete-value": "- Team Name \"{{ name }}\" - Channel Name \"{{ channelName }}\"",
+			"command-delete-no-subscriptions": "Subscription list is empty",
+			"label-delete": "Subscription to delete",
+			"command-list-description": "List of teams subscribed to channels",
+			"command-list-title": "List of teams subscribed to channels",
+			"command-alert-description": "Config Alert in OpsGenie",
+			"command-create-description": "Create Alert in OpsGenie",
+			"command-create-title": "Create alert",
+			"label-alert": "Alert message",
+			"label-team": "Team name",
+			"label-priority": "Priority",
+			"command-note-description": "Add note to Alert in OpsGenie",
+			"command-note-title": "Add Note To Alert",
+			"label-note": "Note message",
+			"label-tiny": "Tiny ID",
+			"command-close-description": "Close Alert in OpsGenie",
+			"command-close-title": "Close Alert",
+			"command-ack-description": "Acknowledge alert in OpsGenie",
+			"command-ack-title": "Acknowledge the alerts",
+			"command-unack-description": "UnAcknowledge alert in OpsGenie",
+			"command-unack-title": "UnAcknowledge the alerts",
+			"command-snooze-description": "Snooze alert in OpsGenie",
+			"command-snooze-title": "Snooze the alerts",
+			"label-time": "'Time Amount",
+			"command-assign-desctiption": "Assign alert in OpsGenie",
+			"command-assign-title": "Assign the alerts",
+			"label-user": "User",
+			"command-own-description": "Take ownership alert in OpsGenie",
+			"command-own-title": "Take ownership of the alerts",
+			"command-priority-description": "Update priority of alert in OpsGenie",
+			"command-priority-title": "Update priority of th alert",
+			"command-teams": "Manage your OpsGenie teams",
+			"command-list-all-description": "Show info of OpsGenie",
+			"command-list-all-title": "List teams",
+			"description-alert": "List alerts",
+			"command-own-title\"": "binding.binding.command-own-title\""
+		}
+	},
+	"forms": {
+		"error": "OpsGenie failed: ",
+		"exception-ack": "You already have acknowledged {{ url }}",
+		"response-ack": "You have acknowledged {{ url }}",
+		"message-ack": "You have acknowledged #{{ alert }}",
+		"error-ack": "Unexpected error: {{ message }}",
+		"mattermost-error": "Mattermost post update failed",
+		"acknowledged": "Acknowledged",
+		"unacknowledged": "Unacknowledged",
+		"name-close": "Close",
+		"name-other-action": "Other actions...",
+		"message-note": "Action executed via Mattermost Plugin",
+		"response-assign-alert": "Assign alert's {{ url }} ownership to {{ email }} will be processed",
+		"close-alert": {
+			"ask-close-alert-title": "Close alert #{{ alert }}",
+			"ask-close-alert-header": "Alert {{ alert }} will be closed, are you sure you want to continue?",
+			"error-close-alert": "You already have closed {{ url }}",
+			"response-close-alert": "Alert {{ url }} will be closed",
+			"exception-close-alert": "You have closed #{{ alert }}"
+		},
+		"configure-admin": {
+			"title": "Configure OpsGenie",
+			"header": "Configure the OpsGenie app with the following information.",
+			"label": "API Key",
+			"description": "API integration OpsGenie api key",
+			"exception": "Your OpsGenie setup has no API integration: ",
+			"system-admin": "Error: This command is only available to Mattermost System Admin"
+		},
+		"create-alert": {
+			"message": "New alert \"{{ message }}\" will be created",
+			"response": "Note will be added for {{ url }}"
+		},
+		"create-snooze": {
+			"response": "Alert {{url }} will be snoozed for {{ time }}"
+		},
+		"actions": {
+			"title-note": "Add note to [{{ alert }}]",
+			"label-note": "Add",
+			"display-note": "Note",
+			"placeholder-note": "Your note here...",
+			"title-list-user": "Choose a user to assign the alert to",
+			"name-list-user": "Choose a user",
+			"name-close": "Close",
+			"title-snooze": "For how long do you want to snooze notifications for this alert",
+			"name-snooze": "Choose snooze time",
+			"exception-owner": "You already are alert {{ alert }} owner",
+			"response-owner": "Take ownership request will be processed for {{ alert }}"
+		},
+		"priority": {
+			"exception": "Alert's {{ url }} priority is already {{ priority }}",
+			"response": "Updated {{ url }} priority to {{ priority }}"
+		},
+		"subcription-add": {
+			"exception": "Team [{{name}}] is already associated with channel [{{channelName}}]"
+		},
+		"ownership": {
+			"exception": "Take ownership request will be processed for {{ url }}",
+			"response": "Take ownership request will be processed for {{ url }}"
+		},
+		"unack": {
+			"response-unack": "You have unacknowledged {{ url }}",
+			"response-ack": "You have unacknowledged #{{ alert }}",
+			"exception-unack": "Unacknowledge request will be processed for {{ url }}",
+			"exception-ack": "You haven't acknowledge alert #{{ alert }}"
+		}
+	},
+	"bindings-descriptions": {
+		"bindings": "Manage OpsGenie App"
+	}
+}
