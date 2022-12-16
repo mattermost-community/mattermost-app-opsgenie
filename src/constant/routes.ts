@@ -1,7 +1,7 @@
 const PathsVariable = {
     Identifier: ':IDENTIFIER',
-    Account: ':ACCOUNT'
-}
+    Account: ':ACCOUNT',
+};
 
 export const AppsPluginName = 'com.mattermost.apps';
 export const AppsOpsGenie = `https://${PathsVariable.Account}.app.opsgenie.com`;
@@ -19,7 +19,9 @@ const AppPaths = {
     OAuthCompletePath: '/oauth2/complete',
     OAuthConnectPath: '/oauth2/connect',
 
+    CallPathSubscriptionAddForm: '/subscription/add/form',
     CallPathSubscriptionAddSubmit: '/subscription/add/submit',
+    CallPathSubscriptionDeleteForm: '/subscription/delete/form',
     CallPathSubscriptionDeleteSubmit: '/subscription/delete/submit',
     CallPathSubscriptionListSubmit: '/subscription/list/submit',
 
@@ -30,7 +32,6 @@ const AppPaths = {
 
     CallPathAlertCloseSubmit: '/alert/close/submit',
     CallPathAlertCloseAction: '/alert/close/action',
-
 
     CallPathAlertUnacknowledge: '/alert/unacknowledge',
     CallPathAlertUnacknowledgeAction: '/alert/unacknowledge/action',
@@ -53,11 +54,11 @@ const AppPaths = {
 
     CallPathTakeOwnershipAlertSubmit: '/alert/takeownership',
 
-    CallPathIncomingWebhookPath: '/webhook'
-}
+    CallPathIncomingWebhookPath: '/webhook',
+};
 
 const OpsGenieWebPaths = {
-    AlertDetailPathPrefix: `/alert/detail/${PathsVariable.Identifier}`
+    AlertDetailPathPrefix: `/alert/detail/${PathsVariable.Identifier}`,
 };
 
 const OpsGeniePaths = {
@@ -90,13 +91,12 @@ const MattermostPaths = {
     DialogsOpenPath: '/actions/dialogs/open',
     ApiVersionV4: '/api/v4',
     ApiVersionV1: '/api/v1',
-}
-
+};
 
 export const Routes = {
     PathsVariable,
     App: AppPaths,
     Mattermost: MattermostPaths,
     OpsGenie: OpsGeniePaths,
-    OpsGenieWeb: OpsGenieWebPaths
+    OpsGenieWeb: OpsGenieWebPaths,
 };

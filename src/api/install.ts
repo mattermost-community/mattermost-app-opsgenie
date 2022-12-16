@@ -1,10 +1,11 @@
-import {Request, Response} from 'express';
-import {AppCallRequest, AppCallResponse, AppContext} from '../types';
-import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
+import { Request, Response } from 'express';
+
+import { AppCallRequest, AppCallResponse, AppContext } from '../types';
+import { newOKCallResponseWithMarkdown } from '../utils/call-responses';
 import manifest from '../manifest.json';
-import {joinLines} from '../utils/markdown';
-import {MattermostClient, MattermostOptions} from '../clients/mattermost';
-import {configureI18n} from "../utils/translations";
+import { joinLines } from '../utils/markdown';
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+import { configureI18n } from '../utils/translations';
 
 export const getInstall = async (request: Request, response: Response) => {
     const call: AppCallRequest = request.body;
@@ -14,14 +15,14 @@ export const getInstall = async (request: Request, response: Response) => {
 
     const mattermostOpts: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken
+        accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOpts);
 
     await mattermostClient.updateRolesByUser(<string>userId, 'system_admin system_post_all');
 
     const helpText: string = [
-        getCommands(call.context)
+        getCommands(call.context),
     ].join('');
     const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
 
@@ -29,7 +30,7 @@ export const getInstall = async (request: Request, response: Response) => {
 };
 
 function getCommands(context: AppContext): string {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const homepageUrl: string = manifest.homepage_url;
     return `${joinLines(

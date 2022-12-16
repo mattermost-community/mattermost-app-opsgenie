@@ -105,7 +105,9 @@ export type AttachmentAction = {
     integration: {
         url: string;
         context: any;
+        expand?: any;
     };
+    expand?: any;
     options?: AttachmentOption[];
 }
 
@@ -117,9 +119,28 @@ export type Attachment = {
         short: boolean;
         title: string;
         value: string;
+        expand?: any;
     }[];
     actions?: AttachmentAction[]
 };
+
+export type PostEmbeddedBindings = {
+    location: string,
+    label: string,
+    bindings?: any,
+    submit?: {
+        path: string,
+        expand: any,
+        state: any,
+    }
+}
+
+export type PostBindings = {
+    location: 'embedded',
+    app_id: string;
+    description: string,
+    bindings: PostEmbeddedBindings[]
+}
 
 export type PostCreate = {
     channel_id: string;
@@ -127,7 +148,8 @@ export type PostCreate = {
     root_id?: string;
     file_ids?: string[];
     props?: {
-        attachments: Attachment[];
+        attachments?: Attachment[];
+        app_bindings?: PostBindings[];
     }
 }
 
@@ -157,7 +179,8 @@ export type PostUpdate = {
     message?: string;
     has_reactions?: boolean;
     props?: {
-        attachments: Attachment[];
+        attachments?: Attachment[];
+        app_bindings?: PostBindings[];
     }
 }
 

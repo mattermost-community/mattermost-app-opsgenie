@@ -7,7 +7,7 @@
       "message-add-note": "Se agregará una nota para #{{ alert }}",
       "message-assign": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
       "message-assign-response": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
-      "message-alert-snoozed": "La alerta se pospondrá"
+      "message-alert-snoozed": "La alerta {{ alert }} se pospondrá {{ timeAmount }}"
     },
     "configure": {
       "error-response": "No se puede abrir el formulario de configuración: {{ message }}",
@@ -51,12 +51,14 @@
       "message-created": "Se creará la suscripción",
       "message-delete": "Se eliminará la suscripción.",
       "message-list": "Lista de suscripciones: se encontraron {{ integrations }} suscripciones abiertas.",
-      "detail-list": "- ID de suscripción: \"{{ integration }}\" - Nombre del equipo \"{{ name }}\" - Nombre del canal \"{{ channelName }}\""
+      "detail-list": "- Nombre del equipo \"{{ name }}\" - Nombre del canal \"{{ channelName }}\""
     },
     "team": {
       "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
     },
     "webhook": {
+      "title": "[#{{ text }}]({{ url }})",
+      "title-closed": "[#{{ text }} [RESUELTA]]({{ ur l}})",
       "error": "Webhook de error: {{ message }}",
       "title-priority": "Prioridad",
       "title-team": "Equipos enrutados",
@@ -70,7 +72,13 @@
       "message-snooze": "{{ username }} alerta pospuesta {{ url }} \"{{ message }}\" hasta que {{ date }}",
       "message-snooze-alert": "Posponer caducó para la alerta { url }} \"{{ message }}\"",
       "message-assign": "{{ username }} propiedad asignada de la alerta {{ url) } a {{ fullName }} \" {{ message }}\"",
-      "message-update": "{{ username }} cambió la prioridad de la alerta {{ url }} \"{{ message }}\" de {{ oldPriority }} a {{ priority }}"
+      "message-update": "{{ username }} cambió la prioridad de la alerta {{ url }} \"{{ message }}\" de {{ oldPriority }} a {{ priority }}",
+      "extra-options": {
+        "add-note": "Añadir nota a alerta",
+        "assign": "Asignar alerta",
+        "snooze": "Silenciar alerta",
+        "take-ownership": "Tomar alerta"
+      }
     }
   },
   "binding": {
@@ -89,7 +97,9 @@
       "name-channel": "Canal",
       "command-delete-description": "Dar de baja al equipo del canal",
       "command-delete-title": "Dar de baja al equipo del canal",
-      "label-delete": "ID de suscripción",
+      "label-delete": "Suscripción a eliminar",
+      "command-delete-value": "- Nombre de equipo \"{{ name }}\" - Canal \"{{ channelName }}\"",
+      "command-delete-no-subscriptions": "No hay subscripciones",
       "command-list-description": "Lista de equipos suscritos a los canales",
       "command-list-title": "Lista de equipos suscritos a los canales",
       "command-alert-description": "Alerta de configuración en OpsGenie",
@@ -118,13 +128,14 @@
       "command-own-title": "Tomar posesión de las alertas",
       "command-priority-description": "Actualizar prioridad de alerta en OpsGenie",
       "command-priority-title": "Actualizar la prioridad de la alerta",
+      "command-teams": "Maneja tus equipos de OpsGenie",
       "command-list-all-description": "Mostrar información de OpsGenie",
       "command-list-all-title": "Listar equipos",
       "description-alert": "Lista de alertas"
     }
   },
   "forms": {
-    "error": "OpsGenie falló",
+    "error": "OpsGenie falló: ",
     "exception-ack": "Ya has reconocido {{ url }}",
     "response-ack": "Has reconocido {{ url }}",
     "message-ack": "Has reconocido #{{ alert }}",
@@ -137,6 +148,8 @@
     "message-note": "Acción ejecutada a través del complemento Mattermost",
     "response-assign-alert": "Asigna alertas {{ url }} propiedad de {{ email }} será procesado",
     "close-alert": {
+      "ask-close-alert-title": "Cerrar alerta #{{ alert }}",
+      "ask-close-alert-header": "La alerta {{ url }} cambiará a resuelta, ¿estas seguro que deseas continuar?",
       "error-close-alert": "Ya has cerrado {{ url }}",
       "response-close-alert": "Alerta {{ url }} esta cerrada",
       "exception-close-alert": "Has cerrado #{{ alert }}"
@@ -146,7 +159,8 @@
       "header": "Configure la aplicación OpsGenie con la siguiente información.",
       "label": "Clave API",
       "description": "Integración de API Clave de API de OpsGenie",
-      "exception": "Your opsgenie setup has no api integration"
+      "exception": "Clave API incorrecta: ",
+      "system-admin": "Error: Este comando únicamente esta habilidato a usuarios Mattertmost System Admin"
     },
     "create-alert": {
       "message": "Nueva alerta \"{{ message }}\" se creará",
@@ -156,7 +170,7 @@
       "response": "Alerta {{ url }} será pospuesta por {{ time }}"
     },
     "actions": {
-      "title-note": "Añadir la nota",
+      "title-note": "Añadir nota a la alerta [{{ alert }}]",
       "label-note": "Agregar",
       "display-note": "Nota",
       "placeholder-note": "Tu nota aquí...",
@@ -165,15 +179,15 @@
       "name-close": "Cerrar",
       "title-snooze": "Durante cuánto tiempo desea posponer las notificaciones de esta alerta",
       "name-snooze": "Elija el tiempo de repetición",
-      "exception-owner": "Ya eres propietario de la alerta #{{ alert }}",
-      "response-owner": "La solicitud de toma de propiedad se procesará para #{{ alert }}"
+      "exception-owner": "Ya eres propietario de la alerta [#{{ alert }}]({{ url }})",
+      "response-owner": "La solicitud de toma de propiedad se procesará para [#{{ alert }}]({{ url }})"
     },
     "priority": {
       "exception": "La prioridad {{ url }} de la alerta ya está {{ priority }}",
       "response": "Prioridad {{ url }} actualizada a {{ priority }}"
     },
     "subcription-add": {
-      "exception": "team [${team.name}] is already associated with channel [${channelName}]"
+      "exception": "El equipo [{{ name }}] ya está asociado con el canal [{{ channelName }}]"
     },
     "ownership": {
       "exception": "La solicitud de toma de propiedad se procesará para {{ url }}",

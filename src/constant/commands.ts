@@ -18,5 +18,5 @@ export const Commands = {
     OWN: 'own',
     PRIORITY: 'priority',
     LOGIN: 'login',
-    LOGOUT: 'logout'
-}
+    LOGOUT: 'logout',
+};

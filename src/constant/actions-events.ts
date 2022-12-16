@@ -7,3 +7,10 @@ export const ActionsEvents = {
     ACKNOWLEDGED_ALERT_BUTTON_EVENT: 'acknowledgedalertbuttonevent',
     OTHER_OPTIONS_SELECT_EVENT: 'otheroptionsselectevent',
 };
+
+export const ExtraOptionsEvents = {
+    ALERT_ADD_NOTE: 'alert_add_note',
+    ALERT_ASSIGN: 'alert_assign',
+    ALERT_SNOOZE: 'alert_snooze',
+    ALERT_TAKE_OWNERSHIP: 'alert_take_ownership',
+};

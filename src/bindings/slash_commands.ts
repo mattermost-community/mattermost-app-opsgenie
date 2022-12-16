@@ -1,22 +1,22 @@
-import {AppActingUser, AppBinding, AppCallRequest, AppContext, AppsState} from '../types';
+import { AppActingUser, AppBinding, AppCallRequest, AppContext, AppsState } from '../types';
+
+import {
+    AppBindingLocations,
+    CommandTrigger,
+    Commands,
+    OpsGenieIcon,
+} from '../constant';
+import { existsKvOpsGenieConfig, isUserSystemAdmin } from '../utils/utils';
+import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { configureI18n } from '../utils/translations';
 
 import {
     alertBinding,
-    getHelpBinding,
     getConfigureBinding,
-    getAllBinding,
-    connectAccountBinding,
-    subscriptionBinding
+    getHelpBinding,
+    getTeamBinding,
+    subscriptionBinding,
 } from './bindings';
-import {
-    AppBindingLocations,
-    Commands,
-    CommandTrigger,
-    OpsGenieIcon
-} from '../constant';
-import {existsKvOpsGenieConfig, isUserSystemAdmin} from "../utils/utils";
-import {KVStoreClient, KVStoreOptions} from "../clients/kvstore";
-import { configureI18n } from '../utils/translations';
 
 const newCommandBindings = (context: AppContext, bindings: AppBinding[], commands: string[]): AppsState => {
     const i18nObj = configureI18n(context);
@@ -48,7 +48,7 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
 
     const bindings: AppBinding[] = [];
     const commands: string[] = [
-        Commands.HELP
+        Commands.HELP,
     ];
 
     bindings.push(getHelpBinding(context));
@@ -56,14 +56,14 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
     if (isUserSystemAdmin(<AppActingUser>actingUser)) {
         bindings.push(getConfigureBinding(context));
         commands.push(Commands.CONFIGURE);
-    }  
+    }
     if (await existsKvOpsGenieConfig(kvClient)) {
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
-        commands.push(Commands.LIST);
+        commands.push(Commands.TEAM);
         bindings.push(subscriptionBinding(context));
         bindings.push(alertBinding(context));
-        bindings.push(getAllBinding(context));
+        bindings.push(getTeamBinding(context));
     }
 
     return newCommandBindings(context, bindings, commands);

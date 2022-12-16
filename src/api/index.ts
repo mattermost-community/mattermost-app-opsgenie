@@ -1,5 +1,7 @@
-import express, {Router} from 'express';
-import {Routes} from '../constant';
+import express, { Router } from 'express';
+
+import { Routes } from '../constant';
+
 import * as cManifest from './manifest';
 import * as cBindings from './bindings';
 import * as cInstall from './install';
@@ -9,7 +11,6 @@ import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cSubscription from './subscription';
 import * as cWebhook from './webhook';
-import {connectAccountLoginSubmit} from "./configure";
 
 const router: Router = express.Router();
 
@@ -22,16 +23,14 @@ router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
 router.post(`${Routes.App.CallPathConfigForm}`, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, cConfigure.configureAdminAccountSubmit);
 
+router.post(`${Routes.App.CallPathSubscriptionAddForm}`, cSubscription.subscriptionAddForm);
 router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, cSubscription.subscriptionAddSubmit);
+router.post(`${Routes.App.CallPathSubscriptionDeleteForm}`, cSubscription.subscriptionDeleteForm);
 router.post(`${Routes.App.CallPathSubscriptionDeleteSubmit}`, cSubscription.subscriptionDeleteSubmit);
 router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, cSubscription.subscriptionListSubmit);
 
 router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 router.post(`${Routes.App.CallPathAlertsListSubmit}`, cAlert.listAlertsSubmit);
-
-router.post(`${Routes.App.CallPathConnectSubmit}`, cConfigure.connectAccountLoginSubmit);
-router.post(`${Routes.App.OAuthConnectPath}`, cConfigure.fOauth2Connect);
-router.post(`${Routes.App.OAuthCompletePath}`, cConfigure.fOauth2Complete);
 
 router.post(`${Routes.App.CallPathAlertCreate}`, cAlert.createAlertSubmit);
 

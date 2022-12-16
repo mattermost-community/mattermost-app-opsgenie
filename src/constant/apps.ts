@@ -1,4 +1,4 @@
-import {AppCallResponseType, AppCallType, AppExpandLevel, AppFieldType} from '../types';
+import { AppCallResponseType, AppCallType, AppExpandLevel, AppFieldType } from '../types';
 
 export const AppBindingLocations = {
     POST_MENU_ITEM: '/post_menu',
@@ -40,4 +40,9 @@ export const AppFieldTypes: { [name: string]: AppFieldType } = {
     BOOL: 'bool',
     USER: 'user',
     CHANNEL: 'channel',
+};
+
+export const AppFieldSubTypes: { [name: string]: AppFieldType } = {
+    TEXTAREA: 'textarea',
+    PASSWORD: 'password',
 };

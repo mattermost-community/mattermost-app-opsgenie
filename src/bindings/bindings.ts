@@ -1,29 +1,27 @@
-import {AppBinding, AppContext} from '../types';
+import { AppBinding, AppContext } from '../types';
 import {
-    AppExpandLevels,
-    OpsGenieIcon,
-    Routes,
-    Commands,
-    AppFieldTypes,
-    options_alert_priority,
-    option_alert_priority_p3,
-    AlertCreateForm,
-    NoteCreateForm,
-    CloseAlertForm,
     AckAlertForm,
-    UnackAlertForm,
-    SnoozeAlertForm,
-    options_alert_time,
+    AlertCreateForm,
+    AppExpandLevels,
+    AppFieldTypes,
     AssignAlertForm,
-    TakeOwnershipAlertForm,
+    CloseAlertForm,
+    Commands,
+    NoteCreateForm,
+    OpsGenieIcon,
     PriorityAlertForm,
-    SubscriptionCreateForm,
-    SubscriptionDeleteForm
+    Routes,
+    SnoozeAlertForm,
+    TakeOwnershipAlertForm,
+    UnackAlertForm,
+    option_alert_priority_p3,
+    options_alert_priority,
+    options_alert_time,
 } from '../constant';
-import {configureI18n} from "../utils/translations";
+import { configureI18n } from '../utils/translations';
 
 export const getHelpBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.HELP,
@@ -34,15 +32,15 @@ export const getHelpBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathHelp,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
-            }
-        }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
     };
 };
 
 export const getConfigureBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
@@ -54,23 +52,23 @@ export const getConfigureBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConfigForm,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                    acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
-                    app: AppExpandLevels.EXPAND_SUMMARY,
-                }
-            }
-        }
-    }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    oauth2_user: AppExpandLevels.EXPAND_ALL,
+                    app: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
 };
 
 export const connectAccountBinding = (context: AppContext): any => {
     const subCommands: string[] = [
         Commands.LOGIN,
-        Commands.LOGOUT
+        Commands.LOGOUT,
     ];
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const bindings: AppBinding[] = [];
 
@@ -82,12 +80,12 @@ export const connectAccountBinding = (context: AppContext): any => {
         label: Commands.ACCOUNT,
         description: i18nObj.__('binding.binding.command-account-description'),
         hint: `[${subCommands.join(' | ')}]`,
-        bindings
-    }
+        bindings,
+    };
 };
 
 export const accountLoginBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
@@ -99,15 +97,15 @@ export const accountLoginBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
-                }
-            }
-        }
-    }
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
 };
 
 export const accountLogoutBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
@@ -119,20 +117,20 @@ export const accountLogoutBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
-                }
-            }
-        }
-    }
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
 };
 
 export const subscriptionBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const subCommands: string[] = [
         Commands.ADD,
         Commands.DELETE,
-        Commands.LIST
+        Commands.LIST,
     ];
 
     const bindings: AppBinding[] = [];
@@ -146,12 +144,12 @@ export const subscriptionBinding = (context: AppContext): AppBinding => {
         label: Commands.SUBSCRIPTION,
         description: i18nObj.__('binding.binding.command-subcription-description'),
         hint: `[${subCommands.join(' | ')}]`,
-        bindings
-    }
+        bindings,
+    };
 };
 
 export const subscriptionAddBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
@@ -161,36 +159,20 @@ export const subscriptionAddBinding = (context: AppContext): any => {
             title: i18nObj.__('binding.binding.command-add-title'),
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathSubscriptionAddSubmit,
+                path: Routes.App.CallPathSubscriptionAddForm,
                 expand: {
-                    app: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY,
-                    oauth2_user: AppExpandLevels.EXPAND_SUMMARY,
-                }
-            },
-            fields: [
-                {
-                    modal_label: i18nObj.__('binding.binding.name-team'),
-                    name: SubscriptionCreateForm.TEAM_NAME,
-                    type: AppFieldTypes.TEXT,
-                    is_required: true,
-                    position: 1,
-                    max_length: 100
+                    app: AppExpandLevels.EXPAND_ALL,
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    oauth2_user: AppExpandLevels.EXPAND_ALL,
+                    channel: AppExpandLevels.EXPAND_SUMMARY,
                 },
-                {
-                    modal_label: i18nObj.__('binding.binding.name-channel'),
-                    name: SubscriptionCreateForm.CHANNEL_ID,
-                    type: AppFieldTypes.CHANNEL,
-                    is_required: true,
-                    position: 2
-                }
-            ]
-        }
-    }
+            },
+        },
+    };
 };
 
 export const subscriptionDeleteBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
@@ -200,28 +182,18 @@ export const subscriptionDeleteBinding = (context: AppContext): any => {
             title: i18nObj.__('binding.binding.command-delete-title'),
             icon: OpsGenieIcon,
             submit: {
-                path: Routes.App.CallPathSubscriptionDeleteSubmit,
+                path: Routes.App.CallPathSubscriptionDeleteForm,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
                 },
             },
-            fields: [
-                {
-                    modal_label: i18nObj.__('binding.binding.label-delete'),
-                    name: SubscriptionDeleteForm.SUBSCRIPTION_ID,
-                    type: AppFieldTypes.TEXT,
-                    is_required: true,
-                    position: 1,
-                    max_length: 36,
-                    min_length: 36
-                }
-            ]
-        }
-    }
+            fields: [],
+        },
+    };
 };
 
 export const subscriptionListBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
@@ -233,15 +205,15 @@ export const subscriptionListBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionListSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_SUMMARY
-                }
-            }
-        }
-    }
+                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
 };
 
 export const alertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     const subCommands: string[] = [
         Commands.CREATE,
@@ -252,7 +224,8 @@ export const alertBinding = (context: AppContext): AppBinding => {
         Commands.SNOOZE,
         Commands.ASSIGN,
         Commands.OWN,
-        Commands.PRIORITY
+        Commands.PRIORITY,
+        Commands.LIST,
     ];
 
     const bindings: AppBinding[] = [];
@@ -266,18 +239,19 @@ export const alertBinding = (context: AppContext): AppBinding => {
     bindings.push(assignAlertBinding(context));
     bindings.push(ownAlertBinding(context));
     bindings.push(updatePriorityAlertBinding(context));
+    bindings.push(listAlertBindig(context));
 
     return {
         label: Commands.ALERT,
         icon: OpsGenieIcon,
         description: i18nObj.__('binding.binding.command-alert-description'),
         hint: `[${subCommands.join(' | ')}]`,
-        bindings
-    }
-}
+        bindings,
+    };
+};
 
 const createAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return (
         {
@@ -289,7 +263,7 @@ const createAlertBinding = (context: AppContext): AppBinding => {
                 icon: OpsGenieIcon,
                 submit: {
                     path: Routes.App.CallPathAlertCreate,
-                    expand: { }
+                    expand: { },
                 },
                 fields: [
                     {
@@ -299,7 +273,7 @@ const createAlertBinding = (context: AppContext): AppBinding => {
                         type: AppFieldTypes.TEXT,
                         is_required: true,
                         position: 1,
-                        max_length: 130
+                        max_length: 130,
                     },
                     {
                         modal_label: i18nObj.__('binding.binding.label-team'),
@@ -307,7 +281,7 @@ const createAlertBinding = (context: AppContext): AppBinding => {
                         type: AppFieldTypes.TEXT,
                         is_required: true,
                         position: 2,
-                        max_length: 100
+                        max_length: 100,
                     },
                     {
                         modal_label: 'binding.binding.label-priority',
@@ -316,16 +290,16 @@ const createAlertBinding = (context: AppContext): AppBinding => {
                         is_required: false,
                         position: 3,
                         options: options_alert_priority,
-                        value: options_alert_priority.find(value => value.value === option_alert_priority_p3)
+                        value: options_alert_priority.find((value) => value.value === option_alert_priority_p3),
                     },
-                ]
-            }
+                ],
+            },
         }
     );
 };
 
 const addNoteToAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.NOTE,
@@ -337,8 +311,8 @@ const addNoteToAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathNoteToAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -348,7 +322,7 @@ const addNoteToAlertBinding = (context: AppContext): AppBinding => {
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,
-                    max_length: 25000
+                    max_length: 25000,
                 },
                 {
                     modal_label: i18nObj.__('binding.binding.label-tiny'),
@@ -357,13 +331,13 @@ const addNoteToAlertBinding = (context: AppContext): AppBinding => {
                     is_required: true,
                     position: 2,
                 },
-            ]
-        }
-    }
-}
+            ],
+        },
+    };
+};
 
 const closeAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.CLOSE,
@@ -375,8 +349,8 @@ const closeAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertCloseSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -386,13 +360,13 @@ const closeAlertBinding = (context: AppContext): AppBinding => {
                     is_required: true,
                     position: 1,
                 },
-            ]
-        }
-    }
-}
+            ],
+        },
+    };
+};
 
 const ackAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.ACK,
@@ -404,8 +378,8 @@ const ackAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertAcknowledgedSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -415,13 +389,13 @@ const ackAlertBinding = (context: AppContext): AppBinding => {
                     is_required: true,
                     position: 1,
                 },
-            ]
-        }
-    }
-}
+            ],
+        },
+    };
+};
 
 const unackAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.UNACK,
@@ -433,8 +407,8 @@ const unackAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertUnacknowledge,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -444,13 +418,13 @@ const unackAlertBinding = (context: AppContext): AppBinding => {
                     is_required: true,
                     position: 1,
                 },
-            ]
-        }
-    }
-}
+            ],
+        },
+    };
+};
 
 const snoozeAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.SNOOZE,
@@ -462,8 +436,8 @@ const snoozeAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathSnoozeAlert,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -479,15 +453,15 @@ const snoozeAlertBinding = (context: AppContext): AppBinding => {
                     type: AppFieldTypes.STATIC_SELECT,
                     is_required: true,
                     position: 2,
-                    options: options_alert_time
+                    options: options_alert_time,
                 },
-            ]
-        }
-    }
-}
+            ],
+        },
+    };
+};
 
 const assignAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.ASSIGN,
@@ -499,8 +473,8 @@ const assignAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAssignAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -511,19 +485,19 @@ const assignAlertBinding = (context: AppContext): AppBinding => {
                     position: 1,
                 },
                 {
-                    modal_label:i18nObj.__('binding.binding.label-user'),
+                    modal_label: i18nObj.__('binding.binding.label-user'),
                     name: AssignAlertForm.USER_ID,
                     type: AppFieldTypes.USER,
                     is_required: true,
-                    position: 2
+                    position: 2,
                 },
-            ]
-        }
-    }
-}
+            ],
+        },
+    };
+};
 
 const ownAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.OWN,
@@ -535,8 +509,8 @@ const ownAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathTakeOwnershipAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -545,14 +519,14 @@ const ownAlertBinding = (context: AppContext): AppBinding => {
                     type: AppFieldTypes.TEXT,
                     is_required: true,
                     position: 1,
-                }
-            ]
-        }
-    }
-}
+                },
+            ],
+        },
+    };
+};
 
 const updatePriorityAlertBinding = (context: AppContext): AppBinding => {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return {
         label: Commands.PRIORITY,
@@ -564,8 +538,8 @@ const updatePriorityAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathUpdatePriorityAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL
-                }
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
             },
             fields: [
                 {
@@ -581,54 +555,56 @@ const updatePriorityAlertBinding = (context: AppContext): AppBinding => {
                     type: AppFieldTypes.STATIC_SELECT,
                     is_required: true,
                     position: 2,
-                    options: options_alert_priority
-                }
-            ]
-        }
-    }
-}
+                    options: options_alert_priority,
+                },
+            ],
+        },
+    };
+};
 
-export const getAllBinding = (context: AppContext): any => {
-		const i18nObj = configureI18n(context);
+const listAlertBindig = (context: AppContext): AppBinding => {
+    const i18nObj = configureI18n(context);
 
-    const commands: string[] = [
-        Commands.TEAM,
-        Commands.ALERT
-    ];
+    return {
+        label: Commands.LIST,
+        icon: OpsGenieIcon,
+        description: i18nObj.__('binding.binding.description-alert'),
+        form: {
+            title: i18nObj.__('binding.binding.description-alert'),
+            icon: OpsGenieIcon,
+            fields: [],
+            submit: {
+                path: Routes.App.CallPathAlertsListSubmit,
+                expand: {
+                    acting_user: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
+};
+
+export const getTeamBinding = (context: AppContext): any => {
+    const i18nObj = configureI18n(context);
 
     return {
         icon: OpsGenieIcon,
-        label: Commands.LIST,
-        description: i18nObj.__('binding.binding.command-list-all-description'),
-        hint: `[${commands.join(' | ')}]`,
+        label: Commands.TEAM,
+        description: i18nObj.__('binding.binding.command-teams'),
+        hint: `[${Commands.LIST}]`,
         bindings: [
             {
                 icon: OpsGenieIcon,
-                label: Commands.TEAM,
+                label: Commands.LIST,
                 description: i18nObj.__('binding.binding.command-list-all-title'),
                 form: {
-                    title: "",
+                    title: '',
                     icon: OpsGenieIcon,
                     submit: {
                         path: Routes.App.CallPathTeamsListSubmit,
-                        expand: { }
-                    }
-                }
+                        expand: {},
+                    },
+                },
             },
-            {
-                icon: OpsGenieIcon,
-                label: Commands.ALERT,
-                description: i18nObj.__('binding.binding.description-alert'),
-                form: {
-                    title: "",
-                    icon: OpsGenieIcon,
-                    submit: {
-                        path: Routes.App.CallPathAlertsListSubmit,
-                        expand: { }
-                    }
-                }
-            }
-        ]
-    }
+        ],
+    };
 };
-

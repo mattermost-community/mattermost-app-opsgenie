@@ -1,26 +1,27 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
+
 import manifest from '../manifest.json';
-import {newOKCallResponseWithMarkdown} from '../utils/call-responses';
-import {AppActingUser, AppCallRequest, AppCallResponse, AppContext, ExpandedBotActingUser} from '../types';
-import {addBulletSlashCommand, h5, joinLines} from '../utils/markdown';
-import {configureI18n} from "../utils/translations";
-import {existsKvOpsGenieConfig, isUserSystemAdmin} from '../utils/utils';
+import { newOKCallResponseWithMarkdown } from '../utils/call-responses';
+import { AppActingUser, AppCallRequest, AppCallResponse, AppContext, ExpandedBotActingUser } from '../types';
+import { addBulletSlashCommand, h5, joinLines } from '../utils/markdown';
+import { configureI18n } from '../utils/translations';
+import { existsKvOpsGenieConfig, isUserSystemAdmin } from '../utils/utils';
 import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { Commands } from '../constant';
 
 export const getHelp = async (request: Request, response: Response) => {
-		const call: AppCallRequest = request.body;
+    const call: AppCallRequest = request.body;
 
     const helpText: string = [
         getHeader(call.context),
-        await getCommands(request.body)
+        await getCommands(request.body),
     ].join('');
     const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
     response.json(callResponse);
 };
 
 function getHeader(context: AppContext): string {
-		const i18nObj = configureI18n(context);
+    const i18nObj = configureI18n(context);
 
     return h5(i18nObj.__('api.help.title'));
 }
@@ -33,7 +34,7 @@ async function getCommands(call: AppCallRequest): Promise<string> {
     const actingUser: AppActingUser | undefined = context.acting_user;
     const actingUserID: string | undefined = actingUser.id;
     const commands: string[] = [];
-		const i18nObj = configureI18n(call.context);
+    const i18nObj = configureI18n(call.context);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -56,7 +57,7 @@ async function getCommands(call: AppCallRequest): Promise<string> {
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-note-command', { command: Commands.ALERT, note: Commands.NOTE }), i18nObj.__('api.help.command-note-description')));
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-snooze-command', { command: Commands.ALERT, snooze: Commands.SNOOZE }), i18nObj.__('api.help.command-snooze-decription')));
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-ask-command', { command: Commands.ALERT, ack: Commands.ACK }), i18nObj.__('api.help.command-ack-description')));
-        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-unack-command', { command: Commands.ALERT, unack: Commands.UNACK  }), i18nObj.__('api.help.command-unack-description')));
+        commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-unack-command', { command: Commands.ALERT, unack: Commands.UNACK }), i18nObj.__('api.help.command-unack-description')));
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-assign-command', { command: Commands.ALERT, assign: Commands.ASSIGN }), i18nObj.__('api.help.command-assign-description')));
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-close-command', { command: Commands.ALERT, close: Commands.CLOSE }), i18nObj.__('api.help.command-close-description')));
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-own-command', { command: Commands.ALERT, own: Commands.OWN }), i18nObj.__('api.help.command-own-description')));
@@ -64,6 +65,6 @@ async function getCommands(call: AppCallRequest): Promise<string> {
         commands.push(addBulletSlashCommand(`${Commands.LIST} ${Commands.TEAM}`, i18nObj.__('api.help.command-team-description')));
         commands.push(addBulletSlashCommand(`${Commands.LIST} ${Commands.ALERT}`, i18nObj.__('api.help.command-alert-decription')));
     }
-    
+
     return `${joinLines(...commands)}`;
 }
