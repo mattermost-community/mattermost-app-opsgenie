@@ -29,6 +29,9 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
 
+    console.log(call);
+    console.log(typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined');
+    console.log(values);
     const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
         call.state.alert.tinyId as string :
         values?.[AckAlertForm.NOTE_TINY_ID];
@@ -70,9 +73,14 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
 }
 
 export async function closeAlertForm(call: AppCallAction<AppContextAction>): Promise<AppForm> {
+    const i18nObj = configureI18n(call.context);
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
     const botAccessToken: string | undefined = call.context.bot_access_token;
-    const i18nObj = configureI18n(call.context);
+    const values: AppCallValues | undefined = call.values;
+    const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
+        call.state.alert.tinyId as string :
+        values?.[AckAlertForm.NOTE_TINY_ID];
+
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
         accessToken: <string>botAccessToken,
@@ -84,8 +92,20 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
         api_key: kvConfig.opsgenie_apikey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
-    const alert = call.state.alert;
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY,
+    };
+
+    const alertResponse: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+    const alert = alertResponse.data;
     const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient);
+    const stateAlert = {
+        id: alert.id,
+        message: alert.message,
+        tinyId: alert.tinyId,
+    };
 
     const form: AppForm = {
         title: i18nObj.__('forms.close-alert.ask-close-alert-title', { alert: alert.tinyId }),
@@ -100,7 +120,9 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
                 locale: AppExpandLevels.EXPAND_ALL,
                 post: AppExpandLevels.EXPAND_SUMMARY,
             },
-            state: call.state,
+            state: {
+                alert: stateAlert,
+            },
         },
     };
     return form;
