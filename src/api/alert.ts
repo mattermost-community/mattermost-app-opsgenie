@@ -20,7 +20,7 @@ import { createAlertCall } from '../forms/create-alert';
 import { addNoteToAlertAction, addNoteToAlertCall } from '../forms/create-note';
 import { createSnoozeAlertAction, createSnoozeAlertCall } from '../forms/create-snooze';
 import { assignAlertAction, assignAlertCall } from '../forms/assign-alert';
-import { closeAlertAction, closeAlertCall } from '../forms/close-alert';
+import { closeAlertCall, closeAlertForm } from '../forms/close-alert';
 import { ackAlertAction, ackAlertCall } from '../forms/ack-alert';
 import { otherActionsAlertCall } from '../forms/other-actions-alert';
 import { closeActionsAlertCall } from '../forms/close-actions-alert';
@@ -100,11 +100,10 @@ export const closeAlertSubmit = async (request: Request, response: Response) => 
 
 export const closeAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
-    const call: AppCallRequest = request.body;
 
     try {
-        await closeAlertAction(request.body, call.context);
-        callResponse = newOKCallResponse();
+        const form = await closeAlertForm(request.body);
+        callResponse = newFormCallResponse(form);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }

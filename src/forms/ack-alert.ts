@@ -30,7 +30,9 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
 
-    const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
+    const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
+        call.state.alert.tinyId as string :
+        values?.[AckAlertForm.NOTE_TINY_ID];
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,

@@ -57,7 +57,8 @@
       "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
     },
     "webhook": {
-      "title": "#[{{text}}]({{url}})",
+      "title": "[#{{ text }}]({{ url }})",
+      "title-closed": "[#{{ text }} [RESUELTA]]({{ ur l}})",
       "error": "Webhook de error: {{ message }}",
       "title-priority": "Prioridad",
       "title-team": "Equipos enrutados",
@@ -147,6 +148,8 @@
     "message-note": "Acción ejecutada a través del complemento Mattermost",
     "response-assign-alert": "Asigna alertas {{ url }} propiedad de {{ email }} será procesado",
     "close-alert": {
+      "ask-close-alert-title": "Cerrar alerta #{{ alert }}",
+      "ask-close-alert-header": "La alerta {{ url }} cambiará a resuelta, ¿estas seguro que deseas continuar?",
       "error-close-alert": "Ya has cerrado {{ url }}",
       "response-close-alert": "Alerta {{ url }} esta cerrada",
       "exception-close-alert": "Has cerrado #{{ alert }}"

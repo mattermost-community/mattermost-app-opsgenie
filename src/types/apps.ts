@@ -170,6 +170,7 @@ export type AppContext = {
     acting_user?: AppActingUser;
     acting_user_access_token?: string;
     oauth2: any;
+    post?: AppPost;
 };
 
 export type AppCallRequest = AppCall & {

@@ -57,7 +57,8 @@
 			"message": "Team List: Found {{ length }} matching teams."
 		},
 		"webhook": {
-			"title": "#[{{text}}]({{url}})",
+			"title": "[#{{ text }}]({{ url }})",
+			"title-closed": "[#{{ text }} [CLOSED] ]({{ url }}) ",
 			"error": "Error webhook: {{ message }}",
 			"title-priority": "Priority",
 			"title-team": "Routed Teams",
@@ -148,6 +149,8 @@
 		"message-note": "Action executed via Mattermost Plugin",
 		"response-assign-alert": "Assign alert's {{ url }} ownership to {{ email }} will be processed",
 		"close-alert": {
+			"ask-close-alert-title": "Close alert #{{ alert }}",
+			"ask-close-alert-header": "Alert {{ alert }} will be closed, are you sure you want to continue?",
 			"error-close-alert": "You already have closed {{ url }}",
 			"response-close-alert": "Alert {{ url }} will be closed",
 			"exception-close-alert": "You have closed #{{ alert }}"
