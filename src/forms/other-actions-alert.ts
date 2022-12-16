@@ -4,6 +4,7 @@ import {
     AppCallAction,
     AppCallResponse, AppContext,
     AppContextAction,
+    AppForm,
     DialogProps,
     Identifier,
     IdentifierType,
@@ -24,6 +25,11 @@ import {
     option_alert_snooze,
     option_alert_take_ownership,
     options_times,
+    AppExpandLevels,
+    AppFieldTypes,
+    ConfigureForm,
+    OpsGenieIcon,
+    AppFieldSubTypes,
 } from '../constant';
 import config from '../config';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
@@ -33,40 +39,33 @@ import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvst
 import { Exception } from '../utils/exception';
 import { OtherActionsFunction } from '../types/functions';
 
-async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<void> {
-    const mattermostUrl: string = call.context.mattermost_site_url;
-    const triggerId: string = 'triggerId';
-    const accessToken: string = call.context.bot_access_token;
-    const alertTinyId: string = call.context.alert.tinyId;
+async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
 
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl,
-        accessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-
-    const dialogProps: DialogProps = {
-        trigger_id: triggerId,
-        url: `${config.APP.HOST}${Routes.App.CallPathNoteToAlertAction}`,
-        dialog: {
-            title: i18nObj.__('forms.actions.title-note'),
-            icon_url: `${config.APP.HOST}/static/opsgenie.png`,
-            submit_label: i18nObj.__('forms.actions.label-note'),
-            state: JSON.stringify(call.context),
-            elements: [
-                {
-                    display_name: i18nObj.__('forms.actions.display-note'),
-                    type: 'textarea',
-                    name: NoteModalForm.NOTE_MESSAGE,
-                    placeholder: i18nObj.__('forms.actions.placeholder-note'),
-                    optional: false,
-                    max_length: 25000,
-                },
-            ],
+    const form: AppForm = {
+        title: i18nObj.__('forms.actions.title-note', { alert: call.state.alert.tinyId }),
+        icon: OpsGenieIcon,
+        fields: [
+            {
+                type: AppFieldTypes.TEXT,
+                subtype: AppFieldSubTypes.TEXTAREA,
+                name: NoteModalForm.NOTE_MESSAGE,
+                modal_label: i18nObj.__('forms.actions.display-note'),
+                is_required: true, 
+                max_length: 250,
+            },
+        ],
+        submit: {
+            path: Routes.App.CallPathNoteToAlertAction,
+            expand: {
+                acting_user: AppExpandLevels.EXPAND_SUMMARY,
+                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
+                locale: AppExpandLevels.EXPAND_ALL
+            },
+            state: call.state
         },
     };
-    await mattermostClient.showDialog(dialogProps);
+    return form;
 }
 
 async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<void> {
@@ -269,11 +268,11 @@ const ACTIONS_EVENT: { [key: string]: OtherActionsFunction } = {
     [option_alert_snooze]: showPostOfTimes,
 };
 
-export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<void> {
-    const selectedOption: string = 'call.context.selected_option!';
+export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<AppForm | void> {
+    const selectedOption: string = call.state.action;
 
     const handle: OtherActionsFunction = ACTIONS_EVENT[selectedOption];
     if (handle && typeof handle === 'function') {
-        await handle(call);
+        return await handle(call);
     }
 }

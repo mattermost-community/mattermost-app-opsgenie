@@ -72,6 +72,7 @@ export type AppField = {
 export type AppFormSubmit = {
     path: string;
     expand: AppExpand;
+    state?: any;
 }
 
 export type AppForm = {
@@ -229,6 +230,7 @@ export type AppCallDialog<T> = {
 export type AppCallAction<T> = {
     path: string;
     context: T;
+    values: any;
     state: {
         alert: {
             id: string;

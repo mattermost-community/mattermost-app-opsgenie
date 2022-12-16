@@ -1,4 +1,5 @@
 import { AppSelectOption, AttachmentOption } from '../types';
+import { ExtraOptionsEvents } from './actions-events';
 
 export const option_time_5m = '5m';
 export const option_time_10m = '10m';
@@ -79,29 +80,10 @@ export const options_alert_time: AppSelectOption[] = [
     },
 ];
 
-export const option_alert_assign = 'assign';
-export const option_alert_snooze = 'snooze';
-export const option_alert_add_note = 'add_note';
-export const option_alert_take_ownership = 'take_ownership';
-
-export const options_alert: AttachmentOption[] = [
-    {
-        text: 'Assign',
-        value: option_alert_assign,
-    },
-    {
-        text: 'Snooze',
-        value: option_alert_snooze,
-    },
-    {
-        text: 'Add note',
-        value: option_alert_add_note,
-    },
-    {
-        text: 'Take Ownership',
-        value: option_alert_take_ownership,
-    },
-];
+export const option_alert_assign = ExtraOptionsEvents.ALERT_ASSIGN;
+export const option_alert_snooze = ExtraOptionsEvents.ALERT_SNOOZE;
+export const option_alert_add_note = ExtraOptionsEvents.ALERT_ADD_NOTE;
+export const option_alert_take_ownership = ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP;
 
 export const option_alert_priority_p1 = 'P1';
 export const option_alert_priority_p2 = 'P2';

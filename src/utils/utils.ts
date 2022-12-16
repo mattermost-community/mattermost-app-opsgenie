@@ -1,7 +1,7 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
+import { Account, AppActingUser, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription, AppForm } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 
@@ -146,4 +146,10 @@ export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any)
 
 export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
     return array.filter((el): el is Subscription => typeof (el) !== 'undefined');
+}
+function isType(value: any) {
+    var regex = /^[object (S+?)]$/;
+    var matches = Object.prototype.toString.call(value).match(regex) || [];
+
+    return (matches[1] || 'undefined').toLowerCase();
 }

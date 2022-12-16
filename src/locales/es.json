@@ -167,7 +167,7 @@
       "response": "Alerta {{ url }} será pospuesta por {{ time }}"
     },
     "actions": {
-      "title-note": "Añadir la nota",
+      "title-note": "Añadir nota a la alerta [{{ alert }}]",
       "label-note": "Agregar",
       "display-note": "Nota",
       "placeholder-note": "Tu nota aquí...",

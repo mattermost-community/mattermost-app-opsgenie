@@ -12,6 +12,7 @@ import {
 } from '../types';
 import {
     newErrorCallResponseWithMessage,
+    newFormCallResponse,
     newOKCallResponse,
     newOKCallResponseWithMarkdown,
 } from '../utils/call-responses';
@@ -168,17 +169,17 @@ export const unackAlertModal = async (request: Request, response: Response) => {
 };
 
 export const otherActionsAlert = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
+    let callResponse: AppCallResponse = newOKCallResponse();
 
     try {
-        await otherActionsAlertCall(request.body);
-        callResponse = newOKCallResponse();
-
-        response.json(callResponse);
+        const other = await otherActionsAlertCall(request.body);
+        if (other) {
+            callResponse = newFormCallResponse(other);
+        }
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
-        response.json(callResponse);
     }
+    response.json(callResponse);
 };
 
 export const closeActionsAlert = async (request: Request, response: Response) => {
@@ -208,48 +209,17 @@ export const addNoteToAlertSubmit = async (request: Request, response: Response)
         response.json(callResponse);
     }
 };
+
 export const addNoteToAlertModal = async (request: Request, response: Response) => {
     let callResponse: AppCallResponse;
-    const call: AppCallDialog<{ alert_message: string }> = request.body;
-    const context: AppContextAction = JSON.parse(call.state);
-    const mattermostUrl: string | undefined = context.mattermost_site_url;
-    const botAccessToken: string | undefined = context.bot_access_token;
-    const channelId: string | undefined = call.channel_id;
-    const userId: string = context.acting_user.id;
-    const i18nObj = configureI18n(request.body);
-
-    const mattermostOptions: MattermostOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
     try {
-        const alert: Alert = await addNoteToAlertAction(request.body, request.body);
-        const message = i18nObj.__('api.list-alert.message-add-note', { alert: alert.tinyId });
-        const post: PostEphemeralCreate = {
-            post: {
-                message,
-                channel_id: channelId,
-            },
-            user_id: userId
-        };
-        await mattermostClient.createEphemeralPost(post);
-
+        const message: string = await addNoteToAlertAction(request.body);
         callResponse = newOKCallResponseWithMarkdown(message);
-        response.json(callResponse);
     } catch (error: any) {
-        const post: PostEphemeralCreate = {
-            post: {
-                message: i18nObj.__('api.list-alert.error-close-alert', { error: error.message }),
-                channel_id: channelId,
-            },
-            user_id: call.user_id,
-        };
-        await mattermostClient.createEphemeralPost(post);
-        callResponse = newErrorCallResponseWithMessage(i18nObj.__('api.list-alert.error-close-alert', { error: error.message }));
-        response.json(callResponse);
+        callResponse = showMessageToMattermost(error);
     }
+    response.json(callResponse);
 };
 
 export const assignAlertSubmit = async (request: Request, response: Response) => {
@@ -391,4 +361,8 @@ export const priorityAlertSubmit = async (request: Request, response: Response) 
         response.json(callResponse);
     }
 };
+
+function isType(other: void | import("../types").AppForm) {
+    throw new Error('Function not implemented.');
+}
 

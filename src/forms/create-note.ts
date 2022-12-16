@@ -1,6 +1,7 @@
 import {
     Alert,
     AlertNote,
+    AppCallAction,
     AppCallDialog,
     AppCallRequest,
     AppCallValues, AppContext,
@@ -53,14 +54,13 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> 
     return i18nObj.__('forms.create-alert.response', { url: alertURL });
 }
 
-export async function addNoteToAlertAction(call: AppCallDialog<{ alert_message: string }>, cont: AppContext): Promise<Alert> {
-    const context: AppContextAction = JSON.parse(call.state);
-    const mattermostUrl: string | undefined = context.mattermost_site_url;
-    const botAccessToken: string | undefined = context.bot_access_token;
-    const i18nObj = configureI18n(cont);
+export async function addNoteToAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
+    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
+    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const i18nObj = configureI18n(call.context);
 
-    const alertMessage: string = call.submission.alert_message;
-    const alertTinyId: string = context.alert.tinyId;
+    const alertMessage: string = call.values['alert_message'];
+    const alertTinyId: string = call.state.alert.tinyId as string;
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -80,10 +80,11 @@ export async function addNoteToAlertAction(call: AppCallDialog<{ alert_message: 
         identifierType: IdentifierType.TINY,
     };
     const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const alertURL: string = await getAlertLink(alertTinyId, responseAlert.data.id, opsGenieClient);
 
     const data: AlertNote = {
         note: alertMessage,
     };
     await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    return responseAlert.data;
+    return i18nObj.__('forms.create-alert.response', { url: alertURL });
 }

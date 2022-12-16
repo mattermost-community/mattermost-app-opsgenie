@@ -168,7 +168,7 @@
 			"response": "Alert {{url }} will be snoozed for {{ time }}"
 		},
 		"actions": {
-			"title-note": "Add Note",
+			"title-note": "Add note to [{{ alert }}]",
 			"label-note": "Add",
 			"display-note": "Note",
 			"placeholder-note": "Your note here...",
