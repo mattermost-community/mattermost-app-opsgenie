@@ -1,3 +1,5 @@
+import { url } from 'inspector';
+
 import {
     Alert, AlertAck,
     AppCallAction,
@@ -11,7 +13,7 @@ import {
     PostUpdate,
     ResponseResultWithData,
 } from '../types';
-import { AckAlertForm, ActionsEvents, ExceptionType, Routes, StoreKeys, AppExpandLevels, ExtraOptionsEvents } from '../constant';
+import { AckAlertForm, ActionsEvents, AppExpandLevels, ExceptionType, ExtraOptionsEvents, Routes, StoreKeys } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { configureI18n } from '../utils/translations';
@@ -20,7 +22,6 @@ import { Exception } from '../utils/exception';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import config from '../config';
 import manifest from '../manifest.json';
-import { url } from 'inspector';
 import { h6 } from '../utils/markdown';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
@@ -122,7 +123,7 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
     const ackAction = {
         location: acknowledged ? ActionsEvents.UNACKNOWLEDGE_ALERT_BUTTON_EVENT : ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
         label: acknowledged ? i18nObj.__('forms.unacknowledged') : i18nObj.__('forms.acknowledged'),
-        path: acknowledged ? Routes.App.CallPathAlertUnacknowledgeAction : Routes.App.CallPathAlertAcknowledgedAction
+        path: acknowledged ? Routes.App.CallPathAlertUnacknowledgeAction : Routes.App.CallPathAlertAcknowledgedAction,
     };
 
     // ACKNOWLEDGED_ALERT_BUTTON_EVENT
@@ -133,7 +134,7 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
             app_bindings: [
                 {
                     app_id: m.app_id,
-                    location: "embedded",
+                    location: 'embedded',
                     description: h6(i18nObj.__('api.webhook.title', { text: `${alert.tinyId}: ${alert.message}`, url })),
                     bindings: [
                         {
@@ -144,10 +145,10 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                 expand: {
                                     acting_user: AppExpandLevels.EXPAND_ALL,
                                     acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                    post: AppExpandLevels.EXPAND_SUMMARY
+                                    post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
-                                state
-                            }
+                                state,
+                            },
                         },
                         {
                             location: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
@@ -157,10 +158,10 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                 expand: {
                                     acting_user: AppExpandLevels.EXPAND_ALL,
                                     acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                    post: AppExpandLevels.EXPAND_SUMMARY
+                                    post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
-                                state
-                            }
+                                state,
+                            },
                         },
                         {
                             location: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
@@ -174,13 +175,13 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                         expand: {
                                             acting_user: AppExpandLevels.EXPAND_ALL,
                                             acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY
+                                            post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
                                             ...state,
                                             action: ExtraOptionsEvents.ALERT_ADD_NOTE,
-                                        }
-                                    }
+                                        },
+                                    },
                                 },
                                 {
                                     location: ExtraOptionsEvents.ALERT_ASSIGN,
@@ -190,13 +191,13 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                         expand: {
                                             acting_user: AppExpandLevels.EXPAND_ALL,
                                             acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY
+                                            post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
                                             ...state,
                                             action: ExtraOptionsEvents.ALERT_ASSIGN,
-                                        }
-                                    }
+                                        },
+                                    },
                                 },
                                 {
                                     location: ExtraOptionsEvents.ALERT_SNOOZE,
@@ -206,13 +207,13 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                         expand: {
                                             acting_user: AppExpandLevels.EXPAND_ALL,
                                             acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY
+                                            post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
                                             ...state,
                                             action: ExtraOptionsEvents.ALERT_SNOOZE,
-                                        }
-                                    }
+                                        },
+                                    },
                                 },
                                 {
                                     location: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
@@ -222,19 +223,19 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                         expand: {
                                             acting_user: AppExpandLevels.EXPAND_ALL,
                                             acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY
+                                            post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
                                             ...state,
                                             action: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
-                                        }
-                                    }
+                                        },
+                                    },
                                 },
-                            ]
-                        }
-                    ]
+                            ],
+                        },
+                    ],
                 },
-            ]
+            ],
         },
     };
 };

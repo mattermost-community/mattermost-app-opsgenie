@@ -77,7 +77,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
     const mattermostUrl: string = call.context.mattermost_site_url;
     const botAccessToken: string = call.context.bot_access_token;
     const username: string = call.context.acting_user.username;
-    const assignUserSelected: string = call.values['userselectevent']?.value;
+    const assignUserSelected: string = call.values.userselectevent?.value;
     const alertTinyId: string = call.state.alert.tinyId as string;
     const i18nObj = configureI18n(call.context);
 

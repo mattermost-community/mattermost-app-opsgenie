@@ -107,6 +107,6 @@ export async function unackAlertAction(call: AppCallAction<AppContextAction>): P
     };
 
     await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    
-    return i18nObj.__('forms.unack.response-ack', { alert: alert.tinyId });;
+
+    return i18nObj.__('forms.unack.response-ack', { alert: alert.tinyId });
 }

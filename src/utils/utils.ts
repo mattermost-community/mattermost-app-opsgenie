@@ -1,7 +1,7 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription, AppForm } from '../types';
+import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 

@@ -12,5 +12,5 @@ export const ExtraOptionsEvents = {
     ALERT_ADD_NOTE: 'alert_add_note',
     ALERT_ASSIGN: 'alert_assign',
     ALERT_SNOOZE: 'alert_snooze',
-    ALERT_TAKE_OWNERSHIP: 'alert_take_ownership'
-}
+    ALERT_TAKE_OWNERSHIP: 'alert_take_ownership',
+};

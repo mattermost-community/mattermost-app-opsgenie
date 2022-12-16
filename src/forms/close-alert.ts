@@ -100,7 +100,7 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
                 locale: AppExpandLevels.EXPAND_ALL,
                 post: AppExpandLevels.EXPAND_SUMMARY,
             },
-            state: call.state
+            state: call.state,
         },
     };
     return form;
@@ -128,7 +128,7 @@ async function updatePostCloseAlert(context: AppContextAction | AppContext, aler
     newProps.app_bindings[0].bindings = [];
     newProps.app_bindings[0].color = '#AD251C';
     newProps.app_bindings[0].description = h6(i18nObj.__('api.webhook.title-closed', { text: `${alert.tinyId}: ${alert.message}`, url: alert.source }));
-    
+
     const updatePost: PostUpdate = {
         id: postId,
         props: newProps,

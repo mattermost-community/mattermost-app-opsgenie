@@ -136,7 +136,7 @@ export type PostEmbeddedBindings = {
 }
 
 export type PostBindings = {
-    location: 'embedded', 
+    location: 'embedded',
     app_id: string;
     description: string,
     bindings: PostEmbeddedBindings[]

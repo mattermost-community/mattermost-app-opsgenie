@@ -59,7 +59,7 @@ export async function addNoteToAlertAction(call: AppCallAction<AppContextAction>
     const botAccessToken: string | undefined = call.context.bot_access_token;
     const i18nObj = configureI18n(call.context);
 
-    const alertMessage: string = call.values['alert_message'];
+    const alertMessage: string = call.values.alert_message;
     const alertTinyId: string = call.state.alert.tinyId as string;
 
     const options: KVStoreOptions = {

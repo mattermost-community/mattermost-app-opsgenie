@@ -241,7 +241,7 @@ export const assignAlertModal = async (request: Request, response: Response) => 
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }
-    
+
     response.json(callResponse);
 };
 

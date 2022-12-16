@@ -2,37 +2,30 @@ import {
     Alert,
     AlertAssign,
     AppCallAction,
-    AppCallResponse, AppContext,
     AppContextAction,
     AppForm,
-    DialogProps,
     Identifier,
     IdentifierType,
-    PostCreate,
-    PostEphemeralCreate,
     ResponseResultWithData,
     User,
 } from '../types';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import {
     ActionsEvents,
+    AppExpandLevels,
+    AppFieldSubTypes,
+    AppFieldTypes,
     ExceptionType,
     NoteModalForm,
+    OpsGenieIcon,
     Routes,
     StoreKeys,
     option_alert_add_note,
     option_alert_assign,
     option_alert_snooze,
     option_alert_take_ownership,
-    options_times,
-    AppExpandLevels,
-    AppFieldTypes,
-    ConfigureForm,
-    OpsGenieIcon,
-    AppFieldSubTypes,
     options_alert_time,
 } from '../constant';
-import config from '../config';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
@@ -52,7 +45,7 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
                 subtype: AppFieldSubTypes.TEXTAREA,
                 name: NoteModalForm.NOTE_MESSAGE,
                 modal_label: i18nObj.__('forms.actions.display-note'),
-                is_required: true, 
+                is_required: true,
                 max_length: 250,
             },
         ],
@@ -61,9 +54,9 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
             expand: {
                 acting_user: AppExpandLevels.EXPAND_SUMMARY,
                 acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL
+                locale: AppExpandLevels.EXPAND_ALL,
             },
-            state: call.state
+            state: call.state,
         },
     };
     return form;
@@ -71,7 +64,7 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
 
 async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
-    
+
     const form: AppForm = {
         title: i18nObj.__('forms.actions.title-list-user'),
         icon: OpsGenieIcon,
@@ -88,9 +81,9 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
             expand: {
                 acting_user: AppExpandLevels.EXPAND_SUMMARY,
                 acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL
+                locale: AppExpandLevels.EXPAND_ALL,
             },
-            state: call.state
+            state: call.state,
         },
     };
     return form;
@@ -107,7 +100,7 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<A
                 type: AppFieldTypes.STATIC_SELECT,
                 name: ActionsEvents.TIME_SELECT_EVENT,
                 modal_label: i18nObj.__('forms.actions.name-snooze'),
-                is_required: true, 
+                is_required: true,
                 options: options_alert_time,
             },
         ],
@@ -116,9 +109,9 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<A
             expand: {
                 acting_user: AppExpandLevels.EXPAND_SUMMARY,
                 acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL
+                locale: AppExpandLevels.EXPAND_ALL,
             },
-            state: call.state
+            state: call.state,
         },
     };
     return form;
@@ -190,11 +183,12 @@ const ACTIONS_EVENT: { [key: string]: OtherActionsFunction } = {
     [option_alert_snooze]: showPostOfTimes,
 };
 
-export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<AppForm | string | void> {
+export async function otherActionsAlertCall(call: AppCallAction<AppContextAction>): Promise<AppForm | string | void | null> {
     const selectedOption: string = call.state.action;
 
     const handle: OtherActionsFunction = ACTIONS_EVENT[selectedOption];
     if (handle && typeof handle === 'function') {
-        return await handle(call);
+        return handle(call);
     }
+    return null;
 }

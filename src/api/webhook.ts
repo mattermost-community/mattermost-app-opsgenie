@@ -8,7 +8,7 @@ import {
 import { newErrorCallResponseWithMessage, newOKCallResponse } from '../utils/call-responses';
 import { configureI18n } from '../utils/translations';
 import { WebhookFunction } from '../types/functions';
-import { notifyNoteCreated, notifyCloseAlert, notifyAckAlert, notifyUnackAlert, notifySnoozeAlert, notifySnoozeEndedAlert, notifyAssignOwnershipAlert, notifyUpdatePriorityAlert, notifyAlertCreated } from '../forms/webhook-post';
+import { notifyAckAlert, notifyAlertCreated, notifyAssignOwnershipAlert, notifyCloseAlert, notifyNoteCreated, notifySnoozeAlert, notifySnoozeEndedAlert, notifyUnackAlert, notifyUpdatePriorityAlert } from '../forms/webhook-post';
 
 const WEBHOOKS_ACTIONS: { [key: string]: WebhookFunction } = {
     Create: notifyAlertCreated,

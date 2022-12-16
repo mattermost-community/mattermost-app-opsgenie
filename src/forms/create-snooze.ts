@@ -89,7 +89,7 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
     const i18nObj = configureI18n(call.context);
 
     const alert = call.state.alert;
-    const timeAmount: string = call.values['timeselectevent']?.value;
+    const timeAmount: string = call.values.timeselectevent?.value;
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
