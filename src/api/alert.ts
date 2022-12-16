@@ -8,6 +8,7 @@ import {
     AppCallRequest,
     AppCallResponse,
     AppContextAction,
+    AppForm,
     PostEphemeralCreate,
 } from '../types';
 import {
@@ -168,8 +169,8 @@ export const otherActionsAlert = async (request: Request, response: Response) =>
 
     try {
         const other = await otherActionsAlertCall(request.body);
-        if (typeof other === 'object') {
-            callResponse = newFormCallResponse(other);
+        if (other !== 'null' && typeof other === 'object') {
+            callResponse = newFormCallResponse(<AppForm>other);
         }
         if (typeof other === 'string') {
             callResponse = newOKCallResponseWithMarkdown(other);
