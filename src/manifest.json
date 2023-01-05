@@ -38,8 +38,8 @@
         "functions": [
             {
                 "path": "/",
-                "name": "opsgenie",
-                "handler": "opsgenie/index.handler",
+                "name": "bundle",
+                "handler": "index.handler",
                 "runtime": "nodejs16.x"
             }
         ]
