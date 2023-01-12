@@ -1,6 +1,6 @@
 {
     "app_id": "opsgenie",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "homepage_url": "https://github.com/development-ancient/mattermost-app-opsengine",
     "display_name": "OpsGenie",
     "description": "OpsGenie cloud app for Mattermost",
