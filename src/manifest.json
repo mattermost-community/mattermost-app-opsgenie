@@ -39,7 +39,7 @@
             {
                 "path": "/",
                 "name": "bundle",
-                "handler": "index.handler",
+                "handler": "bundle/index.handler",
                 "runtime": "nodejs16.x"
             }
         ]
