@@ -1,6 +1,6 @@
 {
   "name": "mattermost-app-opsgenie",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Connect with the OpsGenine service through the Mattermost platform",
   "main": "src/index.ts",
   "scripts": {
