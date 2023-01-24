@@ -1,7 +1,7 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
+import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 
@@ -9,7 +9,7 @@ import config from '../config';
 
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+import { MattermostClient } from '../clients/mattermost';
 
 import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
@@ -28,14 +28,8 @@ export function isUserSystemAdmin(actingUser: AppActingUser): boolean {
     return Boolean(actingUser.roles && actingUser.roles.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
 }
 
-export async function existsKvOpsGenieConfig(kvClient: KVStoreClient): Promise<boolean> {
-    const opsGenieConfig: ConfigStoreProps = await kvClient.kvGet(StoreKeys.config);
-
-    return Boolean(Object.keys(opsGenieConfig).length);
-}
-
-export function isConnected(oauth2user: any): boolean {
-    return Boolean(oauth2user?.token?.access_token);
+export function existsOpsGenieAPIKey(oauth2App: Oauth2App): boolean {
+    return Boolean(oauth2App.client_id);
 }
 
 export function getAlertDetailUrl(accountName: string, alertId: string): string {

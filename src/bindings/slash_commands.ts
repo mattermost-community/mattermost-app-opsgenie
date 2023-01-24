@@ -1,4 +1,4 @@
-import { AppActingUser, AppBinding, AppCallRequest, AppContext, AppsState } from '../types';
+import { AppActingUser, AppBinding, AppCallRequest, AppContext, AppsState, Oauth2App } from '../types';
 
 import {
     AppBindingLocations,
@@ -6,8 +6,7 @@ import {
     Commands,
     OpsGenieIcon,
 } from '../constant';
-import { existsKvOpsGenieConfig, isUserSystemAdmin } from '../utils/utils';
-import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
 import { configureI18n } from '../utils/translations';
 
 import {
@@ -34,17 +33,10 @@ const newCommandBindings = (context: AppContext, bindings: AppBinding[], command
     };
 };
 
-export const getCommandBindings = async (call: AppCallRequest): Promise<AppsState> => {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
+export const getCommandBindings = (call: AppCallRequest): AppsState => {
     const actingUser: AppActingUser | undefined = call.context.acting_user;
+    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
     const context = call.context as AppContext;
-
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvClient = new KVStoreClient(options);
 
     const bindings: AppBinding[] = [];
     const commands: string[] = [
@@ -57,7 +49,7 @@ export const getCommandBindings = async (call: AppCallRequest): Promise<AppsStat
         bindings.push(getConfigureBinding(context));
         commands.push(Commands.CONFIGURE);
     }
-    if (await existsKvOpsGenieConfig(kvClient)) {
+    if (existsOpsGenieAPIKey(oauth2)) {
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
         commands.push(Commands.TEAM);

@@ -1,5 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 
+import { Oauth2App } from '../types';
+
 import { AppsPluginName, Routes } from '../constant';
 
 export interface KVStoreOptions {
@@ -18,6 +20,16 @@ export class KVStoreClient {
         config: KVStoreOptions
     ) {
         this.config = config;
+    }
+
+    public storeOauth2App(data: Oauth2App): Promise<any> {
+        const url = `${this.config.mattermostUrl}/plugins/${AppsPluginName}${Routes.Mattermost.ApiVersionV1}${Routes.Mattermost.PathOAuth2App}`;
+        return axios.post(url, data, {
+            headers: {
+                Authorization: `BEARER ${this.config.accessToken}`,
+                'content-type': 'application/json; charset=UTF-8',
+            },
+        }).then((response: AxiosResponse<any>) => response.data);
     }
 
     public kvSet(key: string, value: ConfigStoreProps): Promise<any> {

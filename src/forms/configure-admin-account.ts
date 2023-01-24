@@ -5,6 +5,7 @@ import {
     AppForm,
     IntegrationType,
     ListIntegrationsParams,
+    Oauth2App,
 } from '../types';
 import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
@@ -14,22 +15,14 @@ import { configureI18n } from '../utils/translations';
 import { isUserSystemAdmin, tryPromise } from '../utils/utils';
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
-    const mattermostUrl: string = call.context.mattermost_site_url!;
-    const botAccessToken: string = call.context.bot_access_token!;
+    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
     const i18nObj = configureI18n(call.context);
     const actingUser: AppActingUser = call.context.acting_user!;
+    const apiKeyOpsGenie: string | undefined = oauth2.client_id;
 
     if (!isUserSystemAdmin(actingUser)) {
         throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'));
     }
-
-    const options: KVStoreOptions = {
-        mattermostUrl,
-        accessToken: botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const form: AppForm = {
         title: i18nObj.__('forms.configure-admin.title'),
@@ -40,7 +33,7 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
                 type: AppFieldTypes.TEXT,
                 name: ConfigureForm.API_KEY,
                 modal_label: i18nObj.__('forms.configure-admin.label'),
-                value: kvConfig.opsgenie_apikey,
+                value: apiKeyOpsGenie,
                 description: i18nObj.__('forms.configure-admin.description'),
                 is_required: true,
             },
@@ -48,8 +41,10 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
         submit: {
             path: Routes.App.CallPathConfigSubmit,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
+                acting_user: AppExpandLevels.EXPAND_ALL,
+                acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                oauth2_app: AppExpandLevels.EXPAND_ALL,
+                oauth2_user: AppExpandLevels.EXPAND_ALL,
             },
         },
     };
@@ -58,14 +53,9 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
 
 export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string = call.context.mattermost_site_url!;
-    const botAccessToken: string = call.context.bot_access_token!;
+    const accessToken: string = call.context.acting_user_access_token!;
     const values: AppCallValues = <any>call.values;
     const i18nObj = configureI18n(call.context);
-    const actingUser: AppActingUser = call.context.acting_user!;
-
-    if (!isUserSystemAdmin(actingUser)) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'));
-    }
 
     const opsGenieApiKey: string = values[ConfigureForm.API_KEY];
 
@@ -81,14 +71,16 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string
 
     const options: KVStoreOptions = {
         mattermostUrl,
-        accessToken: botAccessToken,
+        accessToken,
     };
     const kvStoreClient = new KVStoreClient(options);
 
-    const kvConfig: ConfigStoreProps = {
-        opsgenie_apikey: opsGenieApiKey,
+    const oauthApp: Oauth2App = {
+        client_id: opsGenieApiKey,
+        client_secret: '',
     };
-    await kvStoreClient.kvSet(StoreKeys.config, kvConfig);
+    await kvStoreClient.storeOauth2App(oauthApp);
+
     return i18nObj.__('api.configure.success-response');
 }
 

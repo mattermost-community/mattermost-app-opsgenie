@@ -2,19 +2,18 @@ import { Request, Response } from 'express';
 
 import manifest from '../manifest.json';
 import { newOKCallResponseWithMarkdown } from '../utils/call-responses';
-import { AppActingUser, AppCallRequest, AppCallResponse, AppContext, ExpandedBotActingUser } from '../types';
+import { AppActingUser, AppCallRequest, AppCallResponse, AppContext, ExpandedBotActingUser, Oauth2App } from '../types';
 import { addBulletSlashCommand, h5, joinLines } from '../utils/markdown';
 import { configureI18n } from '../utils/translations';
-import { existsKvOpsGenieConfig, isUserSystemAdmin } from '../utils/utils';
-import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
 import { Commands } from '../constant';
 
-export const getHelp = async (request: Request, response: Response) => {
+export const getHelp = (request: Request, response: Response) => {
     const call: AppCallRequest = request.body;
 
     const helpText: string = [
         getHeader(call.context),
-        await getCommands(request.body),
+        getCommands(request.body),
     ].join('');
     const callResponse: AppCallResponse = newOKCallResponseWithMarkdown(helpText);
     response.json(callResponse);
@@ -26,30 +25,21 @@ function getHeader(context: AppContext): string {
     return h5(i18nObj.__('api.help.title'));
 }
 
-async function getCommands(call: AppCallRequest): Promise<string> {
+function getCommands(call: AppCallRequest): string {
     const homepageUrl: string = manifest.homepage_url;
+    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
     const context = call.context as ExpandedBotActingUser;
-    const mattermostUrl: string | undefined = context.mattermost_site_url;
-    const botAccessToken: string | undefined = context.bot_access_token;
     const actingUser: AppActingUser | undefined = context.acting_user;
-    const actingUserID: string | undefined = actingUser.id;
     const commands: string[] = [];
     const i18nObj = configureI18n(call.context);
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvClient = new KVStoreClient(options);
-
     commands.push(addBulletSlashCommand(Commands.HELP, i18nObj.__('api.help.command-help', { url: homepageUrl })));
+
     if (isUserSystemAdmin(<AppActingUser>actingUser)) {
         commands.push(addBulletSlashCommand(Commands.CONFIGURE, i18nObj.__('api.help.command-configure')));
     }
-    if (await existsKvOpsGenieConfig(kvClient)) {
-        //commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGIN}`, `Connect your OpsGenie account.`));
-        //commands.push(addBulletSlashCommand(`${Commands.ACCOUNT} ${Commands.LOGOUT}`, `Disconnect from your OpsGenie account.`));
 
+    if (existsOpsGenieAPIKey(oauth2)) {
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-add-command', { command: Commands.SUBSCRIPTION, add: Commands.ADD }), i18nObj.__('api.help.command-add-description')));
         commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-delete-command', { command: Commands.SUBSCRIPTION, delete: Commands.DELETE }), i18nObj.__('api.help.command-delete-description')));
         commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.LIST}`, i18nObj.__('api.help.command-list-description')));
