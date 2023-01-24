@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 
 import { Routes } from '../constant';
 
-import { requireSystemAdmin } from '../restapi/middleware';
+import { requireOpsGenieAPIKey, requireSystemAdmin } from '../restapi/middleware';
 
 import * as cManifest from './manifest';
 import * as cBindings from './bindings';
@@ -25,11 +25,11 @@ router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
 router.post(`${Routes.App.CallPathConfigForm}`, requireSystemAdmin, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, requireSystemAdmin, cConfigure.configureAdminAccountSubmit);
 
-router.post(`${Routes.App.CallPathSubscriptionAddForm}`, cSubscription.subscriptionAddForm);
-router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, cSubscription.subscriptionAddSubmit);
-router.post(`${Routes.App.CallPathSubscriptionDeleteForm}`, cSubscription.subscriptionDeleteForm);
-router.post(`${Routes.App.CallPathSubscriptionDeleteSubmit}`, cSubscription.subscriptionDeleteSubmit);
-router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, cSubscription.subscriptionListSubmit);
+router.post(`${Routes.App.CallPathSubscriptionAddForm}`, requireOpsGenieAPIKey, cSubscription.subscriptionAddForm);
+router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, requireOpsGenieAPIKey, cSubscription.subscriptionAddSubmit);
+router.post(`${Routes.App.CallPathSubscriptionDeleteForm}`, requireOpsGenieAPIKey, cSubscription.subscriptionDeleteForm);
+router.post(`${Routes.App.CallPathSubscriptionDeleteSubmit}`, requireOpsGenieAPIKey, cSubscription.subscriptionDeleteSubmit);
+router.post(`${Routes.App.CallPathSubscriptionListSubmit}`, requireOpsGenieAPIKey, cSubscription.subscriptionListSubmit);
 
 router.post(`${Routes.App.CallPathTeamsListSubmit}`, cTeam.listTeamsSubmit);
 router.post(`${Routes.App.CallPathAlertsListSubmit}`, cAlert.listAlertsSubmit);

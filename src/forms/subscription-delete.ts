@@ -32,16 +32,8 @@ export async function subscriptionDeleteCall(call: AppCallRequest): Promise<stri
 }
 
 export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<AppForm> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const i18nObj = configureI18n(call.context);
-
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-
-    const integrations: Subscription[] = await getIntegrationsList(options, i18nObj);
+    const integrations: Subscription[] = await getIntegrationsList(call);
 
     if (!integrations.length) {
         throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-subscriptions'));

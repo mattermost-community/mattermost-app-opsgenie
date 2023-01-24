@@ -1,7 +1,7 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription } from '../types';
+import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription, AppCallRequest } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 
@@ -15,6 +15,8 @@ import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 
 import { hyperlink } from './markdown';
+import { getOpsGenieAPIKey } from './user-mapping';
+import { configureI18n } from './translations';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -96,13 +98,19 @@ export const getAlertLink = async (alertTinyId: string, alertID: string, opsGeni
     return `${hyperlink(`#${alertTinyId}`, alertDetailUrl)}`;
 };
 
-export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any) => {
-    const kvStore: KVStoreClient = new KVStoreClient(options);
+export const getIntegrationsList = async (call: AppCallRequest) => {
+    const mattermostUrl: string = call.context.mattermost_site_url!;
+    const botAccessToken: string = call.context.bot_access_token!;
+    const i18nObj = configureI18n(call.context);
 
-    const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
+    const options: KVStoreOptions = {
+        mattermostUrl,
+        accessToken: botAccessToken,
+    };
+    const apiKey = getOpsGenieAPIKey(call);
 
     const optionsOps: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 

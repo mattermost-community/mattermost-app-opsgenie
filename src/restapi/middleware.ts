@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 
 import { ExceptionType } from '../constant';
-import { AppActingUser, AppCallRequest } from '../types';
+import { AppActingUser, AppCallRequest, Oauth2App } from '../types';
 import { Exception } from '../utils/exception';
 import { configureI18n } from '../utils/translations';
-import { isUserSystemAdmin, showMessageToMattermost } from '../utils/utils';
+import { existsOpsGenieAPIKey, isUserSystemAdmin, showMessageToMattermost } from '../utils/utils';
 
 export const requireSystemAdmin = (req: Request, res: Response, next: () => void) => {
     const call: AppCallRequest = req.body as AppCallRequest;
@@ -18,6 +18,19 @@ export const requireSystemAdmin = (req: Request, res: Response, next: () => void
 
     if (!isUserSystemAdmin(actingUser)) {
         res.json(showMessageToMattermost(new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.system-admin'))));
+        return;
+    }
+
+    next();
+};
+
+export const requireOpsGenieAPIKey = (req: Request, res: Response, next: () => void) => {
+    const call: AppCallRequest = req.body as AppCallRequest;
+    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
+    const i18nObj = configureI18n(call.context);
+
+    if (!existsOpsGenieAPIKey(oauth2)) {
+        res.json(showMessageToMattermost(new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.api-key-not-found'))));
         return;
     }
 

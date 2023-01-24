@@ -24,26 +24,20 @@ import { tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
 
 import { getAllTeamsCall } from './list-team';
+import { getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const appPath: string | undefined = call.context.app_path;
     const whSecret: string | undefined = call.context.app?.webhook_secret;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const teamId: string = values?.[SubscriptionCreateForm.TEAM_NAME].value;
     const channelId: string = values?.[SubscriptionCreateForm.CHANNEL_ID].value;
     const channelName: string = values?.[SubscriptionCreateForm.CHANNEL_ID].label;
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStore: KVStoreClient = new KVStoreClient(options);
-
-    const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
     const whPath = Routes.App.CallPathIncomingWebhookPath;
 
     const params: string = queryString.stringify({
@@ -53,7 +47,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     const url = `${mattermostUrl}${appPath}${whPath}?${params}`;
 
     const optionsOps: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 

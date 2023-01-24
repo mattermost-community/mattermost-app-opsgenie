@@ -2,7 +2,8 @@
 	"general": {
 		"validation-user": {
 			"system-admin": "Error: This command is only available for Mattermost System Admin",
-			"not-provided": "Not acting user provided"
+			"not-provided": "Not acting user provided",
+			"api-key-not-found": "Error: No configuration found"
 		}
 	},
 	"api": {
