@@ -19,6 +19,7 @@ import {
     options_alert_time,
 } from '../constant';
 import { configureI18n } from '../utils/translations';
+import { ExtendRequired } from '../utils/user-mapping';
 
 export const getHelpBinding = (context: AppContext): any => {
     const i18nObj = configureI18n(context);
@@ -32,7 +33,8 @@ export const getHelpBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathHelp,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -52,10 +54,7 @@ export const getConfigureBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConfigForm,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
-                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                    oauth2_app: AppExpandLevels.EXPAND_ALL,
-                    oauth2_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
                     app: AppExpandLevels.EXPAND_ALL,
                 },
             },
@@ -97,7 +96,8 @@ export const accountLoginBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -117,7 +117,8 @@ export const accountLogoutBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathConnectSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -161,9 +162,8 @@ export const subscriptionAddBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionAddForm,
                 expand: {
+                    ...ExtendRequired,
                     app: AppExpandLevels.EXPAND_ALL,
-                    oauth2_app: AppExpandLevels.EXPAND_ALL,
-                    oauth2_user: AppExpandLevels.EXPAND_ALL,
                     channel: AppExpandLevels.EXPAND_SUMMARY,
                 },
             },
@@ -184,7 +184,8 @@ export const subscriptionDeleteBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionDeleteForm,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [],
@@ -205,7 +206,8 @@ export const subscriptionListBinding = (context: AppContext): any => {
             submit: {
                 path: Routes.App.CallPathSubscriptionListSubmit,
                 expand: {
-                    oauth2_app: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
         },
@@ -263,7 +265,10 @@ const createAlertBinding = (context: AppContext): AppBinding => {
                 icon: OpsGenieIcon,
                 submit: {
                     path: Routes.App.CallPathAlertCreate,
-                    expand: { },
+                    expand: {
+                        ...ExtendRequired,
+                        app: AppExpandLevels.EXPAND_ALL,
+                    },
                 },
                 fields: [
                     {
@@ -311,7 +316,8 @@ const addNoteToAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathNoteToAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -349,7 +355,8 @@ const closeAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertCloseAction,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -378,7 +385,8 @@ const ackAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertAcknowledgedSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -407,7 +415,8 @@ const unackAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertUnacknowledge,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -436,7 +445,8 @@ const snoozeAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathSnoozeAlert,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -473,7 +483,8 @@ const assignAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAssignAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -509,7 +520,8 @@ const ownAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathTakeOwnershipAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -538,7 +550,8 @@ const updatePriorityAlertBinding = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathUpdatePriorityAlertSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
                 },
             },
             fields: [
@@ -576,7 +589,7 @@ const listAlertBindig = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertsListSubmit,
                 expand: {
-                    acting_user: AppExpandLevels.EXPAND_ALL,
+                    ...ExtendRequired
                 },
             },
         },
@@ -601,7 +614,9 @@ export const getTeamBinding = (context: AppContext): any => {
                     icon: OpsGenieIcon,
                     submit: {
                         path: Routes.App.CallPathTeamsListSubmit,
-                        expand: {},
+                        expand: {
+                            ...ExtendRequired
+                        },
                     },
                 },
             },

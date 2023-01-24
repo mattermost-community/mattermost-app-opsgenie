@@ -16,15 +16,14 @@ import {
     ResponseResultWithData,
     Team,
 } from '../types';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
-import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys, SubscriptionCreateForm } from '../constant';
+import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SubscriptionCreateForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
 
 import { getAllTeamsCall } from './list-team';
-import { getOpsGenieAPIKey } from '../utils/user-mapping';
+import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -115,9 +114,8 @@ export async function subscriptionAddFormCall(call: AppCallRequest): Promise<App
         submit: {
             path: Routes.App.CallPathSubscriptionAddSubmit,
             expand: {
-                app: AppExpandLevels.EXPAND_ALL,
-                oauth2_app: AppExpandLevels.EXPAND_ALL,
-                oauth2_user: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
+                app: AppExpandLevels.EXPAND_ALL
             },
         },
         fields: [

@@ -9,6 +9,7 @@ import { h6, hyperlink } from '../utils/markdown';
 import { configureI18n } from '../utils/translations';
 import { getAlertDetailUrl } from '../utils/utils';
 import manifest from '../manifest.json';
+import { ExtendRequired } from '../utils/user-mapping';
 
 export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
     const mattermostUrl: string | undefined = context.mattermost_site_url;
@@ -72,8 +73,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                             submit: {
                                 path: Routes.App.CallPathAlertAcknowledgedAction,
                                 expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                    ...ExtendRequired,
                                     post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
                                 state,
@@ -85,8 +85,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                             submit: {
                                 path: Routes.App.CallPathAlertCloseAction,
                                 expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                    ...ExtendRequired,
                                     post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
                                 state,
@@ -102,8 +101,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -118,8 +116,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -134,8 +131,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -150,8 +146,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {

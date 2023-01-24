@@ -21,6 +21,7 @@ import { getAlertLink, tryPromise } from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { Exception } from '../utils/exception';
 import { h6 } from '../utils/markdown';
+import { ExtendRequired } from '../utils/user-mapping';
 
 export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -115,9 +116,7 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
         submit: {
             path: Routes.App.CallPathAlertCloseSubmit,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
                 post: AppExpandLevels.EXPAND_SUMMARY,
             },
             state: {

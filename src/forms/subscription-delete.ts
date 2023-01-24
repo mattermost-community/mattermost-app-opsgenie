@@ -1,10 +1,11 @@
-import { AppCallRequest, AppCallValues, AppForm, AppFormValue, AppSelectOption, Subscription } from '../types';
+import { AppCallRequest, AppCallValues, AppForm, AppSelectOption, Subscription } from '../types';
 import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, StoreKeys, SubscriptionCreateForm, SubscriptionDeleteForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getIntegrationsList, tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
+import { ExtendRequired } from '../utils/user-mapping';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string = call.context.mattermost_site_url!;
@@ -52,9 +53,8 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
         submit: {
             path: Routes.App.CallPathSubscriptionDeleteSubmit,
             expand: {
-                app: AppExpandLevels.EXPAND_ALL,
-                oauth2_app: AppExpandLevels.EXPAND_ALL,
-                oauth2_user: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
+                app: AppExpandLevels.EXPAND_ALL
             },
         },
         fields: [

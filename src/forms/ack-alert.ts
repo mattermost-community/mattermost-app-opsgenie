@@ -23,6 +23,7 @@ import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import config from '../config';
 import manifest from '../manifest.json';
 import { h6 } from '../utils/markdown';
+import { ExtendRequired } from '../utils/user-mapping';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -143,8 +144,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                             submit: {
                                 path: ackAction.path,
                                 expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                    ...ExtendRequired,
+                                    app: AppExpandLevels.EXPAND_ALL,
                                     post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
                                 state,
@@ -156,8 +157,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                             submit: {
                                 path: Routes.App.CallPathAlertCloseAction,
                                 expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                    ...ExtendRequired,
+                                    app: AppExpandLevels.EXPAND_ALL,
                                     post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
                                 state,
@@ -173,8 +174,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -189,8 +190,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -205,8 +206,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -221,8 +222,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {

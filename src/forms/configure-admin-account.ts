@@ -7,12 +7,13 @@ import {
     ListIntegrationsParams,
     Oauth2App,
 } from '../types';
-import { AppExpandLevels, AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys } from '../constant';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { AppFieldTypes, ConfigureForm, ExceptionType, OpsGenieIcon, Routes, StoreKeys } from '../constant';
+import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { Exception } from '../utils/exception';
 import { configureI18n } from '../utils/translations';
 import { isUserSystemAdmin, tryPromise } from '../utils/utils';
+import { ExtendRequired } from '../utils/user-mapping';
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
     const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
@@ -41,10 +42,7 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
         submit: {
             path: Routes.App.CallPathConfigSubmit,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_ALL,
-                acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                oauth2_app: AppExpandLevels.EXPAND_ALL,
-                oauth2_user: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
             },
         },
     };
