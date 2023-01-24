@@ -1,4 +1,10 @@
 {
+  "general": {
+    "validation-user": {
+      "system-admin": "Error: Este comando esta únicamente disponible a usuarios Mattermost System Admin",
+      "not-provided": "El usuario no fue provisto"
+    }
+  },
   "api": {
     "list-alert": {
       "message": "Lista de alertas: se encontraron {{ alerts }} alertas no confirmadas de {{ openalert }} alertas abiertas. [Total: {{ length }}]",

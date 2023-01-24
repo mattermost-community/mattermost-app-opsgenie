@@ -1,4 +1,10 @@
 {
+	"general": {
+		"validation-user": {
+			"system-admin": "Error: This command is only available for Mattermost System Admin",
+			"not-provided": "Not acting user provided"
+		}
+	},
 	"api": {
 		"list-alert": {
 			"message": "Alert List: Found {{ alerts }} unacked alerts out of {{ openalert }} open alerts. [Total: {{ length }}]",
