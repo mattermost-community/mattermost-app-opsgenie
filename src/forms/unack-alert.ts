@@ -3,43 +3,34 @@ import {
     AlertUnack,
     AppCallAction,
     AppCallRequest,
-    AppCallValues, AppContext,
+    AppCallValues,
     AppContextAction,
     Identifier,
     IdentifierType,
-    PostEphemeralCreate,
     ResponseResultWithData,
 } from '../types';
-import { AckAlertForm, ExceptionType, StoreKeys } from '../constant';
+import { AckAlertForm, ExceptionType } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
 import { Exception } from '../utils/exception';
 
+import { getOpsGenieAPIKey } from '../utils/user-mapping';
+
 import { bodyPostUpdate } from './ack-alert';
 
 export async function unackAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -69,6 +60,7 @@ export async function unackAlertAction(call: AppCallAction<AppContextAction>): P
     const alertTinyId: string = call.state.alert.tinyId as string;
     const postId: string = call.context.post.id;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -76,16 +68,8 @@ export async function unackAlertAction(call: AppCallAction<AppContextAction>): P
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 

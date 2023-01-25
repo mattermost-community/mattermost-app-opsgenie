@@ -22,8 +22,9 @@ import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
 
-import { getAllTeamsCall } from './list-team';
 import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+
+import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
@@ -46,7 +47,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     const url = `${mattermostUrl}${appPath}${whPath}?${params}`;
 
     const optionsOps: OpsGenieOptions = {
-        api_key: apiKey
+        api_key: apiKey,
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
@@ -115,7 +116,7 @@ export async function subscriptionAddFormCall(call: AppCallRequest): Promise<App
             path: Routes.App.CallPathSubscriptionAddSubmit,
             expand: {
                 ...ExtendRequired,
-                app: AppExpandLevels.EXPAND_ALL
+                app: AppExpandLevels.EXPAND_ALL,
             },
         },
         fields: [

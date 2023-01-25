@@ -10,7 +10,7 @@ export async function getAllTeamsCall(call: AppCallRequest): Promise<Teams[]> {
     const apiKey = getOpsGenieAPIKey(call);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: apiKey
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 

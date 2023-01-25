@@ -589,7 +589,7 @@ const listAlertBindig = (context: AppContext): AppBinding => {
             submit: {
                 path: Routes.App.CallPathAlertsListSubmit,
                 expand: {
-                    ...ExtendRequired
+                    ...ExtendRequired,
                 },
             },
         },
@@ -615,7 +615,7 @@ export const getTeamBinding = (context: AppContext): any => {
                     submit: {
                         path: Routes.App.CallPathTeamsListSubmit,
                         expand: {
-                            ...ExtendRequired
+                            ...ExtendRequired,
                         },
                     },
                 },

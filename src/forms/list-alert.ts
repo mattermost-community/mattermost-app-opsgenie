@@ -1,25 +1,16 @@
 import { Account, Alert, AppCallRequest, ListAlertParams, ResponseResultWithData } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
-import { ExceptionType, StoreKeys } from '../constant';
+import { ExceptionType } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { tryPromise } from '../utils/utils';
+import { getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function getAllAlertCall(call: AppCallRequest): Promise<[Alert[], Account]> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const i18nObj = configureI18n(call.context);
-
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 

@@ -1,9 +1,9 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription, AppCallRequest } from '../types';
-import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { Account, AppActingUser, AppCallRequest, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription } from '../types';
+import { AppsOpsGenie, ExceptionType, Routes } from '../constant';
+import { KVStoreOptions } from '../clients/kvstore';
 
 import config from '../config';
 
@@ -100,17 +100,17 @@ export const getAlertLink = async (alertTinyId: string, alertID: string, opsGeni
 
 export const getIntegrationsList = async (call: AppCallRequest) => {
     const mattermostUrl: string = call.context.mattermost_site_url!;
-    const botAccessToken: string = call.context.bot_access_token!;
+    const accessToken: string = call.context.acting_user_access_token!;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const options: KVStoreOptions = {
         mattermostUrl,
-        accessToken: botAccessToken,
+        accessToken,
     };
-    const apiKey = getOpsGenieAPIKey(call);
 
     const optionsOps: OpsGenieOptions = {
-        api_key: apiKey
+        api_key: apiKey,
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
@@ -127,6 +127,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
 
         const queryParams: ParsedUrl = queryString.parseUrl(integration.url);
         const params: ParsedQuery = queryParams.query;
+
         try {
             const channel: Channel = await mattermostClient.getChannel(<string>params.channelId);
             return new Promise((resolve, reject) => {

@@ -1,30 +1,20 @@
 import { AppCallRequest, AppCallValues, AppForm, AppSelectOption, Subscription } from '../types';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
-import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, StoreKeys, SubscriptionCreateForm, SubscriptionDeleteForm } from '../constant';
+import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SubscriptionDeleteForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getIntegrationsList, tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
-import { ExtendRequired } from '../utils/user-mapping';
+import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string = call.context.mattermost_site_url!;
-    const botAccessToken: string = call.context.bot_access_token!;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const subscription: AppSelectOption = values?.[SubscriptionDeleteForm.SUBSCRIPTION_ID];
 
-    const options: KVStoreOptions = {
-        mattermostUrl,
-        accessToken: botAccessToken,
-    };
-    const kvStore: KVStoreClient = new KVStoreClient(options);
-
-    const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
-
     const optionsOps: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
@@ -54,7 +44,7 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
             path: Routes.App.CallPathSubscriptionDeleteSubmit,
             expand: {
                 ...ExtendRequired,
-                app: AppExpandLevels.EXPAND_ALL
+                app: AppExpandLevels.EXPAND_ALL,
             },
         },
         fields: [

@@ -20,8 +20,9 @@ import {
 import { configureI18n } from '../utils/translations';
 import { OtherActionsFunction } from '../types/functions';
 
-import { takeOwnershipAlertCall } from './take-ownership-alert';
 import { ExtendRequired } from '../utils/user-mapping';
+
+import { takeOwnershipAlertCall } from './take-ownership-alert';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
