@@ -1,6 +1,5 @@
-import { AppCallAction, AppContext, AppContextAction, AppForm } from './apps';
-import { WebhookRequest } from './opsgenie';
+import { AppCallAction, AppContext, AppContextAction, AppForm, WebhookAppCallRequest } from './apps';
 
-export type WebhookFunction = (webhookRequest: WebhookRequest<any>, context: AppContext) => Promise<void>;
+export type WebhookFunction = (webhookRequest: WebhookAppCallRequest<any>) => Promise<void>;
 
 export type OtherActionsFunction = (call: AppCallAction<AppContextAction>) => Promise<AppForm | string | void>

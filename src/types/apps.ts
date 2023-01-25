@@ -1,4 +1,5 @@
 import { UserProfile } from './mattermost';
+import { WebhookRequest } from './opsgenie';
 
 export type AppManifest = {
     app_id: string;
@@ -230,6 +231,10 @@ export type AppCallRequest = AppCall & {
     selected_field?: string;
     query?: string;
 };
+
+export type WebhookAppCallRequest<T> = AppCallRequest & {
+    values: WebhookRequest<T>
+}
 
 export type AppModalState = {
     form: AppForm;

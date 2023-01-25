@@ -6,6 +6,7 @@ import {
     AppForm,
     AppFormValue,
     AppSelectOption,
+    Channel,
     Identifier,
     IdentifierType,
     Integration,
@@ -24,12 +25,16 @@ import { Exception } from '../utils/exception';
 
 import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
 
+import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+
 import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
+    const accessToken: string | undefined = call.context.acting_user_access_token;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const appPath: string | undefined = call.context.app_path;
     const whSecret: string | undefined = call.context.app?.webhook_secret;
+    const botUserID: string = call.context.bot_user_id!;
+    const appPath: string | undefined = call.context.app_path;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
@@ -90,6 +95,18 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     };
 
     await tryPromise(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+    const mattermostOption: MattermostOptions = {
+        mattermostUrl: <string>mattermostUrl,
+        accessToken: <string>accessToken,
+    };
+
+    const mattermostClient: MattermostClient = new MattermostClient(mattermostOption);
+    const channel: Channel = await mattermostClient.getChannel(channelId);
+
+    await mattermostClient.addUserToTeam(channel.team_id, botUserID);
+    await mattermostClient.addMemberToChannel(channelId, botUserID);
+
     return i18nObj.__('api.subcription.message-created');
 }
 

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import {
     AppCallResponse,
     AppContext,
-    WebhookRequest,
+    WebhookAppCallRequest,
 } from '../types';
 import { newErrorCallResponseWithMessage, newOKCallResponse } from '../utils/call-responses';
 import { configureI18n } from '../utils/translations';
@@ -23,16 +23,16 @@ const WEBHOOKS_ACTIONS: { [key: string]: WebhookFunction } = {
 };
 
 export const incomingWebhook = async (request: Request, response: Response) => {
-    const webhookRequest: WebhookRequest<any> = request.body.values;
-    const context: AppContext = request.body.context;
+    const webhookRequest: WebhookAppCallRequest<any> = request.body;
+    const context: AppContext = webhookRequest.context;
     const i18nObj = configureI18n(context);
 
     let callResponse: AppCallResponse;
     try {
-        console.log('data', webhookRequest.data);
-        const action: WebhookFunction = WEBHOOKS_ACTIONS[webhookRequest.data.action];
+        console.log('data', webhookRequest.values.data);
+        const action: WebhookFunction = WEBHOOKS_ACTIONS[webhookRequest.values.data.action];
         if (action) {
-            await action(webhookRequest, context);
+            await action(webhookRequest);
         }
         callResponse = newOKCallResponse();
     } catch (error: any) {

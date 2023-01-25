@@ -8,9 +8,18 @@
     "on_install": {
         "expand": {
             "app": "all",
-            "acting_user_access_token": "all"
+            "acting_user_access_token": "all",
+            "locale": "all"
         },
         "path": "/install"
+    },
+    "remote_webhook_auth_type": "secret",
+    "on_remote_webhook": {
+        "path": "/webhook",
+        "expand": {
+            "oauth2_app": "all",
+            "locale": "all"
+        }
     },
     "bindings": {
         "path": "/bindings",
@@ -32,7 +41,7 @@
         "/in_post"
     ],
     "http": {
-        "root_url": "https://mattermost-opsgenie-dev.ancient.mx"
+        "root_url": ""
     },
     "aws_lambda": {
         "functions": [
