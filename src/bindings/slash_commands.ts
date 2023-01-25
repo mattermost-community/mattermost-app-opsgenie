@@ -13,6 +13,7 @@ import {
     alertBinding,
     getConfigureBinding,
     getHelpBinding,
+    getSettingsBinding,
     getTeamBinding,
     subscriptionBinding,
 } from './bindings';
@@ -50,9 +51,11 @@ export const getCommandBindings = (call: AppCallRequest): AppsState => {
         commands.push(Commands.CONFIGURE);
     }
     if (existsOpsGenieAPIKey(oauth2)) {
+        commands.push(Commands.SETTINGS);
         commands.push(Commands.SUBSCRIPTION);
         commands.push(Commands.ALERT);
         commands.push(Commands.TEAM);
+        bindings.push(getSettingsBinding(context));
         bindings.push(subscriptionBinding(context));
         bindings.push(alertBinding(context));
         bindings.push(getTeamBinding(context));

@@ -52,8 +52,12 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
 export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string = call.context.mattermost_site_url!;
     const accessToken: string = call.context.acting_user_access_token!;
+    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
     const values: AppCallValues = <any>call.values;
     const i18nObj = configureI18n(call.context);
+    const linkEmailAddress: boolean = typeof oauth2.data?.settings?.link_email_address === 'boolean'
+        ? oauth2.data?.settings.link_email_address
+        : true;
 
     const opsGenieApiKey: string = values[ConfigureForm.API_KEY];
 
@@ -76,6 +80,11 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string
     const oauthApp: Oauth2App = {
         client_id: opsGenieApiKey,
         client_secret: '',
+        data: {
+            settings: {
+                link_email_address: linkEmailAddress
+            }
+        }
     };
     await kvStoreClient.storeOauth2App(oauthApp);
 

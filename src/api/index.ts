@@ -13,6 +13,7 @@ import * as cAlert from './alert';
 import * as cTeam from './team';
 import * as cSubscription from './subscription';
 import * as cWebhook from './webhook';
+import * as cSettings from './settings';
 
 const router: Router = express.Router();
 
@@ -24,6 +25,9 @@ router.post(`${Routes.App.CallPathHelp}`, cHelp.getHelp);
 
 router.post(`${Routes.App.CallPathConfigForm}`, requireSystemAdmin, cConfigure.configureAdminAccountForm);
 router.post(`${Routes.App.CallPathConfigSubmit}`, requireSystemAdmin, cConfigure.configureAdminAccountSubmit);
+
+router.post(`${Routes.App.CallPathSettingsForm}`, requireSystemAdmin, requireOpsGenieAPIKey, cSettings.appSettingsForm);
+router.post(`${Routes.App.CallPathSettingsSubmit}`, requireSystemAdmin, requireOpsGenieAPIKey, cSettings.appSettingsSubmit);
 
 router.post(`${Routes.App.CallPathSubscriptionAddForm}`, requireOpsGenieAPIKey, cSubscription.subscriptionAddForm);
 router.post(`${Routes.App.CallPathSubscriptionAddSubmit}`, requireOpsGenieAPIKey, cSubscription.subscriptionAddSubmit);

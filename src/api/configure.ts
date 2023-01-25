@@ -5,10 +5,8 @@ import {
     newFormCallResponse,
     newOKCallResponseWithMarkdown,
 } from '../utils/call-responses';
-import { Account, AppCallRequest, AppCallResponse } from '../types';
+import { AppCallResponse } from '../types';
 import { opsGenieConfigForm, opsGenieConfigSubmit } from '../forms/configure-admin-account';
-import { hyperlink } from '../utils/markdown';
-import { configureI18n } from '../utils/translations';
 import { showMessageToMattermost } from '../utils/utils';
 
 export const configureAdminAccountForm: CallResponseHandler = async (req: Request, res: Response) => {

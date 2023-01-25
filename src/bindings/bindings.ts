@@ -62,6 +62,27 @@ export const getConfigureBinding = (context: AppContext): any => {
     };
 };
 
+export const getSettingsBinding = (context: AppContext): any => {
+    const i18nObj = configureI18n(context);
+
+    return {
+        icon: OpsGenieIcon,
+        label: Commands.SETTINGS,
+        description: i18nObj.__('binding.binding.command-settings'),
+        form: {
+            title: i18nObj.__('binding.binding.command-settings'),
+            icon: OpsGenieIcon,
+            submit: {
+                path: Routes.App.CallPathSettingsForm,
+                expand: {
+                    ...ExtendRequired,
+                    app: AppExpandLevels.EXPAND_ALL,
+                },
+            },
+        },
+    };
+};
+
 export const connectAccountBinding = (context: AppContext): any => {
     const subCommands: string[] = [
         Commands.LOGIN,

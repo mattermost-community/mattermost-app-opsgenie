@@ -162,7 +162,6 @@ export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<A
         accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-    console.log(payload);
     await mattermostClient.createPost(payload);
 }
 

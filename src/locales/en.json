@@ -93,6 +93,7 @@
 			"command-help": "Show OpsGenie Help",
 			"command-configure": "Setup OpsGenie Admin Account",
 			"command-configure-title": "Setup OpsGenie",
+			"command-settings": "Display OpsGenie app settings",
 			"command-login": "Connect your OpsGenie account",
 			"command-login-title": "Account login",
 			"command-account-description": "Connect your OpsGenie account",
@@ -169,6 +170,13 @@
 			"description": "API integration OpsGenie api key",
 			"exception": "Your OpsGenie setup has no API integration: ",
 			"system-admin": "Error: This command is only available to Mattermost System Admin"
+		},
+		"settings": {
+			"title": "Display OpsGenie app settings",
+			"header": "Configure your OpsGenie app",
+			"allow-user-mapping-field-label": "Link users by email address",
+			"allow-user-mapping-field-description": "Allow Mattermost users to update alerts in OpsGenie if their email in Mattermost matches their email in OpsGenie",
+			"success": "OpsGenie configuration updated!"
 		},
 		"create-alert": {
 			"message": "New alert \"{{ message }}\" will be created",

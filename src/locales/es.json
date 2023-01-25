@@ -93,6 +93,7 @@
       "command-help": "Mostrar la ayuda de OpsGenie",
       "command-configure": "Configurar la cuenta de administrador de OpsGenie",
       "command-configure-title": "Configuración OpsGenie",
+      "command-settings": "Mostrar la configuración de la app de OpsGenie",
       "command-login": "Conecte su cuenta de OpsGenie",
       "command-login-title": "Cuenta de Ingreso",
       "command-account-description": "Conecte su cuenta de OpsGenie",
@@ -168,6 +169,13 @@
       "description": "Integración de API Clave de API de OpsGenie",
       "exception": "Clave API incorrecta: ",
       "system-admin": "Error: Este comando únicamente esta habilidato a usuarios Mattertmost System Admin"
+    },
+    "settings": {
+      "title": "Display OpsGenie app settings",
+      "header": "Configure your OpsGenie app",
+      "allow-user-mapping-field-label": "Vincular usuarios por dirección de correo electrónico",
+      "allow-user-mapping-field-description": "Permitir que los usuarios de Mattermost actualicen las alertas en OpsGenie si su correo electrónico en Mattermost coincide con su correo electrónico en OpsGenie",
+      "success": "¡Configuración de OpsGenie actualizada!"
     },
     "create-alert": {
       "message": "Nueva alerta \"{{ message }}\" se creará",

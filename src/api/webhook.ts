@@ -29,7 +29,6 @@ export const incomingWebhook = async (request: Request, response: Response) => {
 
     let callResponse: AppCallResponse;
     try {
-        console.log('data', webhookRequest.values.data);
         const action: WebhookFunction = WEBHOOKS_ACTIONS[webhookRequest.values.data.action];
         if (action) {
             await action(webhookRequest);
