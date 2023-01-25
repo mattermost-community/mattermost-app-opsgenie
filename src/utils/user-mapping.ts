@@ -1,5 +1,5 @@
 import { AppExpandLevels } from "../constant";
-import { AppCallRequest, Oauth2App } from "../types";
+import { AppCallAction, AppCallRequest, Oauth2App } from "../types";
 
 export const ExtendRequired = {
    acting_user: AppExpandLevels.EXPAND_ALL,
@@ -8,7 +8,7 @@ export const ExtendRequired = {
    locale: AppExpandLevels.EXPAND_ALL,
 }
 
-export function getOpsGenieAPIKey(call: AppCallRequest): string {
+export function getOpsGenieAPIKey(call: AppCallRequest | AppCallAction<any>): string {
    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
    return oauth2.client_id;
 }

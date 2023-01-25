@@ -3,7 +3,7 @@
     "validation-user": {
       "system-admin": "Error: Este comando esta únicamente disponible a usuarios Mattermost System Admin",
       "not-provided": "El usuario no fue provisto",
-      "api-key-not-found": "Error: No se encontró configuración"
+      "api-key-not-found": "\"OpsGenie falló\": ¡API Key no encontrada!"
     }
   },
   "api": {
