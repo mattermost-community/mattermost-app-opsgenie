@@ -272,17 +272,6 @@ export type AppsState = {
     bindings: AppBinding[];
 };
 
-export type AppCallDialog<T> = {
-    type: string;
-    callback_id: string;
-    state: string;
-    user_id: string;
-    channel_id: string;
-    team_id: string;
-    submission: T;
-    cancelled: boolean;
-}
-
 export type AppCallAction<T> = {
     path: string;
     context: T;

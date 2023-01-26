@@ -2,7 +2,6 @@ import {
     Alert,
     AlertNote,
     AppCallAction,
-    AppCallDialog,
     AppCallRequest,
     AppCallValues,
     AppContextAction,
