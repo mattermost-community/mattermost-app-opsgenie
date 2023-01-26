@@ -18,13 +18,13 @@ export async function getAllTeamsCall(call: AppCallRequest): Promise<Teams[]> {
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     if (isSystemAdmin) {
-        return await tryPromise<Teams[]>(opsGenieClient.getAllTeams(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    } 
+        return tryPromise<Teams[]>(opsGenieClient.getAllTeams(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    }
 
     if (allowMember) {
         const genieUser: OpsUser = await validateUserAccess(call);
-        return await tryPromise<Teams[]>(opsGenieClient.getAllUserTeams(genieUser.username), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    } 
+        return tryPromise<Teams[]>(opsGenieClient.getAllUserTeams(genieUser.username), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    }
 
     return [];
 }

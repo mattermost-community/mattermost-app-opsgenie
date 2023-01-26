@@ -56,7 +56,7 @@ export const getCommandBindings = (call: AppCallRequest): AppsState => {
             commands.push(Commands.SETTINGS);
             bindings.push(getSettingsBinding(context));
         }
-        
+
         if (allowMemberAction(context)) {
             commands.push(Commands.SUBSCRIPTION);
             bindings.push(subscriptionBinding(context));

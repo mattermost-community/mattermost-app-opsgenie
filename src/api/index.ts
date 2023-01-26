@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 
 import { Routes } from '../constant';
 
-import { requireOpsGenieAllowUserMapping, requireOpsGenieAPIKey, requireSystemAdmin } from '../restapi/middleware';
+import { requireOpsGenieAPIKey, requireOpsGenieAllowUserMapping, requireSystemAdmin } from '../restapi/middleware';
 
 import * as cManifest from './manifest';
 import * as cBindings from './bindings';

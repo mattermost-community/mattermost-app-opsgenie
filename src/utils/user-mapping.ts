@@ -1,6 +1,7 @@
-import { OpsGenieOptions, OpsGenieClient } from '../clients/opsgenie';
+import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { AppExpandLevels, ExceptionType } from '../constant';
 import { AppActingUser, AppCallAction, AppCallRequest, AppContext, Identifier, IdentifierType, Oauth2App, OpsUser, ResponseResultWithData } from '../types';
+
 import { Exception } from './exception';
 import { configureI18n } from './translations';
 import { isUserSystemAdmin, tryPromise } from './utils';
@@ -19,9 +20,9 @@ export function getOpsGenieAPIKey(call: AppCallRequest | AppCallAction<any>): st
 
 export function linkEmailAddress(oauth2App: Oauth2App | undefined): boolean {
     const linkEmail = oauth2App?.data?.settings?.link_email_address;
-    return typeof linkEmail === 'boolean'
-        ? linkEmail
-        : true;
+    return typeof linkEmail === 'boolean' ?
+        linkEmail :
+        true;
 }
 
 export function allowMemberAction(context: AppContext): boolean {
@@ -30,9 +31,9 @@ export function allowMemberAction(context: AppContext): boolean {
     const i18nObj = configureI18n(context);
 
     if (!actingUser) {
-        new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.not-provided'));
+        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.not-provided'));
     }
-    
+
     return isUserSystemAdmin(actingUser) || linkEmailAddress(oauth2);
 }
 
@@ -55,7 +56,7 @@ export async function validateUserAccess(call: AppCallRequest): Promise<OpsUser>
         identifierType: IdentifierType.USERNAME,
     };
     const genieUser: OpsUser = await tryPromise<OpsUser>(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-user', { email: actingUser.email }));
-    
+
     if (genieUser.blocked) {
         throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-user', { email: actingUser.email }));
     }
@@ -63,6 +64,6 @@ export async function validateUserAccess(call: AppCallRequest): Promise<OpsUser>
     if (!genieUser.verified) {
         throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-user-verified', { email: actingUser.email }));
     }
-    
+
     return genieUser;
 }

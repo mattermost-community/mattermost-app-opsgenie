@@ -1,6 +1,7 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import {
+    ActionResponse,
     AppCallRequest,
     AppCallValues,
     AppForm,
@@ -16,7 +17,6 @@ import {
     ListIntegrationsParams,
     ResponseResultWithData,
     Team,
-    ActionResponse,
 } from '../types';
 import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SubscriptionCreateForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';

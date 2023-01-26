@@ -44,7 +44,7 @@ function getCommands(call: AppCallRequest): string {
         if (isUserSystemAdmin(<AppActingUser>actingUser)) {
             commands.push(addBulletSlashCommand(Commands.SETTINGS, i18nObj.__('api.help.command-settings')));
         }
-        
+
         if (allowMemberAction(context)) {
             commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-add-command', { command: Commands.SUBSCRIPTION, add: Commands.ADD }), i18nObj.__('api.help.command-add-description')));
             commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-delete-command', { command: Commands.SUBSCRIPTION, delete: Commands.DELETE }), i18nObj.__('api.help.command-delete-description')));

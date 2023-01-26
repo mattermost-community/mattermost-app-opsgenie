@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { allowMemberAction, linkEmailAddress } from '../utils/user-mapping';
 
 import { ExceptionType } from '../constant';
@@ -49,7 +50,7 @@ export const requireOpsGenieAllowUserMapping = (req: Request, res: Response, nex
         return;
     }
 
-    if (linkEmailAddress(oauth2)){
+    if (linkEmailAddress(oauth2)) {
         next();
         return;
     }

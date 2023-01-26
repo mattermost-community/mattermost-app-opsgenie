@@ -11,13 +11,14 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 
 import { MattermostClient } from '../clients/mattermost';
 
+import { getAllTeamsCall } from '../forms/list-team';
+
 import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 
 import { hyperlink } from './markdown';
 import { getOpsGenieAPIKey } from './user-mapping';
 import { configureI18n } from './translations';
-import { getAllTeamsCall } from '../forms/list-team';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -57,11 +58,11 @@ export function tryPromise<T>(p: Promise<any>, exceptionType: ExceptionType, mes
     return p.
         then((response) => {
             return <T>response.data;
-        })
-        .catch((error) => {
-        const errorMessage: string = errorDataMessage(error);
-        throw new Exception(exceptionType, `${message} ${errorMessage}`);
-    });
+        }).
+        catch((error) => {
+            const errorMessage: string = errorDataMessage(error);
+            throw new Exception(exceptionType, `${message} ${errorMessage}`);
+        });
 }
 
 export function showMessageToMattermost(exception: Exception | Error): AppCallResponse {
@@ -125,7 +126,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
     const integrationsResult: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const teams: Teams[] = await getAllTeamsCall(call);
-    const teamsIds: string[] = teams.map(team => team.id);
+    const teamsIds: string[] = teams.map((team) => team.id);
     const mattermostClient: MattermostClient = new MattermostClient(options);
 
     const promises: Promise<Subscription | undefined>[] = integrationsResult.map(async (int: Integrations) => {
@@ -156,7 +157,6 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
     const integrations: Subscription[] = webhookSubscriptionArray(await Promise.all(promises));
     return integrations;
 };
-
 
 export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
     return array.filter((el): el is Subscription => typeof (el) !== 'undefined');

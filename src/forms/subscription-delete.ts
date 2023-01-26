@@ -4,7 +4,8 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getIntegrationsList, isUserSystemAdmin, tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
-import { allowMemberAction, ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { ExtendRequired, allowMemberAction, getOpsGenieAPIKey } from '../utils/user-mapping';
+
 import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
@@ -26,7 +27,7 @@ export async function subscriptionDeleteCall(call: AppCallRequest): Promise<stri
             const opsSubscription: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
             const teams: Teams[] = await getAllTeamsCall(call);
-            const teamsIds: string[] = teams.map(team => team.id);
+            const teamsIds: string[] = teams.map((team) => team.id);
 
             if (!teamsIds.includes(opsSubscription.ownerTeam.id)) {
                 throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-found'));
