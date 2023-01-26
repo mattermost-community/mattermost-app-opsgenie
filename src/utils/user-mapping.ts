@@ -84,25 +84,26 @@ export async function canUserInteractWithAlert(call: AppCallRequest | AppCallAct
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    
+
     const alertResponse: Alert = await tryPromise<Alert>(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
-    if (allowMember) {
-        if (!isSystemAdmin) {
-            const identifier: Identifier = {
-                identifier: alertResponse.ownerTeamId,
-                identifierType: IdentifierType.ID,
-            };
-
-            const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-
-            const teamMembers: string[] | undefined = team?.members?.map(member => member.user.username);
-            if (!teamMembers || !teamMembers.includes(actingUser?.email || '')) {
-                throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-alert-not-found', { tinyId: alertTinyId }));
-            }
-        }
-    } else {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.genie-action-invalid'));
+    if (!allowMember) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
     }
+
+    if (!isSystemAdmin) {
+        const teamIdentifier: Identifier = {
+            identifier: alertResponse.ownerTeamId,
+            identifierType: IdentifierType.ID,
+        };
+
+        const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(teamIdentifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+        const teamMembers: string[] | undefined = team?.members?.map((member) => member.user.username);
+        if (!teamMembers || !teamMembers.includes(actingUser?.email || '')) {
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-alert-not-found', { tinyId: alertTinyId }));
+        }
+    }
+
     return alertResponse;
 }

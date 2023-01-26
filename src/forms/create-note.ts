@@ -39,13 +39,12 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> 
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    
 
     const data: AlertNote = {
         note: alertMessage,
         user: username,
     };
-    
+
     await tryPromise<ResponseResult>(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.create-alert.response', { url: alertURL });
 }

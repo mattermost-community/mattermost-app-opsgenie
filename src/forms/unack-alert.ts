@@ -33,7 +33,7 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
         api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
-    
+
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
@@ -45,7 +45,7 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    
+
     const data: AlertUnack = {
         user: username,
     };

@@ -22,7 +22,7 @@ import { getAlertLink, tryPromise } from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { Exception } from '../utils/exception';
 import { h6 } from '../utils/markdown';
-import { canUserInteractWithAlert, ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
@@ -43,7 +43,7 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    
+
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 

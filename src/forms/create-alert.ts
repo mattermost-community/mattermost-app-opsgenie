@@ -3,7 +3,7 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { AlertCreateForm, ExceptionType, option_alert_priority_p3 } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { isUserSystemAdmin, tryPromise } from '../utils/utils';
-import { allowMemberAction, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { allowMemberAction, getOpsGenieAPIKey, validateUserAccess } from '../utils/user-mapping';
 import { Exception } from '../utils/exception';
 
 export async function createAlertCall(call: AppCallRequest): Promise<string> {
@@ -27,20 +27,20 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
         identifier: teamName,
         identifierType: IdentifierType.NAME,
     };
-    
+
     const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
-    if (allowMember) {
-        if (!isSystemAdmin) {
-            const teamMembers: string[] | undefined = team?.members?.map(member => member.user.username);
-            if (!teamMembers || !teamMembers.includes(actingUser?.email || '')){
-                throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }));
-            }
-        }
-    } else {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.genie-action-invalid'));
+    if (!allowMember) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
     }
-    
+
+    if (!isSystemAdmin) {
+        const teamMembers: string[] | undefined = team?.members?.map((member) => member.user.username);
+        if (!teamMembers || !teamMembers.includes(actingUser?.email || '')) {
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }));
+        }
+    }
+
     const alertCreate: AlertCreate = {
         message,
         priority,

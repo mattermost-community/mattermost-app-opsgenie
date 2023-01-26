@@ -34,7 +34,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: accessToken,
+        accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     const mattermostUser: User = await mattermostClient.getUser(userId);
@@ -60,7 +60,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         },
         note: i18nObj.__('forms.message-note'),
     };
-    
+
     await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.response-assign-alert', { url: alertURL, email: mattermostUser.email });
 }

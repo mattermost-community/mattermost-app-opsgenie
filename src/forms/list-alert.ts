@@ -3,9 +3,10 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { AppsOpsGenie, ExceptionType, Routes } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { isUserSystemAdmin, replace, tryPromise } from '../utils/utils';
-import { allowMemberAction, getOpsGenieAPIKey } from '../utils/user-mapping';
-import { h6, joinLines, hyperlink, strikethrough } from '../utils/markdown';
+import { allowMemberAction, getOpsGenieAPIKey, validateUserAccess } from '../utils/user-mapping';
+import { h6, hyperlink, joinLines, strikethrough } from '../utils/markdown';
 import { Exception } from '../utils/exception';
+
 import { getAllTeamsCall } from './list-team';
 
 export async function getAllAlertCall(call: AppCallRequest): Promise<string> {
@@ -25,14 +26,14 @@ export async function getAllAlertCall(call: AppCallRequest): Promise<string> {
     };
     let alerts: Alert[] = await tryPromise<Alert[]>(opsGenieClient.listAlert(params), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
-    if (allowMember) {
-        if (!isSystemAdmin) {
-            const teams: Teams[] = await getAllTeamsCall(call);
-            const teamsIds: string[] = teams.map((team) => team.id);
-            alerts = alerts.filter((alert: Alert) => teamsIds.includes(alert.ownerTeamId));
-        }
-    } else {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.genie-action-invalid'));
+    if (!allowMember) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
+    }
+
+    if (!isSystemAdmin) {
+        const teams: Teams[] = await getAllTeamsCall(call);
+        const teamsIds: string[] = teams.map((team) => team.id);
+        alerts = alerts.filter((alert: Alert) => teamsIds.includes(alert.ownerTeamId));
     }
 
     const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
@@ -59,11 +60,11 @@ export async function getAllAlertCall(call: AppCallRequest): Promise<string> {
                     tinyId: alert.tinyId,
                     message: alert.message,
                     status: alert.status,
-                    link: hyperlink(i18nObj.__('api.list-alert.detail'), alertDetailUrl)
+                    link: hyperlink(i18nObj.__('api.list-alert.detail'), alertDetailUrl),
                 });
             }).join('\n')
         )}\n`,
     ].join('');
-    
+
     return teamsText;
 }

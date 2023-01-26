@@ -21,7 +21,7 @@ import { Exception } from '../utils/exception';
 import { MattermostClient } from '../clients/mattermost';
 import manifest from '../manifest.json';
 import { h6 } from '../utils/markdown';
-import { canUserInteractWithAlert, ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
