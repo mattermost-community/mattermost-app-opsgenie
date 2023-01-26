@@ -16,6 +16,7 @@ import {
     ListIntegrationsParams,
     ResponseResultWithData,
     Team,
+    ActionResponse,
 } from '../types';
 import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SubscriptionCreateForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
@@ -60,20 +61,17 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
         identifier: teamId,
         identifierType: IdentifierType.ID,
     };
-    const responseTeam: ResponseResultWithData<Team> = await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const team: Team = responseTeam.data;
+    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const paramsIntegrations: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
         teamId: team.id,
         teamName: team.name,
     };
-    const responseIntegrations: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(paramsIntegrations), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const integrations: Integrations[] = responseIntegrations.data;
+    const integrations: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(paramsIntegrations), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     for (const integration of integrations) {
-        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error')); // eslint-disable-line no-await-in-loop
-        const auxIntegration: Integration = responseIntegration.data;
+        const auxIntegration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error')); // eslint-disable-line no-await-in-loop
         const parsedQuery: ParsedUrl = queryString.parseUrl(auxIntegration.url);
         const queryParams: ParsedQuery = parsedQuery.query;
 
@@ -94,7 +92,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
         url,
     };
 
-    await tryPromise(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise<ActionResponse>(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const mattermostOption: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,

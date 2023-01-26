@@ -6,7 +6,8 @@ import {
     Commands,
     OpsGenieIcon,
 } from '../constant';
-import { allowMemberAction, existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
+import { allowMemberAction } from '../utils/user-mapping';
+import { existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
 import { configureI18n } from '../utils/translations';
 
 import {
@@ -56,7 +57,7 @@ export const getCommandBindings = (call: AppCallRequest): AppsState => {
             bindings.push(getSettingsBinding(context));
         }
         
-        if (allowMemberAction(oauth2)) {
+        if (allowMemberAction(context)) {
             commands.push(Commands.SUBSCRIPTION);
             bindings.push(subscriptionBinding(context));
         }

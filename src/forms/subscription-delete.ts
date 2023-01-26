@@ -1,22 +1,40 @@
-import { AppCallRequest, AppCallValues, AppForm, AppSelectOption, Subscription } from '../types';
+import { AppActingUser, AppCallRequest, AppCallValues, AppForm, AppSelectOption, Integration, Subscription, Teams } from '../types';
 import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SubscriptionDeleteForm } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
-import { getIntegrationsList, tryPromise } from '../utils/utils';
+import { getIntegrationsList, isUserSystemAdmin, tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
-import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { allowMemberAction, ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
+    const actingUser: AppActingUser | undefined = call.context.acting_user;
+    const isSystemAdmin: boolean = isUserSystemAdmin(actingUser);
+    const allowMember: boolean = allowMemberAction(call.context);
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
-
-    const subscription: AppSelectOption = values?.[SubscriptionDeleteForm.SUBSCRIPTION_ID];
 
     const optionsOps: OpsGenieOptions = {
         api_key: apiKey,
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
+    const subscription: AppSelectOption = values?.[SubscriptionDeleteForm.SUBSCRIPTION_ID];
+
+    if (allowMember) {
+        if (!isSystemAdmin) {
+            const opsSubscription: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+            const teams: Teams[] = await getAllTeamsCall(call);
+            const teamsIds: string[] = teams.map(team => team.id);
+
+            if (!teamsIds.includes(opsSubscription.ownerTeam.id)) {
+                throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-found'));
+            }
+        }
+    } else {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.genie-action-invalid'));
+    }
 
     await tryPromise(opsGenieClient.deleteIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('api.subcription.message-delete');

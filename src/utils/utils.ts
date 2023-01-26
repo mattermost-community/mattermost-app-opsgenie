@@ -1,7 +1,7 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallRequest, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription } from '../types';
+import { Account, AppActingUser, AppCallRequest, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription, Teams } from '../types';
 import { AppsOpsGenie, ExceptionType, Routes } from '../constant';
 import { KVStoreOptions } from '../clients/kvstore';
 
@@ -17,6 +17,7 @@ import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from '
 import { hyperlink } from './markdown';
 import { getOpsGenieAPIKey } from './user-mapping';
 import { configureI18n } from './translations';
+import { getAllTeamsCall } from '../forms/list-team';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -26,18 +27,12 @@ export function isConfigured(oauth2: any): boolean {
     return Boolean(oauth2.client_id && oauth2.client_secret);
 }
 
-export function isUserSystemAdmin(actingUser: AppActingUser): boolean {
-    return Boolean(actingUser.roles && actingUser.roles.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
+export function isUserSystemAdmin(actingUser: AppActingUser | undefined): boolean {
+    return Boolean(actingUser?.roles && actingUser?.roles?.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
 }
 
 export function existsOpsGenieAPIKey(oauth2App: Oauth2App): boolean {
     return Boolean(oauth2App.client_id);
-}
-
-export function allowMemberAction(oauth2App: Oauth2App): boolean {
-    return typeof oauth2App.data?.settings?.link_email_address === 'boolean'
-        ? oauth2App.data?.settings.link_email_address
-        : true;
 }
 
 export function getAlertDetailUrl(accountName: string, alertId: string): string {
@@ -58,8 +53,12 @@ export function errorDataMessage(error: Exception | Error | any): string {
     return `${errorMessage}`;
 }
 
-export function tryPromise(p: Promise<any>, exceptionType: ExceptionType, message: string) {
-    return p.catch((error) => {
+export function tryPromise<T>(p: Promise<any>, exceptionType: ExceptionType, message: string) {
+    return p.
+        then((response) => {
+            return <T>response.data;
+        })
+        .catch((error) => {
         const errorMessage: string = errorDataMessage(error);
         throw new Exception(exceptionType, `${message} ${errorMessage}`);
     });
@@ -123,13 +122,18 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
     const integrationParams: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
     };
-    const integrationsResult: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const integrationsResult: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
+    const teams: Teams[] = await getAllTeamsCall(call);
+    const teamsIds: string[] = teams.map(team => team.id);
     const mattermostClient: MattermostClient = new MattermostClient(options);
 
-    const promises: Promise<Subscription | undefined>[] = integrationsResult.data.map(async (int: Integrations) => {
-        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-        const integration: Integration = responseIntegration.data;
+    const promises: Promise<Subscription | undefined>[] = integrationsResult.map(async (int: Integrations) => {
+        if (!teamsIds.includes(int.teamId)) {
+            return Promise.resolve(undefined);
+        }
+
+        const integration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
         const queryParams: ParsedUrl = queryString.parseUrl(integration.url);
         const params: ParsedQuery = queryParams.query;
@@ -139,7 +143,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
             return new Promise((resolve, reject) => {
                 resolve({
                     integrationId: int.id,
-                    ...responseIntegration.data,
+                    ...integration,
                     channelId: channel.id,
                     channelName: channel.name,
                 } as Subscription);
@@ -153,12 +157,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
     return integrations;
 };
 
+
 export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
     return array.filter((el): el is Subscription => typeof (el) !== 'undefined');
-}
-function isType(value: any) {
-    var regex = /^[object (S+?)]$/;
-    var matches = Object.prototype.toString.call(value).match(regex) || [];
-
-    return (matches[1] || 'undefined').toLowerCase();
 }

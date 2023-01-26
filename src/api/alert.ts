@@ -4,15 +4,11 @@ import {
     Alert,
     AlertOption,
     AlertStatus,
-    AppCallAction,
     AppCallRequest,
     AppCallResponse,
-    AppContextAction,
     AppForm,
-    PostEphemeralCreate,
 } from '../types';
 import {
-    newErrorCallResponseWithMessage,
     newFormCallResponse,
     newOKCallResponse,
     newOKCallResponseWithMarkdown,
@@ -32,7 +28,6 @@ import { h6, hyperlink, joinLines } from '../utils/markdown';
 import { AppsOpsGenie, Routes } from '../constant';
 import { replace, showMessageToMattermost } from '../utils/utils';
 import { priorityAlertCall } from '../forms/priority-alert';
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { configureI18n } from '../utils/translations';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {

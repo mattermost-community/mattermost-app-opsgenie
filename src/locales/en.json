@@ -3,7 +3,10 @@
 		"validation-user": {
 			"system-admin": "Error: This command is only available for Mattermost System Admin",
 			"not-provided": "Not acting user provided",
-			"api-key-not-found": "\"OpsGenie failed\": API Key not found!"
+			"api-key-not-found": "\"OpsGenie failed\": API Key not found!",
+			"genie-user": "\"OpsGenie failed\": No user found with email [{{ email }}]!",
+			"genie-user-verified": "\"OpsGenie failed\": User with email [{{ email }}] not verified!",
+			"genie-action-invalid": "\"OpsGenie failed\": Action not permitted!"
 		}
 	},
 	"api": {
@@ -109,6 +112,7 @@
 			"command-delete-title": "Unsubscribe team from channel",
 			"command-delete-value": "- Team Name \"{{ name }}\" - Channel Name \"{{ channelName }}\"",
 			"command-delete-no-subscriptions": "Subscription list is empty",
+			"command-delete-no-found": "Subscription not found",
 			"label-delete": "Subscription to delete",
 			"command-list-description": "List of teams subscribed to channels",
 			"command-list-title": "List of teams subscribed to channels",

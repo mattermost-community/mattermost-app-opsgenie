@@ -5,7 +5,8 @@ import { newOKCallResponseWithMarkdown } from '../utils/call-responses';
 import { AppActingUser, AppCallRequest, AppCallResponse, AppContext, ExpandedBotActingUser, Oauth2App } from '../types';
 import { addBulletSlashCommand, h5, joinLines } from '../utils/markdown';
 import { configureI18n } from '../utils/translations';
-import { allowMemberAction, existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
+import { allowMemberAction } from '../utils/user-mapping';
+import { existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
 import { Commands } from '../constant';
 
 export const getHelp = (request: Request, response: Response) => {
@@ -44,7 +45,7 @@ function getCommands(call: AppCallRequest): string {
             commands.push(addBulletSlashCommand(Commands.SETTINGS, i18nObj.__('api.help.command-settings')));
         }
         
-        if (allowMemberAction(oauth2) || (!allowMemberAction(oauth2) && isUserSystemAdmin(<AppActingUser>actingUser))) {
+        if (allowMemberAction(context)) {
             commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-add-command', { command: Commands.SUBSCRIPTION, add: Commands.ADD }), i18nObj.__('api.help.command-add-description')));
             commands.push(addBulletSlashCommand(i18nObj.__('api.help.command-delete-command', { command: Commands.SUBSCRIPTION, delete: Commands.DELETE }), i18nObj.__('api.help.command-delete-description')));
             commands.push(addBulletSlashCommand(`${Commands.SUBSCRIPTION} ${Commands.LIST}`, i18nObj.__('api.help.command-list-description')));

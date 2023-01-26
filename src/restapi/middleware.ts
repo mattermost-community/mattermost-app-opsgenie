@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
+import { allowMemberAction, linkEmailAddress } from '../utils/user-mapping';
 
 import { ExceptionType } from '../constant';
 import { AppActingUser, AppCallRequest, Oauth2App } from '../types';
 import { Exception } from '../utils/exception';
 import { configureI18n } from '../utils/translations';
-import { allowMemberAction, existsOpsGenieAPIKey, isUserSystemAdmin, showMessageToMattermost } from '../utils/utils';
+import { existsOpsGenieAPIKey, isUserSystemAdmin, showMessageToMattermost } from '../utils/utils';
 
 export const requireSystemAdmin = (req: Request, res: Response, next: () => void) => {
     const call: AppCallRequest = req.body as AppCallRequest;
@@ -48,7 +49,7 @@ export const requireOpsGenieAllowUserMapping = (req: Request, res: Response, nex
         return;
     }
 
-    if (allowMemberAction(oauth2)){
+    if (linkEmailAddress(oauth2)){
         next();
         return;
     }

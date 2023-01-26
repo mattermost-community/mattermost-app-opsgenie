@@ -170,7 +170,7 @@ export type PostResponse = {
     root_id: string,
     original_id: string,
     message: string,
-    props: { attachments: Attachment[]; }
+    props: { attachments: Attachment[]; app_bindings: any[] }
 }
 
 export type PostUpdate = {

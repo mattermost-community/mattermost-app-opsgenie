@@ -256,4 +256,14 @@ export class OpsGenieClient {
             responseType: 'json',
         }).then((response) => response.data);
     }
+
+    public getAllUserTeams(userEmail: string): Promise<ResponseResultWithData<Teams[]>> {
+        const url = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.UserPathPrefix}${Routes.OpsGenie.TeamPathPrefix}`;
+        return axios.get(replace(url, Routes.PathsVariable.Identifier, userEmail), {
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`,
+            },
+            responseType: 'json',
+        }).then((response) => response.data);
+    }
 }

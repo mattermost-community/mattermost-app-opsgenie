@@ -3,7 +3,10 @@
     "validation-user": {
       "system-admin": "Error: Este comando esta únicamente disponible a usuarios Mattermost System Admin",
       "not-provided": "El usuario no fue provisto",
-      "api-key-not-found": "\"OpsGenie falló\": ¡API Key no encontrada!"
+      "api-key-not-found": "\"OpsGenie falló\": ¡API Key no encontrada!",
+      "genie-user": "\"OpsGenie falló\": ¡Usuario no encontrado con email [{{ email }}]!",
+      "genie-user-verified": "\"OpsGenie falló\": ¡Usuario con correo [{{ email }}] no ha sido verificado!",
+      "genie-action-invalid": "\"OpsGenie falló\": ¡Acción no permitida!"
     }
   },
   "api": {
@@ -110,6 +113,7 @@
       "label-delete": "Suscripción a eliminar",
       "command-delete-value": "- Nombre de equipo \"{{ name }}\" - Canal \"{{ channelName }}\"",
       "command-delete-no-subscriptions": "No hay subscripciones",
+      "command-delete-no-found": "La subscripción no se encontró",
       "command-list-description": "Lista de equipos suscritos a los canales",
       "command-list-title": "Lista de equipos suscritos a los canales",
       "command-alert-description": "Alerta de configuración en OpsGenie",

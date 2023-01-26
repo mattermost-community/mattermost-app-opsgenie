@@ -12,6 +12,7 @@ import {
     AppForm,
     Identifier,
     IdentifierType,
+    PostResponse,
     PostUpdate,
     ResponseResultWithData,
 } from '../types';
@@ -128,7 +129,7 @@ async function updatePostCloseAlert(context: AppContextAction | AppContext, aler
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const currentPost = await tryPromise(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const currentPost = await tryPromise<PostResponse>(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const newProps = _.cloneDeep(currentPost.props);
     newProps.app_bindings[0].bindings = [];
