@@ -236,7 +236,8 @@ export class OpsGenieClient {
     }
 
     public getTeam(identifier: Identifier): Promise<ResponseResultWithData<Team>> {
-        return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`, {
+        const url = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`;
+        return axios.get(url, {
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`,
             },

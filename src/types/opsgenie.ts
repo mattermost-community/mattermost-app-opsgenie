@@ -157,11 +157,19 @@ export type Teams = {
     description: string;
 };
 
+export type TeamMember = {
+    user: {
+        id: string;
+        username: string;
+    },
+    role: string;
+}
+
 export type Team = {
     id: string;
     name: string;
     description: string;
-    members: any[];
+    members?: TeamMember[];
     links: any[];
 }
 

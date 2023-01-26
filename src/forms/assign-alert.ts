@@ -11,14 +11,14 @@ import {
 } from '../types';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { AssignAlertForm, ExceptionType, StoreKeys } from '../constant';
+import { AssignAlertForm, ExceptionType } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
-import { getOpsGenieAPIKey } from '../utils/user-mapping';
+import { canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function assignAlertCall(call: AppCallRequest): Promise<string> {
+    const accessToken: string | undefined = call.context.acting_user_access_token;
     const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
@@ -34,7 +34,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: botAccessToken,
+        accessToken: accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     const mattermostUser: User = await mattermostClient.getUser(userId);
@@ -49,8 +49,8 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifierAlert), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert = responseAlert.data;
+
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const data: AlertAssign = {
@@ -60,6 +60,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         },
         note: i18nObj.__('forms.message-note'),
     };
+    
     await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.response-assign-alert', { url: alertURL, email: mattermostUser.email });
 }

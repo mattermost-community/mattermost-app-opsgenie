@@ -6,7 +6,9 @@
       "api-key-not-found": "\"OpsGenie falló\": ¡API Key no encontrada!",
       "genie-user": "\"OpsGenie falló\": ¡Usuario no encontrado con email [{{ email }}]!",
       "genie-user-verified": "\"OpsGenie falló\": ¡Usuario con correo [{{ email }}] no ha sido verificado!",
-      "genie-action-invalid": "\"OpsGenie falló\": ¡Acción no permitida!"
+      "genie-action-invalid": "\"OpsGenie falló\": ¡Acción no permitida!",
+      "genie-team-invalid": "\"OpsGenie falló\": ¡Usuario con email [ {{ email }} ] no tiene acceso al equipo [ {{ team }} ]!",
+      "genie-alert-not-found": "\"OpsGenie failed\": ¡Alerta con tinyId [{{ tinyId }}] no encontrada!"
     }
   },
   "api": {

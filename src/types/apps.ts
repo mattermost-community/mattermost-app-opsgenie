@@ -356,5 +356,6 @@ export type AppContextAction = {
     locale: string;
     post: AppPost;
     action: string;
+    oauth2?: Oauth2App;
 }
 

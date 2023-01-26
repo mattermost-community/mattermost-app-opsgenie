@@ -9,7 +9,6 @@ import {
     AppContextAction,
     Identifier,
     IdentifierType,
-    ResponseResultWithData,
 } from '../types';
 import {
     ExceptionType,
@@ -26,7 +25,7 @@ import {
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
-import { getOpsGenieAPIKey } from '../utils/user-mapping';
+import { canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function createSnoozeAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
@@ -46,8 +45,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const currentDate: Date = new Date();

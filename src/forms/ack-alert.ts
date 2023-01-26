@@ -21,7 +21,7 @@ import { Exception } from '../utils/exception';
 import { MattermostClient } from '../clients/mattermost';
 import manifest from '../manifest.json';
 import { h6 } from '../utils/markdown';
-import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { canUserInteractWithAlert, ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
@@ -38,17 +38,17 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY,
-    };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.acknowledged) {
         throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }));
     }
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY,
+    };
 
     const data: AlertAck = {
         user: username,

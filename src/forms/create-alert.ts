@@ -1,11 +1,15 @@
-import { AlertCreate, AlertResponderType, AppCallRequest, AppCallValues, Identifier, IdentifierType } from '../types';
+import { AlertCreate, AlertResponderType, AppActingUser, AppCallRequest, AppCallValues, Identifier, IdentifierType, Team } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { AlertCreateForm, ExceptionType, option_alert_priority_p3 } from '../constant';
 import { configureI18n } from '../utils/translations';
-import { tryPromise } from '../utils/utils';
-import { getOpsGenieAPIKey } from '../utils/user-mapping';
+import { isUserSystemAdmin, tryPromise } from '../utils/utils';
+import { allowMemberAction, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { Exception } from '../utils/exception';
 
 export async function createAlertCall(call: AppCallRequest): Promise<string> {
+    const actingUser: AppActingUser | undefined = call.context.acting_user;
+    const isSystemAdmin: boolean = isUserSystemAdmin(actingUser);
+    const allowMember: boolean = allowMemberAction(call.context);
     const values: AppCallValues | undefined = call.values;
     const apiKey = getOpsGenieAPIKey(call);
     const i18nObj = configureI18n(call.context);
@@ -23,8 +27,20 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
         identifier: teamName,
         identifierType: IdentifierType.NAME,
     };
-    await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    
+    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
+    if (allowMember) {
+        if (!isSystemAdmin) {
+            const teamMembers: string[] | undefined = team?.members?.map(member => member.user.username);
+            if (!teamMembers || !teamMembers.includes(actingUser?.email || '')){
+                throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }));
+            }
+        }
+    } else {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.genie-action-invalid'));
+    }
+    
     const alertCreate: AlertCreate = {
         message,
         priority,

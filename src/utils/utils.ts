@@ -89,14 +89,14 @@ export function getHTTPPath(): string {
 }
 
 export const getAlertLink = async (alertTinyId: string, alertID: string, opsGenieClient: OpsGenieClient) => {
-    const account: ResponseResultWithData<Account> = await tryPromise(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed');
+    const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed');
     const url = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
 
     const alertDetailUrl = replace(
         replace(
             url,
             Routes.PathsVariable.Account,
-            account.data.name
+            account.name
         ),
         Routes.PathsVariable.Identifier,
         alertID

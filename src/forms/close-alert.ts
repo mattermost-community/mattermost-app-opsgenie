@@ -14,7 +14,6 @@ import {
     IdentifierType,
     PostResponse,
     PostUpdate,
-    ResponseResultWithData,
 } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { AckAlertForm, AppExpandLevels, ExceptionType, OpsGenieIcon, Routes } from '../constant';
@@ -23,11 +22,9 @@ import { getAlertLink, tryPromise } from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { Exception } from '../utils/exception';
 import { h6 } from '../utils/markdown';
-import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { canUserInteractWithAlert, ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function closeAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
@@ -46,8 +43,8 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.status === AlertStatus.CLOSED) {
@@ -67,8 +64,6 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
 
 export async function closeAlertForm(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues | undefined = call.values;
     const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
         call.state.alert.tinyId as string :
@@ -79,15 +74,15 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
         api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY,
-    };
 
-    const alertResponse: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-
-    const alert = alertResponse.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient);
+
+    if (alert.status === AlertStatus.CLOSED) {
+        await updatePostCloseAlert(call.context, alert);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }),);
+    }
+
     const stateAlert = {
         id: alert.id,
         message: alert.message,

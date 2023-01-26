@@ -6,7 +6,9 @@
 			"api-key-not-found": "\"OpsGenie failed\": API Key not found!",
 			"genie-user": "\"OpsGenie failed\": No user found with email [{{ email }}]!",
 			"genie-user-verified": "\"OpsGenie failed\": User with email [{{ email }}] not verified!",
-			"genie-action-invalid": "\"OpsGenie failed\": Action not permitted!"
+			"genie-action-invalid": "\"OpsGenie failed\": Action not permitted!",
+			"genie-team-invalid": "\"OpsGenie failed\": User with email [{{ email }}] has no access to team [{{ team }}]!",
+			"genie-alert-not-found": "\"OpsGenie failed\": Alert with tinyId [{{ tinyId }}] not found!"
 		}
 	},
 	"api": {

@@ -1,6 +1,6 @@
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { AppExpandLevels, ExceptionType } from '../constant';
-import { AppActingUser, AppCallAction, AppCallRequest, AppContext, Identifier, IdentifierType, Oauth2App, OpsUser, ResponseResultWithData } from '../types';
+import { Alert, AppActingUser, AppCallAction, AppCallRequest, AppContext, AppContextAction, Identifier, IdentifierType, Oauth2App, OpsUser, ResponseResultWithData, Team } from '../types';
 
 import { Exception } from './exception';
 import { configureI18n } from './translations';
@@ -25,7 +25,7 @@ export function linkEmailAddress(oauth2App: Oauth2App | undefined): boolean {
         true;
 }
 
-export function allowMemberAction(context: AppContext): boolean {
+export function allowMemberAction(context: AppContext | AppContextAction): boolean {
     const oauth2: Oauth2App | undefined = context.oauth2;
     const actingUser: AppActingUser | undefined = context.acting_user;
     const i18nObj = configureI18n(context);
@@ -66,4 +66,43 @@ export async function validateUserAccess(call: AppCallRequest): Promise<OpsUser>
     }
 
     return genieUser;
+}
+
+export async function canUserInteractWithAlert(call: AppCallRequest | AppCallAction<AppContextAction>, alertTinyId: string): Promise<Alert> {
+    const actingUser: AppActingUser | undefined = call.context.acting_user;
+    const isSystemAdmin: boolean = isUserSystemAdmin(actingUser);
+    const allowMember: boolean = allowMemberAction(call.context);
+    const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
+
+    const optionsOpsgenie: OpsGenieOptions = {
+        api_key: apiKey,
+    };
+    const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY,
+    };
+    
+    const alertResponse: Alert = await tryPromise<Alert>(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+    if (allowMember) {
+        if (!isSystemAdmin) {
+            const identifier: Identifier = {
+                identifier: alertResponse.ownerTeamId,
+                identifierType: IdentifierType.ID,
+            };
+
+            const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+            const teamMembers: string[] | undefined = team?.members?.map(member => member.user.username);
+            if (!teamMembers || !teamMembers.includes(actingUser?.email || '')) {
+                throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-alert-not-found', { tinyId: alertTinyId }));
+            }
+        }
+    } else {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.genie-action-invalid'));
+    }
+    return alertResponse;
 }

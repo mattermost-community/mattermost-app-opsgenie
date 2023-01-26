@@ -17,7 +17,7 @@ import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
 import { Exception } from '../utils/exception';
 
-import { getOpsGenieAPIKey } from '../utils/user-mapping';
+import { canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 import { bodyPostUpdate } from './ack-alert';
 
@@ -33,19 +33,19 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
         api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
-
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY,
-    };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (!alert.acknowledged) {
         throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.unack.exception-unack', { url: alertURL }));
     }
 
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY,
+    };
+    
     const data: AlertUnack = {
         user: username,
     };

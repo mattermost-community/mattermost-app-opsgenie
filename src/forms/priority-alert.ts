@@ -5,18 +5,15 @@ import {
     Identifier,
     IdentifierType,
     PriorityAlert,
-    ResponseResultWithData,
 } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { ExceptionType, PriorityAlertForm } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
-import { getOpsGenieAPIKey } from '../utils/user-mapping';
+import { canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
@@ -34,8 +31,7 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = responseAlert.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.priority === priority) {
