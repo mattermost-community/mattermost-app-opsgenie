@@ -25,6 +25,7 @@
       "title": "Complemento Mattermost OpsGenie - Ayuda con el comando Slash",
       "command-help": "Inicie la sintaxis de ayuda de la línea de comandos del complemento OpsGenie, consulte la [documentación]({{ url }}).",
       "command-configure": "Configurar OpsGenie.",
+      "command-settings": "Mostrar la configuración de la app de OpsGenie",
       "command-add-command": "{{ command }} {{ add }} [Nombre del equipo] [Canal Mattermost]",
       "command-add-description": "Agregar suscripción del equipo al canal.",
       "command-delete-command": "{{ command }} {{ delete }} [ID de suscripción]",
@@ -48,8 +49,9 @@
       "command-own-description": "Tomar posesión de las alertas con ID [tinyID tinyID2..].",
       "command-priority-command": "{{ command }} {{ priority }} [Alerta TinyID] [Prioridad]",
       "command-priority-description": "Actualizar la prioridad de la alerta con [tinyID].",
-      "command-team-description": "Listar equipos.",
-      "command-alert-decription": "Lista de alertas."
+			"command-list-alert-command": "{{ command }} {{ list }}",
+      "command-alert-decription": "Lista de alertas.",
+      "command-team-description": "Listar equipos."
     },
     "install": {
       "command": "Para terminar de configurar la aplicación Opsgenie, lea la sección [Inicio rápido]({{ url }}#inicio rápido) del LÉAME"

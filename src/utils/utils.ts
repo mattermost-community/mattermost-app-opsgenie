@@ -34,6 +34,12 @@ export function existsOpsGenieAPIKey(oauth2App: Oauth2App): boolean {
     return Boolean(oauth2App.client_id);
 }
 
+export function allowMemberAction(oauth2App: Oauth2App): boolean {
+    return typeof oauth2App.data?.settings?.link_email_address === 'boolean'
+        ? oauth2App.data?.settings.link_email_address
+        : true;
+}
+
 export function getAlertDetailUrl(accountName: string, alertId: string): string {
     const url = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
     return replace(

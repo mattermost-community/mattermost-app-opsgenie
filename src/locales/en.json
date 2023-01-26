@@ -25,6 +25,7 @@
 			"title": "Mattermost OpsGenie Plugin - Slash Command Help",
 			"command-help": "Launch the OpsGenie plugin command line help syntax, check out the [documentation]({{ url }}).",
 			"command-configure": "Configure OpsGenie.",
+			"command-settings": "Display OpsGenie app settings",
 			"command-add-command": "{{ command }} {{ add }} [Team name] [Mattermost Channel]",
 			"command-add-description": "Add subscription of team to channel.",
 			"command-delete-command": "{{ command }} {{ delete }} [SubscriptionId]",
@@ -48,8 +49,9 @@
 			"command-own-description": "Take ownership of the alerts with IDs [tinyID tinyID2..].",
 			"command-priority-command": "{{ command }} {{ priority }} [Alert TinyID] [Priority]",
 			"command-priority-description": "Update priority of the alert with [tinyID].",
-			"command-team-description": "List teams.",
-			"command-alert-decription": "List alerts."
+			"command-list-alert-command": "{{ command }} {{ list }}",
+			"command-alert-decription": "List all alerts.",
+			"command-team-description": "List all teams."
 		},
 		"install": {
 			"command": "To finish configuring the Opsgenie app please read the [Quick Start]({{ url }}#quick-start) section of the README"

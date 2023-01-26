@@ -6,7 +6,7 @@ import {
     Commands,
     OpsGenieIcon,
 } from '../constant';
-import { existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
+import { allowMemberAction, existsOpsGenieAPIKey, isUserSystemAdmin } from '../utils/utils';
 import { configureI18n } from '../utils/translations';
 
 import {
@@ -51,12 +51,17 @@ export const getCommandBindings = (call: AppCallRequest): AppsState => {
         commands.push(Commands.CONFIGURE);
     }
     if (existsOpsGenieAPIKey(oauth2)) {
-        commands.push(Commands.SETTINGS);
-        commands.push(Commands.SUBSCRIPTION);
+        if (isUserSystemAdmin(<AppActingUser>actingUser)) {
+            commands.push(Commands.SETTINGS);
+            bindings.push(getSettingsBinding(context));
+        }
+        
+        if (allowMemberAction(oauth2)) {
+            commands.push(Commands.SUBSCRIPTION);
+            bindings.push(subscriptionBinding(context));
+        }
         commands.push(Commands.ALERT);
         commands.push(Commands.TEAM);
-        bindings.push(getSettingsBinding(context));
-        bindings.push(subscriptionBinding(context));
         bindings.push(alertBinding(context));
         bindings.push(getTeamBinding(context));
     }
