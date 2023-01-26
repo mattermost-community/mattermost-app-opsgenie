@@ -19,7 +19,8 @@
 			"message-add-note": "Note will be added for #{{ alert }}",
 			"message-assign": "Assign ownership request will be processed for #{{ alert }}",
 			"message-assign-response": "Assign ownership request will be processed for #{{ alert }}",
-			"message-alert-snoozed": "Alert {{ alert }} will be snoozed for {{ timeAmount }}"
+			"message-alert-snoozed": "Alert {{ alert }} will be snoozed for {{ timeAmount }}",
+			"list-item": "- #{{ tinyId }}: \"{{ message }}\" - Status: {{ status }} - {{ link }}"
 		},
 		"configure": {
 			"error-response": "Unable to open configuration form: {{ message }}",

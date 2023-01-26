@@ -19,7 +19,8 @@
       "message-add-note": "Se agregará una nota para #{{ alert }}",
       "message-assign": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
       "message-assign-response": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
-      "message-alert-snoozed": "La alerta {{ alert }} se pospondrá {{ timeAmount }}"
+      "message-alert-snoozed": "La alerta {{ alert }} se pospondrá {{ timeAmount }}",
+      "list-item": "- #{{ tinyId }}: \"{{ message }}\" - Estado: {{ status }} - {{ link }}"
     },
     "configure": {
       "error-response": "No se puede abrir el formulario de configuración: {{ message }}",

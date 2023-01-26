@@ -20,6 +20,10 @@ export function bold(text: string): string {
     return `**${text}**`;
 }
 
+export function strikethrough(text: string): string {
+    return `~~ ${text} ~~`;
+}
+
 export function hyperlink(text: string, url: string): string {
     return `[${text}](${url})`;
 }

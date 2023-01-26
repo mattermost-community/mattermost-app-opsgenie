@@ -36,31 +36,8 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
     const i18nObj = configureI18n(call.context);
 
     try {
-        const [alerts, account] = await getAllAlertCall(request.body);
-
-        const alertsWithStatusOpen: Alert[] = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN);
-        const alertsUnacked: number = alertsWithStatusOpen.filter((alert: Alert) => !alert.acknowledged).length;
-        const url = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
-
-        const teamsText: string = [
-            h6(i18nObj.__('api.list-alert.message', { alerts: alertsUnacked.toString(), openalert: alertsWithStatusOpen.length.toString(), length: alerts.length.toString() })),
-            `${joinLines(
-                alerts.map((alert: Alert) => {
-                    const alertDetailUrl: string = replace(
-                        replace(
-                            url,
-                            Routes.PathsVariable.Account,
-                            account.name
-                        ),
-                        Routes.PathsVariable.Identifier,
-                        alert.id
-                    );
-                    const status: string = alert.acknowledged ? AlertOption.ASKED : AlertOption.UNACKED;
-                    return `- #${alert.tinyId}: "${alert.message}" [${status}] - ${hyperlink(i18nObj.__('api.list-alert.detail'), alertDetailUrl)}.`;
-                }).join('\n')
-            )}\n`,
-        ].join('');
-        callResponse = newOKCallResponseWithMarkdown(teamsText);
+        const message = await getAllAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
