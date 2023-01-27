@@ -65,8 +65,8 @@ export async function addNoteToAlertAction(call: AppCallAction<AppContextAction>
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alertURL: string = await getAlertLink(alertTinyId, responseAlert.data.id, opsGenieClient);
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const data: AlertNote = {
         note: alertMessage,

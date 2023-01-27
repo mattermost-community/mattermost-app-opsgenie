@@ -66,8 +66,8 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
 }
 
 export async function assignAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
+    const accessToken: string | undefined = call.context.acting_user_access_token;
     const mattermostUrl: string = call.context.mattermost_site_url;
-    const botAccessToken: string = call.context.bot_access_token;
     const username: string = call.context.acting_user.username;
     const assignUserSelected: string = call.values.userselectevent?.value;
     const alertTinyId: string = call.state.alert.tinyId as string;
@@ -81,7 +81,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: botAccessToken,
+        accessToken: accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     const mattermostUser: User = await mattermostClient.getUser(<string>assignUserSelected);
@@ -96,7 +96,9 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifierAlert), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const data: AlertAssign = {
         user: username,
@@ -106,5 +108,5 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
     };
     await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
-    return i18nObj.__('api.list-alert.message-assign', { alert: alertTinyId });
+    return i18nObj.__('forms.response-assign-alert', { url: alertURL, email: mattermostUser.email });
 }

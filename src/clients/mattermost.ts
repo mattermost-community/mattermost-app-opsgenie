@@ -49,7 +49,7 @@ export class MattermostClient {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
             },
-        }).then((response: AxiosResponse<any>) => response.data);
+        });
     }
 
     public updatePost(postId: string, post: PostUpdate): Promise<any> {

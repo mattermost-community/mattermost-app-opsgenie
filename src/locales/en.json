@@ -72,6 +72,7 @@
 			"message": "Team List: Found {{ length }} matching teams."
 		},
 		"webhook": {
+			"message": "New alert created:",
 			"title": "[#{{ text }}]({{ url }})",
 			"title-closed": "[#{{ text }} [CLOSED] ]({{ url }}) ",
 			"error": "Error webhook: {{ message }}",

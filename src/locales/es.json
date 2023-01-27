@@ -72,6 +72,7 @@
       "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
     },
     "webhook": {
+      "message": "Nueva alerta creada:",
       "title": "[#{{ text }}]({{ url }})",
       "title-closed": "[#{{ text }} [RESUELTA]]({{ ur l}})",
       "error": "Webhook de error: {{ message }}",

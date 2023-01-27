@@ -83,8 +83,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     await mattermostClient.updatePost(postId, bodyPostUpdate(call, true));

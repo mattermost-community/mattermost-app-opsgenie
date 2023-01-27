@@ -77,8 +77,7 @@ export async function unackAlertAction(call: AppCallAction<AppContextAction>): P
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
 
     await mattermostClient.updatePost(postId, bodyPostUpdate(call, false));
 

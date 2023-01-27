@@ -4,19 +4,20 @@ import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvst
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { ActionsEvents, AppExpandLevels, ExtraOptionsEvents, Routes, StoreKeys } from '../constant';
-import { Account, AlertWebhook, AppContext, AssignWebhook, Identifier, IdentifierType, Manifest, NoteWebhook, OpsUser, PostCreate, ResponseResultWithData, SnoozeWebhook, Team, WebhookAppCallRequest, WebhookData, WebhookRequest } from '../types';
-import { h6, hyperlink } from '../utils/markdown';
+import { Account, AlertWebhook, AppContext, AssignWebhook, Identifier, IdentifierType, Manifest, NoteWebhook, OpsUser, PostCreate, PostEmbeddedBindings, ResponseResultWithData, SnoozeWebhook, Team, WebhookAppCallRequest, WebhookData, WebhookRequest } from '../types';
+import { bold, h6, hyperlink } from '../utils/markdown';
 import { configureI18n } from '../utils/translations';
 import { getAlertDetailUrl } from '../utils/utils';
 import manifest from '../manifest.json';
-import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { ExtendRequired, getOpsGenieAPIKey, linkEmailAddress } from '../utils/user-mapping';
 
 export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<AlertWebhook>) {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.values.rawQuery;
     const event: WebhookData<AlertWebhook> = webhookRequest.values.data;
+    const linkEmail: boolean = linkEmailAddress(context.oauth2);
+    const rawQuery: string = webhookRequest.values.rawQuery;
     const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AlertWebhook = event.alert;
     const i18nObj = configureI18n(context);
@@ -34,25 +35,105 @@ export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<A
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
-    const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((teamId: string) => {
-        const teamParams: Identifier = {
-            identifier: teamId,
-            identifierType: IdentifierType.ID,
-        };
-        return opsGenieClient.getTeam(teamParams);
-    });
-    const teams: ResponseResultWithData<Team>[] = await Promise.all(teamsPromise);
-    const teamsName: string[] = teams.map((team: ResponseResultWithData<Team>) =>
-        team.data.name
-    );
-
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
     const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
     const channelId: string = <string>parsedQuery.channelId;
+    const bindings: PostEmbeddedBindings[] = [
+        {
+            location: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            label: i18nObj.__('api.webhook.name-acknowledged'),
+            submit: {
+                path: Routes.App.CallPathAlertAcknowledgedAction,
+                expand: {
+                    ...ExtendRequired,
+                    post: AppExpandLevels.EXPAND_SUMMARY,
+                },
+                state,
+            },
+        },
+        {
+            location: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
+            label: i18nObj.__('api.webhook.name-close'),
+            submit: {
+                path: Routes.App.CallPathAlertCloseAction,
+                expand: {
+                    ...ExtendRequired,
+                    post: AppExpandLevels.EXPAND_SUMMARY,
+                },
+                state,
+            },
+        },
+        {
+            location: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
+            label: i18nObj.__('api.webhook.name-other'),
+            bindings: [
+                {
+                    location: ExtraOptionsEvents.ALERT_ADD_NOTE,
+                    label: i18nObj.__('api.webhook.extra-options.add-note'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_ADD_NOTE,
+                        },
+                    },
+                },
+                {
+                    location: ExtraOptionsEvents.ALERT_ASSIGN,
+                    label: i18nObj.__('api.webhook.extra-options.assign'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_ASSIGN,
+                        },
+                    },
+                },
+                {
+                    location: ExtraOptionsEvents.ALERT_SNOOZE,
+                    label: i18nObj.__('api.webhook.extra-options.snooze'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_SNOOZE,
+                        },
+                    },
+                },
+                {
+                    location: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
+                    label: i18nObj.__('api.webhook.extra-options.take-ownership'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
+                        },
+                    },
+                },
+            ],
+        },
+    ];
     const payload: PostCreate = {
-        message: '',
+        message: bold(i18nObj.__('api.webhook.message')),
         channel_id: channelId,
         props: {
             app_bindings: [
@@ -60,98 +141,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<A
                     app_id: m.app_id,
                     location: 'embedded',
                     description: h6(i18nObj.__('api.webhook.title', { text: `${alert.tinyId}: ${alert.message}`, url })),
-                    bindings: [
-                        {
-                            location: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
-                            label: i18nObj.__('api.webhook.name-acknowledged'),
-                            submit: {
-                                path: Routes.App.CallPathAlertAcknowledgedAction,
-                                expand: {
-                                    ...ExtendRequired,
-                                    post: AppExpandLevels.EXPAND_SUMMARY,
-                                },
-                                state,
-                            },
-                        },
-                        {
-                            location: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
-                            label: i18nObj.__('api.webhook.name-close'),
-                            submit: {
-                                path: Routes.App.CallPathAlertCloseAction,
-                                expand: {
-                                    ...ExtendRequired,
-                                    post: AppExpandLevels.EXPAND_SUMMARY,
-                                },
-                                state,
-                            },
-                        },
-                        {
-                            location: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
-                            label: i18nObj.__('api.webhook.name-other'),
-                            bindings: [
-                                {
-                                    location: ExtraOptionsEvents.ALERT_ADD_NOTE,
-                                    label: i18nObj.__('api.webhook.extra-options.add-note'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            ...ExtendRequired,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_ADD_NOTE,
-                                        },
-                                    },
-                                },
-                                {
-                                    location: ExtraOptionsEvents.ALERT_ASSIGN,
-                                    label: i18nObj.__('api.webhook.extra-options.assign'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            ...ExtendRequired,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_ASSIGN,
-                                        },
-                                    },
-                                },
-                                {
-                                    location: ExtraOptionsEvents.ALERT_SNOOZE,
-                                    label: i18nObj.__('api.webhook.extra-options.snooze'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            ...ExtendRequired,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_SNOOZE,
-                                        },
-                                    },
-                                },
-                                {
-                                    location: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
-                                    label: i18nObj.__('api.webhook.extra-options.take-ownership'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            ...ExtendRequired,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
-                                        },
-                                    },
-                                },
-                            ],
-                        },
-                    ],
+                    bindings: linkEmail ? bindings : []
                 },
             ],
         },
