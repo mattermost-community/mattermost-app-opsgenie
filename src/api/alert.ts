@@ -20,7 +20,6 @@ import { assignAlertAction, assignAlertCall } from '../forms/assign-alert';
 import { closeAlertCall, closeAlertForm } from '../forms/close-alert';
 import { ackAlertAction, ackAlertCall } from '../forms/ack-alert';
 import { otherActionsAlertCall } from '../forms/other-actions-alert';
-import { closeActionsAlertCall } from '../forms/close-actions-alert';
 import { unackAlertAction, unackAlertCall } from '../forms/unack-alert';
 import { getAllAlertCall } from '../forms/list-alert';
 import { takeOwnershipAlertCall } from '../forms/take-ownership-alert';
@@ -150,19 +149,6 @@ export const otherActionsAlert = async (request: Request, response: Response) =>
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }
-    response.json(callResponse);
-};
-
-export const closeActionsAlert = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
-
-    try {
-        await closeActionsAlertCall(request.body);
-        callResponse = newOKCallResponse();
-    } catch (error: any) {
-        callResponse = showMessageToMattermost(error);
-    }
-
     response.json(callResponse);
 };
 

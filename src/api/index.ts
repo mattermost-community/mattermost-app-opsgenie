@@ -54,7 +54,6 @@ router.post(`${Routes.App.CallPathAssignAlertAction}`, requireOpsGenieAPIKey, cA
 router.post(`${Routes.App.CallPathTakeOwnershipAlertSubmit}`, requireOpsGenieAPIKey, cAlert.takeOwnershipAlertSubmit);
 router.post(`${Routes.App.CallPathUpdatePriorityAlertSubmit}`, requireOpsGenieAPIKey, cAlert.priorityAlertSubmit);
 router.post(`${Routes.App.CallPathAlertOtherActions}`, requireOpsGenieAPIKey, cAlert.otherActionsAlert);
-router.post(`${Routes.App.CallPathCloseOptions}`, requireOpsGenieAPIKey, cAlert.closeActionsAlert);
 
 router.post(`${Routes.App.CallPathIncomingWebhookPath}`, cWebhook.incomingWebhook);
 
