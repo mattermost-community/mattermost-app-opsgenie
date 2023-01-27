@@ -1,3 +1,6 @@
+import { WebhookAppCallRequest } from './apps';
+import { WebhookFunction } from './functions';
+
 export enum AlertStatus {
     CLOSED = 'closed',
     OPEN = 'open'
@@ -255,7 +258,33 @@ export type ListIntegrationsParams = {
     teamName?: string;
 }
 
-export type AlertWebhook = {
+export type WebhookRequestValues = {
+    alertId: string;
+    message: string;
+    tags: any[];
+    tinyId: string;
+    entity: string;
+    alias: string;
+    createdAt: Date;
+    updatedAt: Date;
+    username: string;
+    userId: string;
+    note: string;
+    description: string;
+    owner: string;
+    team: string;
+    responders: any[];
+    teams: any[];
+    actions: any[];
+    snoozeEndDate: string;
+    snoozedUntil: string;
+    details: any;
+    priority: string;
+    oldPriority: string;
+    source: string;
+}
+
+export type AlertWebhook = WebhookRequestValues & {
     alertId: string;
     message: string;
     tags: any[];
@@ -275,7 +304,7 @@ export type AlertWebhook = {
     source: string;
 }
 
-export type NoteWebhook = {
+export type NoteWebhook = WebhookRequestValues & {
     alertId: string;
     message: string;
     tags: any[];
@@ -296,7 +325,7 @@ export type NoteWebhook = {
     source: string;
 }
 
-export type SnoozeWebhook = {
+export type SnoozeWebhook = WebhookRequestValues & {
     alertId: string;
     message: string;
     tags: any[];
@@ -319,7 +348,7 @@ export type SnoozeWebhook = {
     source: string;
 }
 
-export type AssignWebhook = {
+export type AssignWebhook = WebhookRequestValues &{
     alertId: string;
     message: string;
     tags: any[];
@@ -340,8 +369,10 @@ export type AssignWebhook = {
     source: string;
 }
 
+export type WebhookDataAction = 'Create' | 'AddNote' | 'Close' | 'Acknowledge' | 'UnAcknowledge' | 'Snooze' | 'SnoozeEnded' | 'AssignOwnership' | 'UpdatePriority';
+
 export type WebhookData<T> = {
-    action: string;
+    action: WebhookDataAction;
     alert: T;
     source: {
         name: string;
@@ -367,3 +398,6 @@ export type WebhookRequest<T> = {
     httpMethod: string;
     rawQuery: string;
 }
+
+export type WebhookFunctionType = WebhookFunction<AlertWebhook> | WebhookFunction<NoteWebhook> | WebhookFunction<SnoozeWebhook> | WebhookFunction<AssignWebhook>
+export type WebhookAppCallRequestType = WebhookAppCallRequest<AlertWebhook> | WebhookAppCallRequest<NoteWebhook> | WebhookAppCallRequest<SnoozeWebhook> | WebhookAppCallRequest<AssignWebhook>;

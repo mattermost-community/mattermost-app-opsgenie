@@ -1,9 +1,8 @@
 import queryString, { ParsedQuery } from 'query-string';
 
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ActionsEvents, AppExpandLevels, ExtraOptionsEvents, Routes, StoreKeys } from '../constant';
+import { ActionsEvents, AppExpandLevels, ExtraOptionsEvents, Routes } from '../constant';
 import { Account, AlertWebhook, AppContext, AssignWebhook, Identifier, IdentifierType, Manifest, NoteWebhook, OpsUser, PostCreate, PostEmbeddedBindings, ResponseResultWithData, SnoozeWebhook, Team, WebhookAppCallRequest, WebhookData, WebhookRequest } from '../types';
 import { bold, h6, hyperlink } from '../utils/markdown';
 import { configureI18n } from '../utils/translations';
@@ -11,7 +10,7 @@ import { getAlertDetailUrl } from '../utils/utils';
 import manifest from '../manifest.json';
 import { ExtendRequired, getOpsGenieAPIKey, linkEmailAddress } from '../utils/user-mapping';
 
-export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<AlertWebhook>) {
+export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -155,7 +154,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<A
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyNoteCreated(webhookRequest: WebhookAppCallRequest<NoteWebhook>) {
+export async function notifyNoteCreated(webhookRequest: WebhookAppCallRequest<NoteWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -195,7 +194,7 @@ export async function notifyNoteCreated(webhookRequest: WebhookAppCallRequest<No
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyCloseAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>) {
+export async function notifyCloseAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -235,7 +234,7 @@ export async function notifyCloseAlert(webhookRequest: WebhookAppCallRequest<Ale
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyAckAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>) {
+export async function notifyAckAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -275,7 +274,7 @@ export async function notifyAckAlert(webhookRequest: WebhookAppCallRequest<Alert
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyUnackAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>) {
+export async function notifyUnackAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -315,7 +314,7 @@ export async function notifyUnackAlert(webhookRequest: WebhookAppCallRequest<Ale
     await mattermostClient.createPost(payload);
 }
 
-export async function notifySnoozeAlert(webhookRequest: WebhookAppCallRequest<SnoozeWebhook>) {
+export async function notifySnoozeAlert(webhookRequest: WebhookAppCallRequest<SnoozeWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -355,7 +354,7 @@ export async function notifySnoozeAlert(webhookRequest: WebhookAppCallRequest<Sn
     await mattermostClient.createPost(payload);
 }
 
-export async function notifySnoozeEndedAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>) {
+export async function notifySnoozeEndedAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -395,7 +394,7 @@ export async function notifySnoozeEndedAlert(webhookRequest: WebhookAppCallReque
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyAssignOwnershipAlert(webhookRequest: WebhookAppCallRequest<AssignWebhook>) {
+export async function notifyAssignOwnershipAlert(webhookRequest: WebhookAppCallRequest<AssignWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
@@ -441,7 +440,7 @@ export async function notifyAssignOwnershipAlert(webhookRequest: WebhookAppCallR
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyUpdatePriorityAlert(webhookRequest: WebhookAppCallRequest<AssignWebhook>) {
+export async function notifyUpdatePriorityAlert(webhookRequest: WebhookAppCallRequest<AssignWebhook>): Promise<void> {
     const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;

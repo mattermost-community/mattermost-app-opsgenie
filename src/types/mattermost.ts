@@ -1,3 +1,5 @@
+import { AppBinding } from './apps';
+
 export type UserNotifyProps = {
     channel: string;
     comments: string;
@@ -137,7 +139,7 @@ export type PostEmbeddedBindings = {
 
 export type PostBindings = {
     location: 'embedded',
-    app_id: string;
+    app_id?: string;
     description: string,
     bindings: PostEmbeddedBindings[]
 }
@@ -170,7 +172,10 @@ export type PostResponse = {
     root_id: string,
     original_id: string,
     message: string,
-    props: { attachments: Attachment[]; app_bindings: any[] }
+    props?: {
+        attachments?: Attachment[];
+        app_bindings?: PostBindings[];
+    }
 }
 
 export type PostUpdate = {

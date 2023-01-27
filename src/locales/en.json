@@ -4,6 +4,8 @@
 			"system-admin": "Error: This command is only available for Mattermost System Admin",
 			"not-provided": "Not acting user provided",
 			"api-key-not-found": "\"OpsGenie failed\": API Key not found!",
+			"user-not-found": "\"OpsGenie failed\": User email not found!",
+			"oauth2-not-found": "\"Error\": Configuration access not found!",
 			"genie-user": "\"OpsGenie failed\": No user found with email [{{ email }}]!",
 			"genie-user-verified": "\"OpsGenie failed\": User with email [{{ email }}] not verified!",
 			"genie-action-invalid": "\"OpsGenie failed\": Action not permitted!",
@@ -171,7 +173,8 @@
 			"ask-close-alert-header": "Alert {{ alert }} will be closed, are you sure you want to continue?",
 			"error-close-alert": "You already have closed {{ url }}",
 			"response-close-alert": "Alert {{ url }} will be closed",
-			"exception-close-alert": "You have closed #{{ alert }}"
+			"exception-close-alert": "You have closed #{{ alert }}",
+			"not-props-found": "No post props found"
 		},
 		"configure-admin": {
 			"title": "Configure OpsGenie",

@@ -35,8 +35,13 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
     }
 
     if (!isSystemAdmin) {
+        const userEmail: string | undefined = actingUser?.email;
+        if (!userEmail) {
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.user-not-found'));
+        }
+
         const teamMembers: string[] | undefined = team?.members?.map((member) => member.user.username);
-        if (!teamMembers || !teamMembers.includes(actingUser?.email || '')) {
+        if (!teamMembers || !teamMembers.includes(userEmail)) {
             throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }));
         }
     }

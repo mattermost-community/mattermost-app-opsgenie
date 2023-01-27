@@ -27,9 +27,13 @@ export const requireSystemAdmin = (req: Request, res: Response, next: () => void
 };
 
 export const requireOpsGenieAPIKey = (req: Request, res: Response, next: () => void) => {
-    const call: AppCallRequest = req.body as AppCallRequest;
-    const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
+    const call: AppCallRequest = req.body;
+    const oauth2: Oauth2App | undefined = call.context.oauth2;
     const i18nObj = configureI18n(call.context);
+
+    if (!oauth2) {
+        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.oauth2-not-found'));
+    }
 
     if (!existsOpsGenieAPIKey(oauth2)) {
         res.json(showMessageToMattermost(new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.api-key-not-found'))));

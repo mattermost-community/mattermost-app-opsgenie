@@ -127,8 +127,11 @@ async function updatePostCloseAlert(context: AppContextAction | AppContext, aler
     const currentPost = await tryPromise<PostResponse>(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
 
     const newProps = _.cloneDeep(currentPost.props);
+    if (!newProps?.app_bindings) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.not-props-found'));
+    }
+
     newProps.app_bindings[0].bindings = [];
-    newProps.app_bindings[0].color = '#AD251C';
     newProps.app_bindings[0].description = h6(i18nObj.__('api.webhook.title-closed', { text: `${alert.tinyId}: ${alert.message}`, url: alert.source }));
 
     const updatePost: PostUpdate = {
