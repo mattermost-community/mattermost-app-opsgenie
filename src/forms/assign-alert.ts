@@ -81,7 +81,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
 
     const mattermostOptions: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,
-        accessToken: accessToken,
+        accessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
     const mattermostUser: User = await mattermostClient.getUser(<string>assignUserSelected);
@@ -96,7 +96,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    
+
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 

@@ -141,7 +141,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<A
                     app_id: m.app_id,
                     location: 'embedded',
                     description: h6(i18nObj.__('api.webhook.title', { text: `${alert.tinyId}: ${alert.message}`, url })),
-                    bindings: linkEmail ? bindings : []
+                    bindings: linkEmail ? bindings : [],
                 },
             ],
         },
