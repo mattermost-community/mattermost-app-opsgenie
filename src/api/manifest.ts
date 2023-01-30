@@ -5,9 +5,14 @@ import manifest from '../manifest.json';
 import { getHTTPPath } from '../utils/utils';
 
 export function getManifest(request: Request, response: Response): void {
-    const m: Manifest = manifest;
+    let m: Manifest = manifest;
+    const http = {
+        http: {
+            root_url: getHTTPPath(),
+        },
+    };
 
-    m.http.root_url = getHTTPPath();
+    m = { ...m, ...http };
 
     response.json(m);
 }

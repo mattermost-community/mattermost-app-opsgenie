@@ -1,4 +1,5 @@
 import { UserProfile } from './mattermost';
+import { WebhookRequest } from './opsgenie';
 
 export type AppManifest = {
     app_id: string;
@@ -154,23 +155,73 @@ export type AppAppConext = {
     remote_oauth2: any;
 }
 
+export type ContextChannel = {
+    id: string;
+    team_id: string;
+    name: string;
+}
+
+export type AppAppContext = {
+    SchemaVersion: string,
+    app_id: string,
+    version: string,
+    homepage_url: string,
+    deploy_type: string,
+    webhook_secret: string,
+    bot_user_id: string,
+    bot_username: string,
+    remote_oauth2: any
+};
+
+export type PostApp = {
+    id: string,
+    channel_id: string
+}
+
+export type Oauth2CurrentUser = {
+    token: string;
+}
+
+export interface Oauth2Data {
+    settings: {
+        link_email_address: boolean
+    };
+}
+
+export type Oauth2App = {
+    client_id: string;
+    client_secret: string;
+    connect_url?: string;
+    complete_url?: string;
+    user?: Oauth2CurrentUser;
+    data?: Oauth2Data;
+}
+
+export type AppContextProps = {
+    [name: string]: string;
+};
+
 export type AppContext = {
     app_id: string;
     location?: string;
     locale?: string;
-    user_agent?: string;
-    track_as_submit?: boolean;
-    mattermost_site_url?: string;
-    developer_mode?: boolean;
-    app_path?: string;
+    acting_user_id?: string;
     bot_user_id?: string;
+    user_id?: string;
+    channel: ContextChannel;
+    team_id?: string;
+    post_id?: string;
+    root_id?: string;
+    props?: AppContextProps;
+    user_agent?: string;
     bot_access_token?: string;
-    app?: AppAppConext;
-    channel?: AppChannel;
+    mattermost_site_url?: string;
+    app?: AppAppContext;
     acting_user?: AppActingUser;
     acting_user_access_token?: string;
-    oauth2?: any;
-    post?: AppPost;
+    oauth2?: Oauth2App;
+    app_path?: string;
+    post?: PostApp;
 };
 
 export type AppCallRequest = AppCall & {
@@ -180,6 +231,10 @@ export type AppCallRequest = AppCall & {
     selected_field?: string;
     query?: string;
 };
+
+export type WebhookAppCallRequest<T> = AppCallRequest & {
+    values: WebhookRequest<T>
+}
 
 export type AppModalState = {
     form: AppForm;
@@ -217,17 +272,6 @@ export type AppsState = {
     bindings: AppBinding[];
 };
 
-export type AppCallDialog<T> = {
-    type: string;
-    callback_id: string;
-    state: string;
-    user_id: string;
-    channel_id: string;
-    team_id: string;
-    submission: T;
-    cancelled: boolean;
-}
-
 export type AppCallAction<T> = {
     path: string;
     context: T;
@@ -253,10 +297,6 @@ export type AppCallResponse<Res = unknown> = {
     use_external_browser?: boolean;
     call?: AppCall;
     form?: AppForm;
-};
-
-export type AppContextProps = {
-    [name: string]: string;
 };
 
 export type ExpandedBotActingUser = AppContext & {
@@ -316,5 +356,6 @@ export type AppContextAction = {
     locale: string;
     post: AppPost;
     action: string;
+    oauth2?: Oauth2App;
 }
 

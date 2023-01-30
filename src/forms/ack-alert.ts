@@ -4,61 +4,51 @@ import {
     Alert, AlertAck,
     AppCallAction,
     AppCallRequest,
-    AppCallValues, AppContext,
+    AppCallValues,
     AppContextAction,
     Identifier,
     IdentifierType,
     Manifest,
-    PostResponse,
     PostUpdate,
     ResponseResultWithData,
 } from '../types';
 import { AckAlertForm, ActionsEvents, AppExpandLevels, ExceptionType, ExtraOptionsEvents, Routes, StoreKeys } from '../constant';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { KVStoreOptions } from '../clients/kvstore';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
 import { Exception } from '../utils/exception';
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
-import config from '../config';
+import { MattermostClient } from '../clients/mattermost';
 import manifest from '../manifest.json';
 import { h6 } from '../utils/markdown';
+import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
+    const apiKey = getOpsGenieAPIKey(call);
     const i18nObj = configureI18n(call.context);
 
     const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
         call.state.alert.tinyId as string :
         values?.[AckAlertForm.NOTE_TINY_ID];
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: kvConfig.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY,
-    };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     if (alert.acknowledged) {
         throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }));
     }
+
+    const identifier: Identifier = {
+        identifier: alertTinyId,
+        identifierType: IdentifierType.TINY,
+    };
 
     const data: AlertAck = {
         user: username,
@@ -74,6 +64,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
     const alertTinyId: string = call.state.alert.tinyId as string;
     const postId: string = call.context.post.id as string;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const options: KVStoreOptions = {
         mattermostUrl: <string>mattermostUrl,
@@ -81,11 +72,9 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
     };
 
     const mattermostClient: MattermostClient = new MattermostClient(options);
-    const kvStoreClient = new KVStoreClient(options);
-    const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
 
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: kvConfig.opsgenie_apikey,
+        api_key: apiKey,
     };
 
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
@@ -94,8 +83,7 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
     const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     await mattermostClient.updatePost(postId, bodyPostUpdate(call, true));
@@ -143,8 +131,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                             submit: {
                                 path: ackAction.path,
                                 expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                    ...ExtendRequired,
+                                    app: AppExpandLevels.EXPAND_ALL,
                                     post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
                                 state,
@@ -156,8 +144,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                             submit: {
                                 path: Routes.App.CallPathAlertCloseAction,
                                 expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                    ...ExtendRequired,
+                                    app: AppExpandLevels.EXPAND_ALL,
                                     post: AppExpandLevels.EXPAND_SUMMARY,
                                 },
                                 state,
@@ -173,8 +161,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -189,8 +177,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -205,8 +193,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {
@@ -221,8 +209,8 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
                                     submit: {
                                         path: Routes.App.CallPathAlertOtherActions,
                                         expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
+                                            ...ExtendRequired,
+                                            app: AppExpandLevels.EXPAND_ALL,
                                             post: AppExpandLevels.EXPAND_SUMMARY,
                                         },
                                         state: {

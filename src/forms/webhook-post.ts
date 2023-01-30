@@ -1,20 +1,23 @@
 import queryString, { ParsedQuery } from 'query-string';
 
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ActionsEvents, AppExpandLevels, ExtraOptionsEvents, Routes, StoreKeys } from '../constant';
-import { Account, AlertWebhook, AppContext, AssignWebhook, Identifier, IdentifierType, Manifest, NoteWebhook, OpsUser, PostCreate, ResponseResultWithData, SnoozeWebhook, Team, WebhookData, WebhookRequest } from '../types';
-import { h6, hyperlink } from '../utils/markdown';
+import { ActionsEvents, AppExpandLevels, ExtraOptionsEvents, Routes } from '../constant';
+import { Account, AlertWebhook, AppContext, AssignWebhook, Identifier, IdentifierType, Manifest, NoteWebhook, OpsUser, PostCreate, PostEmbeddedBindings, ResponseResultWithData, SnoozeWebhook, Team, WebhookAppCallRequest, WebhookData, WebhookRequest } from '../types';
+import { bold, h6, hyperlink } from '../utils/markdown';
 import { configureI18n } from '../utils/translations';
 import { getAlertDetailUrl } from '../utils/utils';
 import manifest from '../manifest.json';
+import { ExtendRequired, getOpsGenieAPIKey, linkEmailAddress } from '../utils/user-mapping';
 
-export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
+export async function notifyAlertCreated(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const event: WebhookData<AlertWebhook> = webhookRequest.values.data;
+    const linkEmail: boolean = linkEmailAddress(context.oauth2);
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AlertWebhook = event.alert;
     const i18nObj = configureI18n(context);
     const m: Manifest = manifest;
@@ -26,38 +29,110 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
         },
     };
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
-
-    const teamsPromise: Promise<ResponseResultWithData<Team>>[] = alert.teams.map((teamId: string) => {
-        const teamParams: Identifier = {
-            identifier: teamId,
-            identifierType: IdentifierType.ID,
-        };
-        return opsGenieClient.getTeam(teamParams);
-    });
-    const teams: ResponseResultWithData<Team>[] = await Promise.all(teamsPromise);
-    const teamsName: string[] = teams.map((team: ResponseResultWithData<Team>) =>
-        team.data.name
-    );
 
     const account: ResponseResultWithData<Account> = await opsGenieClient.getAccount();
     const parsedQuery: ParsedQuery = queryString.parse(rawQuery);
 
     const url: string = getAlertDetailUrl(account.data.name, alert.alertId);
     const channelId: string = <string>parsedQuery.channelId;
+    const bindings: PostEmbeddedBindings[] = [
+        {
+            location: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
+            label: i18nObj.__('api.webhook.name-acknowledged'),
+            submit: {
+                path: Routes.App.CallPathAlertAcknowledgedAction,
+                expand: {
+                    ...ExtendRequired,
+                    post: AppExpandLevels.EXPAND_SUMMARY,
+                },
+                state,
+            },
+        },
+        {
+            location: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
+            label: i18nObj.__('api.webhook.name-close'),
+            submit: {
+                path: Routes.App.CallPathAlertCloseAction,
+                expand: {
+                    ...ExtendRequired,
+                    post: AppExpandLevels.EXPAND_SUMMARY,
+                },
+                state,
+            },
+        },
+        {
+            location: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
+            label: i18nObj.__('api.webhook.name-other'),
+            bindings: [
+                {
+                    location: ExtraOptionsEvents.ALERT_ADD_NOTE,
+                    label: i18nObj.__('api.webhook.extra-options.add-note'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_ADD_NOTE,
+                        },
+                    },
+                },
+                {
+                    location: ExtraOptionsEvents.ALERT_ASSIGN,
+                    label: i18nObj.__('api.webhook.extra-options.assign'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_ASSIGN,
+                        },
+                    },
+                },
+                {
+                    location: ExtraOptionsEvents.ALERT_SNOOZE,
+                    label: i18nObj.__('api.webhook.extra-options.snooze'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_SNOOZE,
+                        },
+                    },
+                },
+                {
+                    location: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
+                    label: i18nObj.__('api.webhook.extra-options.take-ownership'),
+                    submit: {
+                        path: Routes.App.CallPathAlertOtherActions,
+                        expand: {
+                            ...ExtendRequired,
+                            post: AppExpandLevels.EXPAND_SUMMARY,
+                        },
+                        state: {
+                            ...state,
+                            action: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
+                        },
+                    },
+                },
+            ],
+        },
+    ];
     const payload: PostCreate = {
-        message: '',
+        message: bold(i18nObj.__('api.webhook.message')),
         channel_id: channelId,
         props: {
             app_bindings: [
@@ -65,104 +140,7 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
                     app_id: m.app_id,
                     location: 'embedded',
                     description: h6(i18nObj.__('api.webhook.title', { text: `${alert.tinyId}: ${alert.message}`, url })),
-                    bindings: [
-                        {
-                            location: ActionsEvents.ACKNOWLEDGED_ALERT_BUTTON_EVENT,
-                            label: i18nObj.__('api.webhook.name-acknowledged'),
-                            submit: {
-                                path: Routes.App.CallPathAlertAcknowledgedAction,
-                                expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                    post: AppExpandLevels.EXPAND_SUMMARY,
-                                },
-                                state,
-                            },
-                        },
-                        {
-                            location: ActionsEvents.CLOSE_ALERT_BUTTON_EVENT,
-                            label: i18nObj.__('api.webhook.name-close'),
-                            submit: {
-                                path: Routes.App.CallPathAlertCloseAction,
-                                expand: {
-                                    acting_user: AppExpandLevels.EXPAND_ALL,
-                                    acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                    post: AppExpandLevels.EXPAND_SUMMARY,
-                                },
-                                state,
-                            },
-                        },
-                        {
-                            location: ActionsEvents.OTHER_OPTIONS_SELECT_EVENT,
-                            label: i18nObj.__('api.webhook.name-other'),
-                            bindings: [
-                                {
-                                    location: ExtraOptionsEvents.ALERT_ADD_NOTE,
-                                    label: i18nObj.__('api.webhook.extra-options.add-note'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_ADD_NOTE,
-                                        },
-                                    },
-                                },
-                                {
-                                    location: ExtraOptionsEvents.ALERT_ASSIGN,
-                                    label: i18nObj.__('api.webhook.extra-options.assign'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_ASSIGN,
-                                        },
-                                    },
-                                },
-                                {
-                                    location: ExtraOptionsEvents.ALERT_SNOOZE,
-                                    label: i18nObj.__('api.webhook.extra-options.snooze'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_SNOOZE,
-                                        },
-                                    },
-                                },
-                                {
-                                    location: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
-                                    label: i18nObj.__('api.webhook.extra-options.take-ownership'),
-                                    submit: {
-                                        path: Routes.App.CallPathAlertOtherActions,
-                                        expand: {
-                                            acting_user: AppExpandLevels.EXPAND_ALL,
-                                            acting_user_access_token: AppExpandLevels.EXPAND_ALL,
-                                            post: AppExpandLevels.EXPAND_SUMMARY,
-                                        },
-                                        state: {
-                                            ...state,
-                                            action: ExtraOptionsEvents.ALERT_TAKE_OWNERSHIP,
-                                        },
-                                    },
-                                },
-                            ],
-                        },
-                    ],
+                    bindings: linkEmail ? bindings : [],
                 },
             ],
         },
@@ -173,28 +151,21 @@ export async function notifyAlertCreated(webhookRequest: WebhookRequest<AlertWeb
         accessToken: <string>botAccessToken,
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
-    console.log(payload);
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyNoteCreated(webhookRequest: WebhookRequest<NoteWebhook>, context: AppContext) {
+export async function notifyNoteCreated(webhookRequest: WebhookAppCallRequest<NoteWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<NoteWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<NoteWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: NoteWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -223,24 +194,18 @@ export async function notifyNoteCreated(webhookRequest: WebhookRequest<NoteWebho
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyCloseAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
+export async function notifyCloseAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AlertWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -269,24 +234,18 @@ export async function notifyCloseAlert(webhookRequest: WebhookRequest<AlertWebho
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyAckAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
+export async function notifyAckAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AlertWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -315,24 +274,18 @@ export async function notifyAckAlert(webhookRequest: WebhookRequest<AlertWebhook
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyUnackAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
+export async function notifyUnackAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AlertWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -361,24 +314,18 @@ export async function notifyUnackAlert(webhookRequest: WebhookRequest<AlertWebho
     await mattermostClient.createPost(payload);
 }
 
-export async function notifySnoozeAlert(webhookRequest: WebhookRequest<SnoozeWebhook>, context: AppContext) {
+export async function notifySnoozeAlert(webhookRequest: WebhookAppCallRequest<SnoozeWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<SnoozeWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<SnoozeWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: SnoozeWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -407,24 +354,18 @@ export async function notifySnoozeAlert(webhookRequest: WebhookRequest<SnoozeWeb
     await mattermostClient.createPost(payload);
 }
 
-export async function notifySnoozeEndedAlert(webhookRequest: WebhookRequest<AlertWebhook>, context: AppContext) {
+export async function notifySnoozeEndedAlert(webhookRequest: WebhookAppCallRequest<AlertWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AlertWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<AlertWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AlertWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -453,24 +394,18 @@ export async function notifySnoozeEndedAlert(webhookRequest: WebhookRequest<Aler
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyAssignOwnershipAlert(webhookRequest: WebhookRequest<AssignWebhook>, context: AppContext) {
+export async function notifyAssignOwnershipAlert(webhookRequest: WebhookAppCallRequest<AssignWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AssignWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<AssignWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AssignWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -505,24 +440,18 @@ export async function notifyAssignOwnershipAlert(webhookRequest: WebhookRequest<
     await mattermostClient.createPost(payload);
 }
 
-export async function notifyUpdatePriorityAlert(webhookRequest: WebhookRequest<AssignWebhook>, context: AppContext) {
+export async function notifyUpdatePriorityAlert(webhookRequest: WebhookAppCallRequest<AssignWebhook>): Promise<void> {
+    const context: AppContext = webhookRequest.context;
     const mattermostUrl: string | undefined = context.mattermost_site_url;
     const botAccessToken: string | undefined = context.bot_access_token;
-    const rawQuery: string = webhookRequest.rawQuery;
-    const event: WebhookData<AssignWebhook> = webhookRequest.data;
+    const rawQuery: string = webhookRequest.values.rawQuery;
+    const event: WebhookData<AssignWebhook> = webhookRequest.values.data;
+    const apiKey = getOpsGenieAPIKey(webhookRequest);
     const alert: AssignWebhook = event.alert;
     const i18nObj = configureI18n(context);
 
-    const kvOptions: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient: KVStoreClient = new KVStoreClient(kvOptions);
-
-    const configStore: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 

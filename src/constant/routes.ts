@@ -15,6 +15,9 @@ const AppPaths = {
     CallPathConfigForm: '/config/form',
     CallPathConfigSubmit: '/config/form/submit',
 
+    CallPathSettingsForm: '/settings/form',
+    CallPathSettingsSubmit: '/settings/form/submit',
+
     CallPathConnectSubmit: '/connect/login/submit',
     OAuthCompletePath: '/oauth2/complete',
     OAuthConnectPath: '/oauth2/connect',
@@ -40,7 +43,6 @@ const AppPaths = {
     CallPathAlertAcknowledgedAction: '/alert/acknowledged/action',
 
     CallPathAlertOtherActions: '/alert/otheractions',
-    CallPathCloseOptions: '/alert/closeoptions',
 
     CallPathAssignAlertSubmit: '/alert/assign',
     CallPathAssignAlertAction: '/alert/assign/action',
@@ -82,13 +84,16 @@ const OpsGeniePaths = {
 
 const MattermostPaths = {
     PathKV: '/kv',
+    PathOAuth2App: '/oauth2/app',
+    PathOAuth2User: '/oauth2/user',
     UsersUpdateRolePath: `/users/${PathsVariable.Identifier}/roles`,
     PostsPath: '/posts',
     PostsEphemeralPath: '/posts/ephemeral',
     PostPath: `/posts/${PathsVariable.Identifier}`,
     UserPath: `/users/${PathsVariable.Identifier}`,
     ChannelPath: `/channels/${PathsVariable.Identifier}`,
-    DialogsOpenPath: '/actions/dialogs/open',
+    ChannelMemberPath: `/channels/${PathsVariable.Identifier}/members`,
+    TeamMemberPath: `/teams/${PathsVariable.Identifier}/members`,
     ApiVersionV4: '/api/v4',
     ApiVersionV1: '/api/v1',
 };

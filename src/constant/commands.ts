@@ -5,6 +5,7 @@ export const Commands = {
     CREATE: 'create',
     NOTE: 'note',
     CONFIGURE: 'configure',
+    SETTINGS: 'settings',
     TEAM: 'team',
     LIST: 'list',
     SUBSCRIPTION: 'subscription',

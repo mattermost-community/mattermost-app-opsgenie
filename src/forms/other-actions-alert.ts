@@ -1,39 +1,26 @@
 import {
-    Alert,
-    AlertAssign,
     AppCallAction,
-    AppCallValues,
     AppContextAction,
     AppForm,
-    Identifier,
-    IdentifierType,
-    ResponseResultWithData,
-    User,
 } from '../types';
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import {
-    AckAlertForm,
     ActionsEvents,
-    AppExpandLevels,
     AppFieldSubTypes,
     AppFieldTypes,
     ExceptionType,
     NoteModalForm,
     OpsGenieIcon,
     Routes,
-    StoreKeys,
     option_alert_add_note,
     option_alert_assign,
     option_alert_snooze,
     option_alert_take_ownership,
     options_alert_time,
 } from '../constant';
-import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
-import { getAlertLink, tryPromise } from '../utils/utils';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
-import { Exception } from '../utils/exception';
 import { OtherActionsFunction } from '../types/functions';
+
+import { ExtendRequired } from '../utils/user-mapping';
 
 import { takeOwnershipAlertCall } from './take-ownership-alert';
 
@@ -56,9 +43,7 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
         submit: {
             path: Routes.App.CallPathNoteToAlertAction,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
             },
             state: call.state,
         },
@@ -84,9 +69,7 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
         submit: {
             path: Routes.App.CallPathAssignAlertAction,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
             },
             state: call.state,
         },
@@ -112,9 +95,7 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<A
         submit: {
             path: Routes.App.CallPathSnoozeAlertAction,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
             },
             state: call.state,
         },
