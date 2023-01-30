@@ -161,3 +161,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
 export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
     return array.filter((el): el is Subscription => typeof (el) !== 'undefined');
 }
+
+export function routesJoin(routes: Array<string>) {
+    return ''.concat(...routes);
+}

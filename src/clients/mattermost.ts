@@ -9,7 +9,7 @@ import {
     User,
 } from '../types';
 import { Routes } from '../constant';
-import { replace } from '../utils/utils';
+import { replace, routesJoin } from '../utils/utils';
 
 export interface MattermostOptions {
     mattermostUrl: string;
@@ -26,7 +26,7 @@ export class MattermostClient {
     }
 
     public createPost(post: PostCreate): Promise<PostResponse> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.PostsPath]);
         return axios.post(url, post, {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -35,7 +35,7 @@ export class MattermostClient {
     }
 
     public createEphemeralPost(post: PostEphemeralCreate): Promise<PostResponse> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostsEphemeralPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.PostsEphemeralPath]);
         return axios.post(url, post, {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -44,7 +44,7 @@ export class MattermostClient {
     }
 
     public getPost(postId: string): Promise<PostResponse> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.PostPath]);
         return axios.get(replace(url, Routes.PathsVariable.Identifier, postId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -53,7 +53,7 @@ export class MattermostClient {
     }
 
     public updatePost(postId: string, post: PostUpdate): Promise<any> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.PostPath]);
         return axios.put(replace(url, Routes.PathsVariable.Identifier, postId), post, {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -62,7 +62,7 @@ export class MattermostClient {
     }
 
     public deletePost(postId: string): Promise<any> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.PostPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.PostPath]);
         return axios.delete(replace(url, Routes.PathsVariable.Identifier, postId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -71,7 +71,7 @@ export class MattermostClient {
     }
 
     public getUser(userId: string): Promise<User> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.UserPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.UserPath]);
         return axios.get(replace(url, Routes.PathsVariable.Identifier, userId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -80,7 +80,7 @@ export class MattermostClient {
     }
 
     public getChannel(channelId: string): Promise<Channel> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.ChannelPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.ChannelPath]);
         return axios.get(replace(url, Routes.PathsVariable.Identifier, channelId), {
             headers: {
                 Authorization: `Bearer ${this.config.accessToken}`,
@@ -89,7 +89,7 @@ export class MattermostClient {
     }
 
     public addUserToTeam(teamId: string, userId: string): Promise<any> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.TeamMemberPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.TeamMemberPath]);
         const body = {
             team_id: teamId,
             user_id: userId,
@@ -102,7 +102,7 @@ export class MattermostClient {
     }
 
     public addMemberToChannel(channelId: string, userId: string): Promise<any> {
-        const url = `${this.config.mattermostUrl}${Routes.Mattermost.ApiVersionV4}${Routes.Mattermost.ChannelMemberPath}`;
+        const url = routesJoin([this.config.mattermostUrl, Routes.Mattermost.ApiVersionV4, Routes.Mattermost.ChannelMemberPath]);
         const body = {
             user_id: userId,
         };
