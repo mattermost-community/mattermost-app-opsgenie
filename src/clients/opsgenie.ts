@@ -236,7 +236,8 @@ export class OpsGenieClient {
     }
 
     public getTeam(identifier: Identifier): Promise<ResponseResultWithData<Team>> {
-        return axios.get(`${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`, {
+        const url = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}/${identifier.identifier}`;
+        return axios.get(url, {
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`,
             },
@@ -250,6 +251,16 @@ export class OpsGenieClient {
     public getAllTeams(): Promise<ResponseResultWithData<Teams[]>> {
         const url = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.TeamPathPrefix}`;
         return axios.get(url, {
+            headers: {
+                Authorization: `GenieKey ${this.options?.api_key}`,
+            },
+            responseType: 'json',
+        }).then((response) => response.data);
+    }
+
+    public getAllUserTeams(userEmail: string): Promise<ResponseResultWithData<Teams[]>> {
+        const url = `${config.OPSGENIE.URL}${Routes.OpsGenie.APIVersionV2}${Routes.OpsGenie.UserPathPrefix}${Routes.OpsGenie.TeamPathPrefix}`;
+        return axios.get(replace(url, Routes.PathsVariable.Identifier, userEmail), {
             headers: {
                 Authorization: `GenieKey ${this.options?.api_key}`,
             },

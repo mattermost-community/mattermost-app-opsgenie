@@ -4,7 +4,8 @@
     "project": "./tsconfig.json",
     "tsconfigRootDir": "./"
   },
-  "plugins": [ "@typescript-eslint",
+  "plugins": [
+    "@typescript-eslint",
     "import"
   ],
   "extends": [
@@ -28,7 +29,15 @@
   },
   "settings": {
     "import/resolver": {
-         "typescript": {}
+      "typescript": {},
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
     }
   },
   "rules": {
@@ -58,7 +67,10 @@
       }
     ],
     "camelcase": [
-      1, { "properties": "never" }
+      1,
+      {
+        "properties": "never"
+      }
     ],
     "capitalized-comments": 0,
     "class-methods-use-this": 0,
@@ -450,12 +462,20 @@
         "after": true
       }
     ],
-    "sort-imports": ["error", {
-      "ignoreCase": false,
-      "ignoreDeclarationSort": true,
-      "ignoreMemberSort": false,
-      "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
-    }],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": false,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "single",
+          "multiple"
+        ]
+      }
+    ],
     "sort-keys": 0,
     "space-before-blocks": [
       2,
@@ -509,10 +529,16 @@
   },
   "overrides": [
     {
-      "files": ["**/*.tsx", "**/*.ts", "**/*.js"],
+      "files": [
+        "**/*.tsx",
+        "**/*.ts",
+        "**/*.js"
+      ],
       "parser": "@typescript-eslint/parser",
       "rules": {
-        "@typescript-eslint/no-floating-promises": ["error"],
+        "@typescript-eslint/no-floating-promises": [
+          "error"
+        ],
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/prefer-interface": 0,
         "@typescript-eslint/indent": [

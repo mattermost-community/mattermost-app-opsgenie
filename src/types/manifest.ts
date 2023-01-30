@@ -31,7 +31,7 @@ export type Manifest = {
     },
     requested_permissions: string[];
     requested_locations: string[];
-    http: {
+    http?: {
         root_url: string;
     },
     aws_lambda?: {

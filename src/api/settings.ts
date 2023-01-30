@@ -6,14 +6,14 @@ import {
     newOKCallResponseWithMarkdown,
 } from '../utils/call-responses';
 import { AppCallResponse } from '../types';
-import { opsGenieConfigForm, opsGenieConfigSubmit } from '../forms/configure-admin-account';
 import { showMessageToMattermost } from '../utils/utils';
+import { settingsForm, settingsFormSubmit } from '../forms/settings';
 
-export const configureAdminAccountForm: CallResponseHandler = async (req: Request, res: Response) => {
+export const appSettingsForm: CallResponseHandler = async (req: Request, res: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const form = await opsGenieConfigForm(req.body);
+        const form = await settingsForm(req.body);
         callResponse = newFormCallResponse(form);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
@@ -21,11 +21,11 @@ export const configureAdminAccountForm: CallResponseHandler = async (req: Reques
     res.json(callResponse);
 };
 
-export const configureAdminAccountSubmit: CallResponseHandler = async (req: Request, res: Response) => {
+export const appSettingsSubmit: CallResponseHandler = async (req: Request, res: Response) => {
     let callResponse: AppCallResponse;
 
     try {
-        const message = await opsGenieConfigSubmit(req.body);
+        const message = await settingsFormSubmit(req.body);
         callResponse = newOKCallResponseWithMarkdown(message);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);

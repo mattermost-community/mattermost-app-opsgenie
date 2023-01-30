@@ -4,15 +4,11 @@ import {
     Alert,
     AlertOption,
     AlertStatus,
-    AppCallAction,
     AppCallRequest,
     AppCallResponse,
-    AppContextAction,
     AppForm,
-    PostEphemeralCreate,
 } from '../types';
 import {
-    newErrorCallResponseWithMessage,
     newFormCallResponse,
     newOKCallResponse,
     newOKCallResponseWithMarkdown,
@@ -24,7 +20,6 @@ import { assignAlertAction, assignAlertCall } from '../forms/assign-alert';
 import { closeAlertCall, closeAlertForm } from '../forms/close-alert';
 import { ackAlertAction, ackAlertCall } from '../forms/ack-alert';
 import { otherActionsAlertCall } from '../forms/other-actions-alert';
-import { closeActionsAlertCall } from '../forms/close-actions-alert';
 import { unackAlertAction, unackAlertCall } from '../forms/unack-alert';
 import { getAllAlertCall } from '../forms/list-alert';
 import { takeOwnershipAlertCall } from '../forms/take-ownership-alert';
@@ -32,7 +27,6 @@ import { h6, hyperlink, joinLines } from '../utils/markdown';
 import { AppsOpsGenie, Routes } from '../constant';
 import { replace, showMessageToMattermost } from '../utils/utils';
 import { priorityAlertCall } from '../forms/priority-alert';
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { configureI18n } from '../utils/translations';
 
 export const listAlertsSubmit = async (request: Request, response: Response) => {
@@ -41,31 +35,8 @@ export const listAlertsSubmit = async (request: Request, response: Response) => 
     const i18nObj = configureI18n(call.context);
 
     try {
-        const [alerts, account] = await getAllAlertCall(request.body);
-
-        const alertsWithStatusOpen: Alert[] = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN);
-        const alertsUnacked: number = alertsWithStatusOpen.filter((alert: Alert) => !alert.acknowledged).length;
-        const url = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
-
-        const teamsText: string = [
-            h6(i18nObj.__('api.list-alert.message', { alerts: alertsUnacked.toString(), openalert: alertsWithStatusOpen.length.toString(), length: alerts.length.toString() })),
-            `${joinLines(
-                alerts.map((alert: Alert) => {
-                    const alertDetailUrl: string = replace(
-                        replace(
-                            url,
-                            Routes.PathsVariable.Account,
-                            account.name
-                        ),
-                        Routes.PathsVariable.Identifier,
-                        alert.id
-                    );
-                    const status: string = alert.acknowledged ? AlertOption.ASKED : AlertOption.UNACKED;
-                    return `- #${alert.tinyId}: "${alert.message}" [${status}] - ${hyperlink(i18nObj.__('api.list-alert.detail'), alertDetailUrl)}.`;
-                }).join('\n')
-            )}\n`,
-        ].join('');
-        callResponse = newOKCallResponseWithMarkdown(teamsText);
+        const message = await getAllAlertCall(request.body);
+        callResponse = newOKCallResponseWithMarkdown(message);
         response.json(callResponse);
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
@@ -178,19 +149,6 @@ export const otherActionsAlert = async (request: Request, response: Response) =>
     } catch (error: any) {
         callResponse = showMessageToMattermost(error);
     }
-    response.json(callResponse);
-};
-
-export const closeActionsAlert = async (request: Request, response: Response) => {
-    let callResponse: AppCallResponse;
-
-    try {
-        await closeActionsAlertCall(request.body);
-        callResponse = newOKCallResponse();
-    } catch (error: any) {
-        callResponse = showMessageToMattermost(error);
-    }
-
     response.json(callResponse);
 };
 

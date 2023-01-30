@@ -1,77 +1,63 @@
 import {
     Alert,
     AlertNote,
+    AppActingUser,
     AppCallAction,
-    AppCallDialog,
     AppCallRequest,
-    AppCallValues, AppContext,
+    AppCallValues,
     AppContextAction,
     Identifier,
     IdentifierType,
+    ResponseResult,
     ResponseResultWithData,
 } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ExceptionType, NoteCreateForm, StoreKeys } from '../constant';
+import { ExceptionType, NoteCreateForm } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
+    const actingUser: AppActingUser | undefined = call.context.acting_user;
     const values: AppCallValues | undefined = call.values;
+    const apiKey = getOpsGenieAPIKey(call);
     const i18nObj = configureI18n(call.context);
 
     const alertMessage: string = values?.[NoteCreateForm.NOTE_MESSAGE];
     const alertTinyId: string = values?.[NoteCreateForm.NOTE_TINY_ID];
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
+
+    const alertResponse: Alert = await canUserInteractWithAlert(call, alertTinyId);
+    const alertURL: string = await getAlertLink(alertTinyId, alertResponse.id, opsGenieClient);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const alertResponse: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alertURL: string = await getAlertLink(alertTinyId, alertResponse.data.id, opsGenieClient);
 
     const data: AlertNote = {
         note: alertMessage,
         user: username,
     };
-    await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+    await tryPromise<ResponseResult>(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
     return i18nObj.__('forms.create-alert.response', { url: alertURL });
 }
 
 export async function addNoteToAlertAction(call: AppCallAction<AppContextAction>): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
     const alertMessage: string = call.values.alert_message;
     const alertTinyId: string = call.state.alert.tinyId as string;
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -79,8 +65,8 @@ export async function addNoteToAlertAction(call: AppCallAction<AppContextAction>
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const responseAlert: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alertURL: string = await getAlertLink(alertTinyId, responseAlert.data.id, opsGenieClient);
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
 
     const data: AlertNote = {
         note: alertMessage,

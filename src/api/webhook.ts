@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 
 import {
+    AlertWebhook,
     AppCallResponse,
     AppContext,
-    WebhookRequest,
+    WebhookAppCallRequestType,
+    WebhookDataAction,
+    WebhookFunctionType,
 } from '../types';
 import { newErrorCallResponseWithMessage, newOKCallResponse } from '../utils/call-responses';
 import { configureI18n } from '../utils/translations';
-import { WebhookFunction } from '../types/functions';
 import { notifyAckAlert, notifyAlertCreated, notifyAssignOwnershipAlert, notifyCloseAlert, notifyNoteCreated, notifySnoozeAlert, notifySnoozeEndedAlert, notifyUnackAlert, notifyUpdatePriorityAlert } from '../forms/webhook-post';
 
-const WEBHOOKS_ACTIONS: { [key: string]: WebhookFunction } = {
+const WEBHOOKS_ACTIONS: { [key in WebhookDataAction]: WebhookFunctionType } = {
     Create: notifyAlertCreated,
     AddNote: notifyNoteCreated,
     Close: notifyCloseAlert,
@@ -23,16 +25,15 @@ const WEBHOOKS_ACTIONS: { [key: string]: WebhookFunction } = {
 };
 
 export const incomingWebhook = async (request: Request, response: Response) => {
-    const webhookRequest: WebhookRequest<any> = request.body.values;
-    const context: AppContext = request.body.context;
+    const webhookRequest: WebhookAppCallRequestType = request.body;
+    const context: AppContext = webhookRequest.context;
     const i18nObj = configureI18n(context);
 
     let callResponse: AppCallResponse;
     try {
-        console.log('data', webhookRequest.data);
-        const action: WebhookFunction = WEBHOOKS_ACTIONS[webhookRequest.data.action];
+        const action: WebhookFunctionType = WEBHOOKS_ACTIONS[webhookRequest.values.data.action];
         if (action) {
-            await action(webhookRequest, context);
+            await action(webhookRequest);
         }
         callResponse = newOKCallResponse();
     } catch (error: any) {
