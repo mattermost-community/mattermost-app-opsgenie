@@ -54,14 +54,14 @@ export function errorDataMessage(error: Exception | Error | any): string {
     return `${errorMessage}`;
 }
 
-export function tryPromise<T>(p: Promise<any>, exceptionType: ExceptionType, message: string) {
+export function tryPromise<T>(p: Promise<any>, exceptionType: ExceptionType, message: string, mattermostUrl: string | undefined, requestPath: string | undefined) {
     return p.
         then((response) => {
             return <T>response.data;
         }).
         catch((error) => {
             const errorMessage: string = errorDataMessage(error);
-            throw new Exception(exceptionType, `${message} ${errorMessage}`);
+            throw new Exception(exceptionType, `${message} ${errorMessage}`, mattermostUrl, requestPath);
         });
 }
 
@@ -88,8 +88,8 @@ export function getHTTPPath(): string {
     return config.APP.HOST;
 }
 
-export const getAlertLink = async (alertTinyId: string, alertID: string, opsGenieClient: OpsGenieClient) => {
-    const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed');
+export const getAlertLink = async (alertTinyId: string, alertID: string, opsGenieClient: OpsGenieClient, mattermostUrl: string | undefined, requestPath: string | undefined) => {
+    const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed', mattermostUrl, requestPath);
     const url = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
 
     const alertDetailUrl = replace(
@@ -123,7 +123,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
     const integrationParams: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
     };
-    const integrationsResult: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const integrationsResult: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const teams: Teams[] = await getAllTeamsCall(call);
     const teamsIds: string[] = teams.map((team) => team.id);
@@ -134,7 +134,7 @@ export const getIntegrationsList = async (call: AppCallRequest) => {
             return Promise.resolve(undefined);
         }
 
-        const integration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        const integration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
         const queryParams: ParsedUrl = queryString.parseUrl(integration.url);
         const params: ParsedQuery = queryParams.query;

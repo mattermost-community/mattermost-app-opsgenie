@@ -32,16 +32,16 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
         identifierType: IdentifierType.TINY,
     };
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (alert.priority === priority) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.priority.exception', { url: alertURL, priority }));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.priority.exception', { url: alertURL, priority }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const priorityAlert: PriorityAlert = {
         priority,
         user: username,
     };
-    await tryPromise(opsGenieClient.updatePriorityToAlert(identifier, priorityAlert), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.updatePriorityToAlert(identifier, priorityAlert), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.priority.response', { url: alertURL, priority });
 }

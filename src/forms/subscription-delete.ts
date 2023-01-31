@@ -23,21 +23,21 @@ export async function subscriptionDeleteCall(call: AppCallRequest): Promise<stri
     const subscription: AppSelectOption = values?.[SubscriptionDeleteForm.SUBSCRIPTION_ID];
 
     if (!allowMember) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     if (!isSystemAdmin) {
-        const opsSubscription: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        const opsSubscription: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
         const teams: Teams[] = await getAllTeamsCall(call);
         const teamsIds: string[] = teams.map((team) => team.id);
 
         if (!teamsIds.includes(opsSubscription.ownerTeam.id)) {
-            throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-found'));
+            throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-found'), call.context.mattermost_site_url, call.context.app_path);
         }
     }
 
-    await tryPromise(opsGenieClient.deleteIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.deleteIntegration(subscription.value), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('api.subcription.message-delete');
 }
 
@@ -46,7 +46,7 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
     const integrations: Subscription[] = await getIntegrationsList(call);
 
     if (!integrations.length) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-subscriptions'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('binding.binding.command-delete-no-subscriptions'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const subscriptionOptions: AppSelectOption[] = integrations.map((integration) => {

@@ -61,22 +61,22 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
         identifier: teamId,
         identifierType: IdentifierType.ID,
     };
-    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const paramsIntegrations: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
         teamId: team.id,
         teamName: team.name,
     };
-    const integrations: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(paramsIntegrations), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const integrations: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(paramsIntegrations), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     for (const integration of integrations) {
-        const auxIntegration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error')); // eslint-disable-line no-await-in-loop
+        const auxIntegration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(integration.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path); // eslint-disable-line no-await-in-loop
         const parsedQuery: ParsedUrl = queryString.parseUrl(auxIntegration.url);
         const queryParams: ParsedQuery = parsedQuery.query;
 
         if (queryParams.channelId === channelId) {
-            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('forms.subcription-add.exception', { name: team.name, channelName }));
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('forms.subcription-add.exception', { name: team.name, channelName }), call.context.mattermost_site_url, call.context.app_path);
         }
     }
 
@@ -92,7 +92,7 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
         url,
     };
 
-    await tryPromise<ActionResponse>(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise<ActionResponse>(opsGenieClient.createIntegration(data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const mattermostOption: MattermostOptions = {
         mattermostUrl: <string>mattermostUrl,

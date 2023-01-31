@@ -19,13 +19,13 @@ export async function getAllTeamsCall(call: AppCallRequest): Promise<Teams[]> {
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     if (!allowMember) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     if (isSystemAdmin) {
-        return tryPromise<Teams[]>(opsGenieClient.getAllTeams(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        return tryPromise<Teams[]>(opsGenieClient.getAllTeams(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const genieUser: OpsUser = await validateUserAccess(call);
-    return tryPromise<Teams[]>(opsGenieClient.getAllUserTeams(genieUser.username), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    return tryPromise<Teams[]>(opsGenieClient.getAllUserTeams(genieUser.username), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 }

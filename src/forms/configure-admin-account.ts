@@ -22,7 +22,7 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
     const apiKeyOpsGenie: string | undefined = oauth2.client_id;
 
     if (!isUserSystemAdmin(actingUser)) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const form: AppForm = {
@@ -69,7 +69,7 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string
     const params: ListIntegrationsParams = {
         type: IntegrationType.API,
     };
-    await tryPromise(opsgenieClient.listIntegrations(params), ExceptionType.TEXT_ERROR, i18nObj.__('forms.configure-admin.exception'));
+    await tryPromise(opsgenieClient.listIntegrations(params), ExceptionType.TEXT_ERROR, i18nObj.__('forms.configure-admin.exception'), call.context.mattermost_site_url, call.context.app_path);
 
     const options: KVStoreOptions = {
         mattermostUrl,
