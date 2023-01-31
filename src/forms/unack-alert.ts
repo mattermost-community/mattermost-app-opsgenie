@@ -35,10 +35,10 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (!alert.acknowledged) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.unack.exception-unack', { url: alertURL }));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.unack.exception-unack', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const identifier: Identifier = {
@@ -49,7 +49,7 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
     const data: AlertUnack = {
         user: username,
     };
-    await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.unack.response-unack', { url: alertURL });
 }
 
@@ -89,7 +89,7 @@ export async function unackAlertAction(call: AppCallAction<AppContextAction>): P
         user: username,
     };
 
-    await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.unacknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     return i18nObj.__('forms.unack.response-ack', { alert: alert.tinyId });
 }

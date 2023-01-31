@@ -31,7 +31,7 @@ export function allowMemberAction(context: AppContext | AppContextAction): boole
     const i18nObj = configureI18n(context);
 
     if (!actingUser) {
-        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.not-provided'));
+        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.not-provided'), context.mattermost_site_url, context.app_path);
     }
 
     return isUserSystemAdmin(actingUser) || linkEmailAddress(oauth2);
@@ -43,7 +43,7 @@ export async function validateUserAccess(call: AppCallRequest): Promise<OpsUser>
     const apiKey = getOpsGenieAPIKey(call);
 
     if (!actingUser) {
-        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.not-provided'));
+        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.not-provided'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const optionsOpsgenie: OpsGenieOptions = {
@@ -55,14 +55,14 @@ export async function validateUserAccess(call: AppCallRequest): Promise<OpsUser>
         identifier: actingUser.email,
         identifierType: IdentifierType.USERNAME,
     };
-    const genieUser: OpsUser = await tryPromise<OpsUser>(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-user', { email: actingUser.email }));
+    const genieUser: OpsUser = await tryPromise<OpsUser>(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-user', { email: actingUser.email }), call.context.mattermost_site_url, call.context.app_path);
 
     if (genieUser.blocked) {
-        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-user', { email: actingUser.email }));
+        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-user', { email: actingUser.email }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     if (!genieUser.verified) {
-        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-user-verified', { email: actingUser.email }));
+        throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-user-verified', { email: actingUser.email }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     return genieUser;
@@ -85,10 +85,10 @@ export async function canUserInteractWithAlert(call: AppCallRequest | AppCallAct
         identifierType: IdentifierType.TINY,
     };
 
-    const alertResponse: Alert = await tryPromise<Alert>(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const alertResponse: Alert = await tryPromise<Alert>(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     if (!allowMember) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     if (!isSystemAdmin) {
@@ -97,11 +97,11 @@ export async function canUserInteractWithAlert(call: AppCallRequest | AppCallAct
             identifierType: IdentifierType.ID,
         };
 
-        const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(teamIdentifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+        const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(teamIdentifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
         const teamMembers: string[] | undefined = team?.members?.map((member) => member.user.username);
         if (!teamMembers || !teamMembers.includes(actingUser?.email || '')) {
-            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-alert-not-found', { tinyId: alertTinyId }));
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-alert-not-found', { tinyId: alertTinyId }), call.context.mattermost_site_url, call.context.app_path);
         }
     }
 

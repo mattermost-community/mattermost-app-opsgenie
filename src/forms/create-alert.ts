@@ -28,21 +28,21 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
         identifierType: IdentifierType.NAME,
     };
 
-    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     if (!allowMember) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     if (!isSystemAdmin) {
         const userEmail: string | undefined = actingUser?.email;
         if (!userEmail) {
-            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.user-not-found'));
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.user-not-found'), call.context.mattermost_site_url, call.context.app_path);
         }
 
         const teamMembers: string[] | undefined = team?.members?.map((member) => member.user.username);
         if (!teamMembers || !teamMembers.includes(userEmail)) {
-            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }));
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }), call.context.mattermost_site_url, call.context.app_path);
         }
     }
 
@@ -56,6 +56,6 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
             },
         ],
     };
-    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.create-alert.message', { message });
 }

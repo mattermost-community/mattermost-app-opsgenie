@@ -24,10 +24,10 @@ export async function getAllAlertCall(call: AppCallRequest): Promise<string> {
     const params: ListAlertParams = {
         limit: 100,
     };
-    let alerts: Alert[] = await tryPromise<Alert[]>(opsGenieClient.listAlert(params), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    let alerts: Alert[] = await tryPromise<Alert[]>(opsGenieClient.listAlert(params), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     if (!allowMember) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     if (!isSystemAdmin) {
@@ -36,7 +36,7 @@ export async function getAllAlertCall(call: AppCallRequest): Promise<string> {
         alerts = alerts.filter((alert: Alert) => teamsIds.includes(alert.ownerTeamId));
     }
 
-    const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const alertsWithStatusOpen: Alert[] = alerts.filter((alert: Alert) => alert.status === AlertStatus.OPEN);
     const alertsUnacked: number = alertsWithStatusOpen.filter((alert: Alert) => !alert.acknowledged).length;

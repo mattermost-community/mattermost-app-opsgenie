@@ -43,7 +43,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         identifier: mattermostUser.email,
         identifierType: IdentifierType.USERNAME,
     };
-    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const identifierAlert: Identifier = {
         identifier: alertTinyId,
@@ -51,7 +51,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
     };
 
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     const data: AlertAssign = {
         user: username,
@@ -61,7 +61,7 @@ export async function assignAlertCall(call: AppCallRequest): Promise<string> {
         note: i18nObj.__('forms.message-note'),
     };
 
-    await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.response-assign-alert', { url: alertURL, email: mattermostUser.email });
 }
 
@@ -90,7 +90,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
         identifier: mattermostUser.email,
         identifierType: IdentifierType.USERNAME,
     };
-    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const identifierAlert: Identifier = {
         identifier: alertTinyId,
@@ -98,7 +98,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
     };
 
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     const data: AlertAssign = {
         user: username,
@@ -106,7 +106,7 @@ export async function assignAlertAction(call: AppCallAction<AppContextAction>): 
             username: mattermostUser.email,
         },
     };
-    await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.assignAlert(identifierAlert, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     return i18nObj.__('forms.response-assign-alert', { url: alertURL, email: mattermostUser.email });
 }

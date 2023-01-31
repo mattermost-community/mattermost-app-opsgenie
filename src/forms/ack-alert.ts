@@ -39,10 +39,10 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (alert.acknowledged) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const identifier: Identifier = {
@@ -53,7 +53,7 @@ export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const data: AlertAck = {
         user: username,
     };
-    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.response-ack', { url: alertURL });
 }
 
@@ -84,19 +84,19 @@ export async function ackAlertAction(call: AppCallAction<AppContextAction>): Pro
         identifierType: IdentifierType.TINY,
     };
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     await mattermostClient.updatePost(postId, bodyPostUpdate(call, true));
 
     if (Boolean(alert.acknowledged)) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.exception-ack', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const data: AlertAck = {
         user: username,
     };
 
-    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.acknowledgeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     return i18nObj.__('forms.response-ack', { url: alertURL });
 }

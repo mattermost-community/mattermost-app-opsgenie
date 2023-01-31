@@ -46,7 +46,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         identifierType: IdentifierType.TINY,
     };
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     const currentDate: Date = new Date();
     const date: { [key: string]: Date } = {
@@ -65,7 +65,7 @@ export async function createSnoozeAlertCall(call: AppCallRequest): Promise<strin
         endTime,
         user: username,
     };
-    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.create-snooze.response', { url: alertURL, time: timeAmount });
 }
 
@@ -86,8 +86,8 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
         identifier: <string>alert.tinyId,
         identifierType: IdentifierType.TINY,
     };
-    await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient);
+    await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     const currentDate: Date = new Date();
     const date: { [key: string]: Date } = {
@@ -106,7 +106,7 @@ export async function createSnoozeAlertAction(call: AppCallAction<AppContextActi
         endTime,
         user: username,
     };
-    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.snoozeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     return i18nObj.__('api.list-alert.message-alert-snoozed', { alert: alertURL, timeAmount });
 }

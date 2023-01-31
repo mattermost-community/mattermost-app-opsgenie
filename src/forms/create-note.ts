@@ -33,7 +33,7 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> 
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const alertResponse: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alertResponse.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alertResponse.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
@@ -45,7 +45,7 @@ export async function addNoteToAlertCall(call: AppCallRequest): Promise<string> 
         user: username,
     };
 
-    await tryPromise<ResponseResult>(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise<ResponseResult>(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.create-alert.response', { url: alertURL });
 }
 
@@ -66,11 +66,11 @@ export async function addNoteToAlertAction(call: AppCallAction<AppContextAction>
         identifierType: IdentifierType.TINY,
     };
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     const data: AlertNote = {
         note: alertMessage,
     };
-    await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.addNoteToAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.create-alert.response', { url: alertURL });
 }

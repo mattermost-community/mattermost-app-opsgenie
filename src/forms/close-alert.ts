@@ -45,17 +45,17 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     };
 
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (alert.status === AlertStatus.CLOSED) {
         await updatePostCloseAlert(call.context, alert);
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }),);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const data: AlertClose = {
         user: username,
     };
-    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     await updatePostCloseAlert(call.context, alert);
 
@@ -76,11 +76,11 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (alert.status === AlertStatus.CLOSED) {
         await updatePostCloseAlert(call.context, alert);
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }),);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const stateAlert = {
@@ -124,11 +124,11 @@ async function updatePostCloseAlert(context: AppContextAction | AppContext, aler
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const currentPost = await tryPromise<PostResponse>(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const currentPost = await tryPromise<PostResponse>(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), context.mattermost_site_url, context.app_path);
 
     const newProps = _.cloneDeep(currentPost.props);
     if (!newProps?.app_bindings) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.not-props-found'));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.not-props-found'), context.mattermost_site_url, context.app_path);
     }
 
     newProps.app_bindings[0].bindings = [];

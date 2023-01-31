@@ -35,17 +35,17 @@ export async function takeOwnershipAlertCall(call: AppCallAction<AppContextActio
         identifierType: IdentifierType.USERNAME,
     };
 
-    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.getUser(identifierUser), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     const identifier: Identifier = {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
     const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (alert.owner === actingUser.email) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.actions.exception-owner', { alert: alertURL }));
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.actions.exception-owner', { alert: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const data: AlertAssign = {
@@ -55,7 +55,7 @@ export async function takeOwnershipAlertCall(call: AppCallAction<AppContextActio
         },
     };
 
-    await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.assignAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     return i18nObj.__('forms.actions.response-owner', { alert: alertURL });
 }
