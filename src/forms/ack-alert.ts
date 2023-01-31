@@ -22,7 +22,7 @@ import { MattermostClient } from '../clients/mattermost';
 import manifest from '../manifest.json';
 import { h6 } from '../utils/markdown';
 import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
-import { bodyPostUpdateValidator } from 'src/utils/validator';
+import { bodyPostUpdateValidator } from '../utils/validator';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
