@@ -22,6 +22,9 @@ import { OtherActionsFunction } from '../types/functions';
 
 import { ExtendRequired } from '../utils/user-mapping';
 
+import { Exception } from '../utils/exception';
+import { AppFormValidator } from '../utils/validator';
+
 import { takeOwnershipAlertCall } from './take-ownership-alert';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<AppForm> {
@@ -48,6 +51,11 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
             state: call.state,
         },
     };
+
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     return form;
 }
 
@@ -100,6 +108,10 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<A
             state: call.state,
         },
     };
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     return form;
 }
 
