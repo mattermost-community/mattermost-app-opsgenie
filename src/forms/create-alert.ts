@@ -1,30 +1,29 @@
-import { AlertCreate, AlertResponderType, AppCallRequest, AppCallValues, Identifier, IdentifierType } from '../types';
+import { AlertCreate, AlertResponderType, AppActingUser, AppCallRequest, AppCallValues, Identifier, IdentifierType, Team } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
-import { AlertCreateForm, ExceptionType, StoreKeys, option_alert_priority_p3 } from '../constant';
+import { AlertCreateForm, ExceptionType, option_alert_priority_p3 } from '../constant';
 import { configureI18n } from '../utils/translations';
-import { tryPromise } from '../utils/utils';
+import { isUserSystemAdmin, tryPromise } from '../utils/utils';
+import { allowMemberAction, getOpsGenieAPIKey, validateUserAccess } from '../utils/user-mapping';
+import { Exception } from '../utils/exception';
 
 export async function createAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
+    const actingUser: AppActingUser | undefined = call.context.acting_user;
+    const isSystemAdmin: boolean = isUserSystemAdmin(actingUser);
+    const allowMember: boolean = allowMemberAction(call.context);
     const values: AppCallValues | undefined = call.values;
+    const apiKey = getOpsGenieAPIKey(call);
     const i18nObj = configureI18n(call.context);
+
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     const message: string = values?.[AlertCreateForm.ALERT_MESSAGE];
     const priority: string = values?.[AlertCreateForm.ALERT_PRIORITY]?.value || option_alert_priority_p3;
     const teamName: string = values?.[AlertCreateForm.TEAM_NAME];
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -32,7 +31,24 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
         identifier: teamName,
         identifierType: IdentifierType.NAME,
     };
-    await tryPromise(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+
+    const team: Team = await tryPromise<Team>(opsGenieClient.getTeam(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+
+    if (!allowMember) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-user.genie-action-invalid'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
+    if (!isSystemAdmin) {
+        const userEmail: string | undefined = actingUser?.email;
+        if (!userEmail) {
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.user-not-found'), call.context.mattermost_site_url, call.context.app_path);
+        }
+
+        const teamMembers: string[] | undefined = team?.members?.map((member) => member.user.username);
+        if (!teamMembers || !teamMembers.includes(userEmail)) {
+            throw new Exception(ExceptionType.TEXT_ERROR, i18nObj.__('general.validation-user.genie-team-invalid', { email: actingUser?.email, team: teamName }), call.context.mattermost_site_url, call.context.app_path);
+        }
+    }
 
     const alertCreate: AlertCreate = {
         message,
@@ -44,6 +60,6 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
             },
         ],
     };
-    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.createAlert(alertCreate), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
     return i18nObj.__('forms.create-alert.message', { message });
 }

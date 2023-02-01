@@ -1,4 +1,21 @@
 {
+  "general": {
+    "validation-user": {
+      "system-admin": "Error: Este comando esta únicamente disponible a usuarios Mattermost System Admin",
+      "not-provided": "El usuario no fue provisto",
+      "api-key-not-found": "\"OpsGenie falló\": ¡API Key no encontrada!",
+      "user-not-found": "\"OpsGenie failed\": ¡No se encontró el email del usuario!",
+      "oauth2-not-found": "\"Error\": No se encontró la configuración de accesso",
+      "genie-user": "\"OpsGenie falló\": ¡Usuario no encontrado con email [{{ email }}]!",
+      "genie-user-verified": "\"OpsGenie falló\": ¡Usuario con correo [{{ email }}] no ha sido verificado!",
+      "genie-action-invalid": "\"OpsGenie falló\": ¡Acción no permitida!",
+      "genie-team-invalid": "\"OpsGenie falló\": ¡Usuario con email [ {{ email }} ] no tiene acceso al equipo [ {{ team }} ]!",
+      "genie-alert-not-found": "\"OpsGenie failed\": ¡Alerta con tinyId [{{ tinyId }}] no encontrada!"
+    },
+    "validation-form": {
+      "values-not-found": "El objeto de valores esta vacío"
+    }
+  },
   "api": {
     "list-alert": {
       "message": "Lista de alertas: se encontraron {{ alerts }} alertas no confirmadas de {{ openalert }} alertas abiertas. [Total: {{ length }}]",
@@ -7,7 +24,8 @@
       "message-add-note": "Se agregará una nota para #{{ alert }}",
       "message-assign": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
       "message-assign-response": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
-      "message-alert-snoozed": "La alerta {{ alert }} se pospondrá {{ timeAmount }}"
+      "message-alert-snoozed": "La alerta {{ alert }} se pospondrá {{ timeAmount }}",
+      "list-item": "- #{{ tinyId }}: \"{{ message }}\" - Estado: {{ status }} - {{ link }}"
     },
     "configure": {
       "error-response": "No se puede abrir el formulario de configuración: {{ message }}",
@@ -18,6 +36,7 @@
       "title": "Complemento Mattermost OpsGenie - Ayuda con el comando Slash",
       "command-help": "Inicie la sintaxis de ayuda de la línea de comandos del complemento OpsGenie, consulte la [documentación]({{ url }}).",
       "command-configure": "Configurar OpsGenie.",
+      "command-settings": "Mostrar la configuración de la app de OpsGenie",
       "command-add-command": "{{ command }} {{ add }} [Nombre del equipo] [Canal Mattermost]",
       "command-add-description": "Agregar suscripción del equipo al canal.",
       "command-delete-command": "{{ command }} {{ delete }} [ID de suscripción]",
@@ -41,8 +60,9 @@
       "command-own-description": "Tomar posesión de las alertas con ID [tinyID tinyID2..].",
       "command-priority-command": "{{ command }} {{ priority }} [Alerta TinyID] [Prioridad]",
       "command-priority-description": "Actualizar la prioridad de la alerta con [tinyID].",
-      "command-team-description": "Listar equipos.",
-      "command-alert-decription": "Lista de alertas."
+			"command-list-alert-command": "{{ command }} {{ list }}",
+      "command-alert-decription": "Lista de alertas.",
+      "command-team-description": "Listar equipos."
     },
     "install": {
       "command": "Para terminar de configurar la aplicación Opsgenie, lea la sección [Inicio rápido]({{ url }}#inicio rápido) del LÉAME"
@@ -57,6 +77,7 @@
       "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
     },
     "webhook": {
+      "message": "Nueva alerta creada:",
       "title": "[#{{ text }}]({{ url }})",
       "title-closed": "[#{{ text }} [RESUELTA]]({{ ur l}})",
       "error": "Webhook de error: {{ message }}",
@@ -86,6 +107,7 @@
       "command-help": "Mostrar la ayuda de OpsGenie",
       "command-configure": "Configurar la cuenta de administrador de OpsGenie",
       "command-configure-title": "Configuración OpsGenie",
+      "command-settings": "Mostrar la configuración de la app de OpsGenie",
       "command-login": "Conecte su cuenta de OpsGenie",
       "command-login-title": "Cuenta de Ingreso",
       "command-account-description": "Conecte su cuenta de OpsGenie",
@@ -100,6 +122,7 @@
       "label-delete": "Suscripción a eliminar",
       "command-delete-value": "- Nombre de equipo \"{{ name }}\" - Canal \"{{ channelName }}\"",
       "command-delete-no-subscriptions": "No hay subscripciones",
+      "command-delete-no-found": "La subscripción no se encontró",
       "command-list-description": "Lista de equipos suscritos a los canales",
       "command-list-title": "Lista de equipos suscritos a los canales",
       "command-alert-description": "Alerta de configuración en OpsGenie",
@@ -152,7 +175,8 @@
       "ask-close-alert-header": "La alerta {{ url }} cambiará a resuelta, ¿estas seguro que deseas continuar?",
       "error-close-alert": "Ya has cerrado {{ url }}",
       "response-close-alert": "Alerta {{ url }} esta cerrada",
-      "exception-close-alert": "Has cerrado #{{ alert }}"
+      "exception-close-alert": "Has cerrado #{{ alert }}",
+			"not-props-found": "No se encontraron propiedades del post a modificar"
     },
     "configure-admin": {
       "title": "Configurar OpsGenie",
@@ -161,6 +185,13 @@
       "description": "Integración de API Clave de API de OpsGenie",
       "exception": "Clave API incorrecta: ",
       "system-admin": "Error: Este comando únicamente esta habilidato a usuarios Mattertmost System Admin"
+    },
+    "settings": {
+      "title": "Display OpsGenie app settings",
+      "header": "Configure your OpsGenie app",
+      "allow-user-mapping-field-label": "Vincular usuarios por dirección de correo electrónico",
+      "allow-user-mapping-field-description": "Permitir que los usuarios de Mattermost actualicen las alertas en OpsGenie si su correo electrónico en Mattermost coincide con su correo electrónico en OpsGenie",
+      "success": "¡Configuración de OpsGenie actualizada!"
     },
     "create-alert": {
       "message": "Nueva alerta \"{{ message }}\" se creará",

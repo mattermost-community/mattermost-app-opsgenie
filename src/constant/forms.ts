@@ -2,6 +2,10 @@ export const ConfigureForm = {
     API_KEY: 'opsgenie_api_key',
 };
 
+export const SettingsForm = {
+    ALLOW_USER_MAPPING: 'allow_user_mapping',
+};
+
 export const SubscriptionCreateForm = {
     TEAM_NAME: 'team_name',
     CHANNEL_ID: 'channel_id',

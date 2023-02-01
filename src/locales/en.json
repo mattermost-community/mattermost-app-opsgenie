@@ -1,4 +1,21 @@
 {
+	"general": {
+		"validation-user": {
+			"system-admin": "Error: This command is only available for Mattermost System Admin",
+			"not-provided": "Not acting user provided",
+			"api-key-not-found": "\"OpsGenie failed\": API Key not found!",
+			"user-not-found": "\"OpsGenie failed\": User email not found!",
+			"oauth2-not-found": "\"Error\": Configuration access not found!",
+			"genie-user": "\"OpsGenie failed\": No user found with email [{{ email }}]!",
+			"genie-user-verified": "\"OpsGenie failed\": User with email [{{ email }}] not verified!",
+			"genie-action-invalid": "\"OpsGenie failed\": Action not permitted!",
+			"genie-team-invalid": "\"OpsGenie failed\": User with email [{{ email }}] has no access to team [{{ team }}]!",
+			"genie-alert-not-found": "\"OpsGenie failed\": Alert with tinyId [{{ tinyId }}] not found!"
+		},
+		"validation-form": {
+			"values-not-found": "Values object is empty"
+		}
+	},
 	"api": {
 		"list-alert": {
 			"message": "Alert List: Found {{ alerts }} unacked alerts out of {{ openalert }} open alerts. [Total: {{ length }}]",
@@ -7,7 +24,8 @@
 			"message-add-note": "Note will be added for #{{ alert }}",
 			"message-assign": "Assign ownership request will be processed for #{{ alert }}",
 			"message-assign-response": "Assign ownership request will be processed for #{{ alert }}",
-			"message-alert-snoozed": "Alert {{ alert }} will be snoozed for {{ timeAmount }}"
+			"message-alert-snoozed": "Alert {{ alert }} will be snoozed for {{ timeAmount }}",
+			"list-item": "- #{{ tinyId }}: \"{{ message }}\" - Status: {{ status }} - {{ link }}"
 		},
 		"configure": {
 			"error-response": "Unable to open configuration form: {{ message }}",
@@ -18,6 +36,7 @@
 			"title": "Mattermost OpsGenie Plugin - Slash Command Help",
 			"command-help": "Launch the OpsGenie plugin command line help syntax, check out the [documentation]({{ url }}).",
 			"command-configure": "Configure OpsGenie.",
+			"command-settings": "Display OpsGenie app settings",
 			"command-add-command": "{{ command }} {{ add }} [Team name] [Mattermost Channel]",
 			"command-add-description": "Add subscription of team to channel.",
 			"command-delete-command": "{{ command }} {{ delete }} [SubscriptionId]",
@@ -41,8 +60,9 @@
 			"command-own-description": "Take ownership of the alerts with IDs [tinyID tinyID2..].",
 			"command-priority-command": "{{ command }} {{ priority }} [Alert TinyID] [Priority]",
 			"command-priority-description": "Update priority of the alert with [tinyID].",
-			"command-team-description": "List teams.",
-			"command-alert-decription": "List alerts."
+			"command-list-alert-command": "{{ command }} {{ list }}",
+			"command-alert-decription": "List all alerts.",
+			"command-team-description": "List all teams."
 		},
 		"install": {
 			"command": "To finish configuring the Opsgenie app please read the [Quick Start]({{ url }}#quick-start) section of the README"
@@ -57,6 +77,7 @@
 			"message": "Team List: Found {{ length }} matching teams."
 		},
 		"webhook": {
+			"message": "New alert created:",
 			"title": "[#{{ text }}]({{ url }})",
 			"title-closed": "[#{{ text }} [CLOSED] ]({{ url }}) ",
 			"error": "Error webhook: {{ message }}",
@@ -86,6 +107,7 @@
 			"command-help": "Show OpsGenie Help",
 			"command-configure": "Setup OpsGenie Admin Account",
 			"command-configure-title": "Setup OpsGenie",
+			"command-settings": "Display OpsGenie app settings",
 			"command-login": "Connect your OpsGenie account",
 			"command-login-title": "Account login",
 			"command-account-description": "Connect your OpsGenie account",
@@ -99,6 +121,7 @@
 			"command-delete-title": "Unsubscribe team from channel",
 			"command-delete-value": "- Team Name \"{{ name }}\" - Channel Name \"{{ channelName }}\"",
 			"command-delete-no-subscriptions": "Subscription list is empty",
+			"command-delete-no-found": "Subscription not found",
 			"label-delete": "Subscription to delete",
 			"command-list-description": "List of teams subscribed to channels",
 			"command-list-title": "List of teams subscribed to channels",
@@ -153,7 +176,8 @@
 			"ask-close-alert-header": "Alert {{ alert }} will be closed, are you sure you want to continue?",
 			"error-close-alert": "You already have closed {{ url }}",
 			"response-close-alert": "Alert {{ url }} will be closed",
-			"exception-close-alert": "You have closed #{{ alert }}"
+			"exception-close-alert": "You have closed #{{ alert }}",
+			"not-props-found": "No post props found"
 		},
 		"configure-admin": {
 			"title": "Configure OpsGenie",
@@ -162,6 +186,13 @@
 			"description": "API integration OpsGenie api key",
 			"exception": "Your OpsGenie setup has no API integration: ",
 			"system-admin": "Error: This command is only available to Mattermost System Admin"
+		},
+		"settings": {
+			"title": "Display OpsGenie app settings",
+			"header": "Configure your OpsGenie app",
+			"allow-user-mapping-field-label": "Link users by email address",
+			"allow-user-mapping-field-description": "Allow Mattermost users to update alerts in OpsGenie if their email in Mattermost matches their email in OpsGenie",
+			"success": "OpsGenie configuration updated!"
 		},
 		"create-alert": {
 			"message": "New alert \"{{ message }}\" will be created",

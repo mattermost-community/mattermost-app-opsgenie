@@ -6,3 +6,7 @@
 *.mov
 *.wmv
 *.zip
+
+
+# Lint file
+.eslintcache

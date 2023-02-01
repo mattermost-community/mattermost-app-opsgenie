@@ -1,20 +1,24 @@
 import queryString, { ParsedQuery, ParsedUrl } from 'query-string';
 
 import GeneralConstants from '../constant/general';
-import { Account, AppActingUser, AppCallResponse, AppForm, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, ResponseResultWithData, Subscription } from '../types';
-import { AppsOpsGenie, ExceptionType, Routes, StoreKeys } from '../constant';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { Account, AppActingUser, AppCallRequest, AppCallResponse, Channel, Integration, IntegrationType, Integrations, ListIntegrationsParams, Oauth2App, ResponseResultWithData, Subscription, Teams } from '../types';
+import { AppsOpsGenie, ExceptionType, Routes } from '../constant';
+import { KVStoreOptions } from '../clients/kvstore';
 
 import config from '../config';
 
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 
-import { MattermostClient, MattermostOptions } from '../clients/mattermost';
+import { MattermostClient } from '../clients/mattermost';
+
+import { getAllTeamsCall } from '../forms/list-team';
 
 import { Exception } from './exception';
 import { newErrorCallResponseWithMessage, newOKCallResponseWithMarkdown } from './call-responses';
 
 import { hyperlink } from './markdown';
+import { getOpsGenieAPIKey } from './user-mapping';
+import { configureI18n } from './translations';
 
 export function replace(value: string, searchValue: string, replaceValue: string): string {
     return value.replace(searchValue, replaceValue);
@@ -24,18 +28,12 @@ export function isConfigured(oauth2: any): boolean {
     return Boolean(oauth2.client_id && oauth2.client_secret);
 }
 
-export function isUserSystemAdmin(actingUser: AppActingUser): boolean {
-    return Boolean(actingUser.roles && actingUser.roles.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
+export function isUserSystemAdmin(actingUser: AppActingUser | undefined): boolean {
+    return Boolean(actingUser?.roles && actingUser?.roles?.includes(GeneralConstants.SYSTEM_ADMIN_ROLE));
 }
 
-export async function existsKvOpsGenieConfig(kvClient: KVStoreClient): Promise<boolean> {
-    const opsGenieConfig: ConfigStoreProps = await kvClient.kvGet(StoreKeys.config);
-
-    return Boolean(Object.keys(opsGenieConfig).length);
-}
-
-export function isConnected(oauth2user: any): boolean {
-    return Boolean(oauth2user?.token?.access_token);
+export function existsOpsGenieAPIKey(oauth2App: Oauth2App): boolean {
+    return Boolean(oauth2App.client_id);
 }
 
 export function getAlertDetailUrl(accountName: string, alertId: string): string {
@@ -56,11 +54,15 @@ export function errorDataMessage(error: Exception | Error | any): string {
     return `${errorMessage}`;
 }
 
-export function tryPromise(p: Promise<any>, exceptionType: ExceptionType, message: string) {
-    return p.catch((error) => {
-        const errorMessage: string = errorDataMessage(error);
-        throw new Exception(exceptionType, `${message} ${errorMessage}`);
-    });
+export function tryPromise<T>(p: Promise<any>, exceptionType: ExceptionType, message: string, mattermostUrl: string | undefined, requestPath: string | undefined) {
+    return p.
+        then((response) => {
+            return <T>response.data;
+        }).
+        catch((error) => {
+            const errorMessage: string = errorDataMessage(error);
+            throw new Exception(exceptionType, `${message} ${errorMessage}`, mattermostUrl, requestPath);
+        });
 }
 
 export function showMessageToMattermost(exception: Exception | Error): AppCallResponse {
@@ -86,15 +88,15 @@ export function getHTTPPath(): string {
     return config.APP.HOST;
 }
 
-export const getAlertLink = async (alertTinyId: string, alertID: string, opsGenieClient: OpsGenieClient) => {
-    const account: ResponseResultWithData<Account> = await tryPromise(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed');
+export const getAlertLink = async (alertTinyId: string, alertID: string, opsGenieClient: OpsGenieClient, mattermostUrl: string | undefined, requestPath: string | undefined) => {
+    const account: Account = await tryPromise<Account>(opsGenieClient.getAccount(), ExceptionType.MARKDOWN, 'OpsGenie failed', mattermostUrl, requestPath);
     const url = `${AppsOpsGenie}${Routes.OpsGenieWeb.AlertDetailPathPrefix}`;
 
     const alertDetailUrl = replace(
         replace(
             url,
             Routes.PathsVariable.Account,
-            account.data.name
+            account.name
         ),
         Routes.PathsVariable.Identifier,
         alertID
@@ -102,35 +104,47 @@ export const getAlertLink = async (alertTinyId: string, alertID: string, opsGeni
     return `${hyperlink(`#${alertTinyId}`, alertDetailUrl)}`;
 };
 
-export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any) => {
-    const kvStore: KVStoreClient = new KVStoreClient(options);
+export const getIntegrationsList = async (call: AppCallRequest) => {
+    const mattermostUrl: string = call.context.mattermost_site_url!;
+    const accessToken: string = call.context.acting_user_access_token!;
+    const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
-    const configStore: ConfigStoreProps = await kvStore.kvGet(StoreKeys.config);
+    const options: KVStoreOptions = {
+        mattermostUrl,
+        accessToken,
+    };
 
     const optionsOps: OpsGenieOptions = {
-        api_key: configStore.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient: OpsGenieClient = new OpsGenieClient(optionsOps);
 
     const integrationParams: ListIntegrationsParams = {
         type: IntegrationType.WEBHOOK,
     };
-    const integrationsResult: ResponseResultWithData<Integrations[]> = await tryPromise(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const integrationsResult: Integrations[] = await tryPromise<Integrations[]>(opsGenieClient.listIntegrations(integrationParams), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
+    const teams: Teams[] = await getAllTeamsCall(call);
+    const teamsIds: string[] = teams.map((team) => team.id);
     const mattermostClient: MattermostClient = new MattermostClient(options);
 
-    const promises: Promise<Subscription | undefined>[] = integrationsResult.data.map(async (int: Integrations) => {
-        const responseIntegration: ResponseResultWithData<Integration> = await tryPromise(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-        const integration: Integration = responseIntegration.data;
+    const promises: Promise<Subscription | undefined>[] = integrationsResult.map(async (int: Integrations) => {
+        if (!teamsIds.includes(int.teamId)) {
+            return Promise.resolve(undefined);
+        }
+
+        const integration: Integration = await tryPromise<Integration>(opsGenieClient.getIntegration(int.id), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
         const queryParams: ParsedUrl = queryString.parseUrl(integration.url);
         const params: ParsedQuery = queryParams.query;
+
         try {
             const channel: Channel = await mattermostClient.getChannel(<string>params.channelId);
             return new Promise((resolve, reject) => {
                 resolve({
                     integrationId: int.id,
-                    ...responseIntegration.data,
+                    ...integration,
                     channelId: channel.id,
                     channelName: channel.name,
                 } as Subscription);
@@ -147,9 +161,7 @@ export const getIntegrationsList = async (options: KVStoreOptions, i18nObj: any)
 export function webhookSubscriptionArray(array: (Subscription | undefined)[]): Subscription[] {
     return array.filter((el): el is Subscription => typeof (el) !== 'undefined');
 }
-function isType(value: any) {
-    var regex = /^[object (S+?)]$/;
-    var matches = Object.prototype.toString.call(value).match(regex) || [];
 
-    return (matches[1] || 'undefined').toLowerCase();
+export function routesJoin(routes: Array<string>) {
+    return ''.concat(...routes);
 }

@@ -2,50 +2,44 @@ import * as _ from 'lodash';
 
 import {
     Alert,
-    AlertAck,
     AlertClose,
-    AlertStatus, AlertWebhook, AppCallAction,
+    AlertStatus,
+    AppCallAction,
     AppCallRequest,
-    AppCallValues, AppContext, AppContextAction,
+    AppCallValues,
+    AppContext,
+    AppContextAction,
     AppForm,
     Identifier,
     IdentifierType,
+    PostResponse,
     PostUpdate,
-    ResponseResultWithData,
 } from '../types';
 import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
-import { AckAlertForm, AppExpandLevels, AppFieldSubTypes, AppFieldTypes, CloseAlertForm, ExceptionType, NoteModalForm, OpsGenieIcon, Routes, StoreKeys } from '../constant';
-import { ConfigStoreProps, KVStoreClient, KVStoreOptions } from '../clients/kvstore';
+import { AckAlertForm, AppExpandLevels, ExceptionType, OpsGenieIcon, Routes } from '../constant';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { Exception } from '../utils/exception';
 import { h6 } from '../utils/markdown';
+import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 export async function closeAlertCall(call: AppCallRequest): Promise<string> {
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
+    const apiKey = getOpsGenieAPIKey(call);
 
-    console.log(call);
-    console.log(typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined');
-    console.log(values);
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
         call.state.alert.tinyId as string :
         values?.[AckAlertForm.NOTE_TINY_ID];
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-
-    const config: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
-
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: config.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
 
@@ -53,19 +47,19 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
         identifier: alertTinyId,
         identifierType: IdentifierType.TINY,
     };
-    const response: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
-    const alert: Alert = response.data;
-    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient);
+
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
+    const alertURL: string = await getAlertLink(alertTinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
     if (alert.status === AlertStatus.CLOSED) {
         await updatePostCloseAlert(call.context, alert);
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }),);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
     }
 
     const data: AlertClose = {
         user: username,
     };
-    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    await tryPromise(opsGenieClient.closeAlert(identifier, data), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
 
     await updatePostCloseAlert(call.context, alert);
 
@@ -74,33 +68,29 @@ export async function closeAlertCall(call: AppCallRequest): Promise<string> {
 
 export async function closeAlertForm(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
-    const mattermostUrl: string | undefined = call.context.mattermost_site_url;
-    const botAccessToken: string | undefined = call.context.bot_access_token;
     const values: AppCallValues | undefined = call.values;
     const alertTinyId: string = typeof values?.[AckAlertForm.NOTE_TINY_ID] === 'undefined' ?
         call.state.alert.tinyId as string :
         values?.[AckAlertForm.NOTE_TINY_ID];
 
-    const options: KVStoreOptions = {
-        mattermostUrl: <string>mattermostUrl,
-        accessToken: <string>botAccessToken,
-    };
-    const kvStoreClient = new KVStoreClient(options);
-    const kvConfig: ConfigStoreProps = await kvStoreClient.kvGet(StoreKeys.config);
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
+    const apiKey = getOpsGenieAPIKey(call);
     const optionsOpsgenie: OpsGenieOptions = {
-        api_key: kvConfig.opsgenie_apikey,
+        api_key: apiKey,
     };
     const opsGenieClient = new OpsGenieClient(optionsOpsgenie);
-    const identifier: Identifier = {
-        identifier: alertTinyId,
-        identifierType: IdentifierType.TINY,
-    };
 
-    const alertResponse: ResponseResultWithData<Alert> = await tryPromise(opsGenieClient.getAlert(identifier), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const alert: Alert = await canUserInteractWithAlert(call, alertTinyId);
+    const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient, call.context.mattermost_site_url, call.context.app_path);
 
-    const alert = alertResponse.data;
-    const alertURL: string = await getAlertLink(<string>alert.tinyId, alert.id, opsGenieClient);
+    if (alert.status === AlertStatus.CLOSED) {
+        await updatePostCloseAlert(call.context, alert);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.error-close-alert', { url: alertURL }), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const stateAlert = {
         id: alert.id,
         message: alert.message,
@@ -115,9 +105,7 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
         submit: {
             path: Routes.App.CallPathAlertCloseSubmit,
             expand: {
-                acting_user: AppExpandLevels.EXPAND_SUMMARY,
-                acting_user_access_token: AppExpandLevels.EXPAND_SUMMARY,
-                locale: AppExpandLevels.EXPAND_ALL,
+                ...ExtendRequired,
                 post: AppExpandLevels.EXPAND_SUMMARY,
             },
             state: {
@@ -144,11 +132,14 @@ async function updatePostCloseAlert(context: AppContextAction | AppContext, aler
     };
     const mattermostClient: MattermostClient = new MattermostClient(mattermostOptions);
 
-    const currentPost = await tryPromise(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'));
+    const currentPost = await tryPromise<PostResponse>(mattermostClient.getPost(postId), ExceptionType.MARKDOWN, i18nObj.__('forms.error'), context.mattermost_site_url, context.app_path);
 
     const newProps = _.cloneDeep(currentPost.props);
+    if (!newProps?.app_bindings) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.close-alert.not-props-found'), context.mattermost_site_url, context.app_path);
+    }
+
     newProps.app_bindings[0].bindings = [];
-    newProps.app_bindings[0].color = '#AD251C';
     newProps.app_bindings[0].description = h6(i18nObj.__('api.webhook.title-closed', { text: `${alert.tinyId}: ${alert.message}`, url: alert.source }));
 
     const updatePost: PostUpdate = {
