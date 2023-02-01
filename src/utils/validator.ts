@@ -65,7 +65,7 @@ export const bodyPostUpdateValidator = z.object({
                                         app: z.string(),
                                         post: z.string(),
                                     }),
-                                    state: z.string().optional(),
+                                    state: z.any().optional(),
                                 }),
                             }),
                             z.object({
@@ -83,7 +83,7 @@ export const bodyPostUpdateValidator = z.object({
                                         app: z.string(),
                                         post: z.string(),
                                     }),
-                                    state: z.string().optional(),
+                                    state: z.any().optional(),
                                 }),
                             }),
                             z.object({
@@ -101,7 +101,7 @@ export const bodyPostUpdateValidator = z.object({
                                         app: z.string(),
                                         post: z.string(),
                                     }),
-                                    state: z.string().optional(),
+                                    state: z.any().optional(),
                                 }),
                             }),
                             z.object({
@@ -119,7 +119,7 @@ export const bodyPostUpdateValidator = z.object({
                                         app: z.string(),
                                         post: z.string(),
                                     }),
-                                    state: z.string().optional(),
+                                    state: z.any().optional(),
                                 }),
                             }),
                         ]),
@@ -137,21 +137,7 @@ export const AppFormValidator = z.object({
     fields: z.array(z.any()).optional(),
     submit: z.object({
         path: z.string(),
-        expand: z.object({
-            ExtendRequired: z.object({
-                acting_user: z.string(),
-                acting_user_access_token: z.string(),
-                oauth2_app: z.string(),
-                locale: z.string(),
-            }).optional(),
-            post: z.string().optional(),
-        }).optional(),
-        state: z.object({
-            alert: z.object({
-                id: z.string(),
-                message: z.string(),
-                tinyId: z.string(),
-            }),
-        }).optional(),
+        expand: z.any().optional(),
+        state: z.any().optional(),
     }),
 });
