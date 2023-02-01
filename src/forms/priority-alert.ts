@@ -19,6 +19,10 @@ export async function priorityAlertCall(call: AppCallRequest): Promise<string> {
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
 
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const alertTinyId: string = values?.[PriorityAlertForm.NOTE_TINY_ID];
     const priority: string = values?.[PriorityAlertForm.ALERT_PRIORITY]?.value;
 

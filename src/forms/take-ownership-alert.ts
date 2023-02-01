@@ -25,6 +25,10 @@ export async function takeOwnershipAlertCall(call: AppCallAction<AppContextActio
         values?.[AckAlertForm.NOTE_TINY_ID];
     const apiKey = getOpsGenieAPIKey(call);
 
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const opsGenieOpt: OpsGenieOptions = {
         api_key: apiKey,
     };

@@ -27,6 +27,10 @@ export async function unackAlertCall(call: AppCallRequest): Promise<string> {
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
 
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const alertTinyId: string = values?.[AckAlertForm.NOTE_TINY_ID];
 
     const optionsOpsgenie: OpsGenieOptions = {

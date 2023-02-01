@@ -1,17 +1,26 @@
 import {
+    AppActingUser,
     AppCallRequest,
     AppCallValues,
     AppForm,
     Oauth2App,
 } from '../types';
-import { AppFieldTypes, OpsGenieIcon, Routes, SettingsForm } from '../constant';
+import { AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SettingsForm } from '../constant';
 import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { configureI18n } from '../utils/translations';
 import { ExtendRequired } from '../utils/user-mapping';
+import { Exception } from '../utils/exception';
+import { isUserSystemAdmin } from '../utils/utils';
 
 export async function settingsForm(call: AppCallRequest): Promise<AppForm> {
     const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
+    const actingUser: AppActingUser = call.context.acting_user!;
     const i18nObj = configureI18n(call.context);
+
+    if (!isUserSystemAdmin(actingUser)) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const linkEmailAddress: boolean = typeof oauth2.data?.settings?.link_email_address === 'boolean' ?
         oauth2.data?.settings.link_email_address :
         true;
@@ -42,9 +51,18 @@ export async function settingsForm(call: AppCallRequest): Promise<AppForm> {
 export async function settingsFormSubmit(call: AppCallRequest): Promise<string> {
     const mattermostUrl: string = call.context.mattermost_site_url!;
     const accessToken: string = call.context.acting_user_access_token!;
+    const actingUser: AppActingUser = call.context.acting_user!;
     const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
-    const values: AppCallValues = <any>call.values;
+    const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
+
+    if (!isUserSystemAdmin(actingUser)) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     const linkEmailAddress: boolean = values[SettingsForm.ALLOW_USER_MAPPING];
 

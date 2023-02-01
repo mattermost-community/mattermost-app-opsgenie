@@ -11,6 +11,9 @@
 			"genie-action-invalid": "\"OpsGenie failed\": Action not permitted!",
 			"genie-team-invalid": "\"OpsGenie failed\": User with email [{{ email }}] has no access to team [{{ team }}]!",
 			"genie-alert-not-found": "\"OpsGenie failed\": Alert with tinyId [{{ tinyId }}] not found!"
+		},
+		"validation-form": {
+			"values-not-found": "Values object is empty"
 		}
 	},
 	"api": {

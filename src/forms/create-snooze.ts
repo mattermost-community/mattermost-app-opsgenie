@@ -26,12 +26,17 @@ import { OpsGenieClient, OpsGenieOptions } from '../clients/opsgenie';
 import { configureI18n } from '../utils/translations';
 import { getAlertLink, tryPromise } from '../utils/utils';
 import { canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { Exception } from '../utils/exception';
 
 export async function createSnoozeAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
+
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     const alertTinyId: string = values?.[SnoozeAlertForm.NOTE_TINY_ID];
     const timeAmount: string = values?.[SnoozeAlertForm.TIME_AMOUNT].value;

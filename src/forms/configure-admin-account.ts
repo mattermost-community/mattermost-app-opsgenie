@@ -53,11 +53,20 @@ export async function opsGenieConfigSubmit(call: AppCallRequest): Promise<string
     const mattermostUrl: string = call.context.mattermost_site_url!;
     const accessToken: string = call.context.acting_user_access_token!;
     const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
-    const values: AppCallValues = <any>call.values;
+    const actingUser: AppActingUser = call.context.acting_user!;
+    const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
     const linkEmailAddress: boolean = typeof oauth2.data?.settings?.link_email_address === 'boolean' ?
         oauth2.data?.settings.link_email_address :
         true;
+
+    if (!isUserSystemAdmin(actingUser)) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.configure-admin.system-admin'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     const opsGenieApiKey: string = values[ConfigureForm.API_KEY];
 

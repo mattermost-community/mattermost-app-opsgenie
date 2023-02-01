@@ -15,6 +15,9 @@ export async function subscriptionDeleteCall(call: AppCallRequest): Promise<stri
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     const optionsOps: OpsGenieOptions = {
         api_key: apiKey,

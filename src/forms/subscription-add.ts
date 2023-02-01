@@ -15,7 +15,6 @@ import {
     IntegrationType,
     Integrations,
     ListIntegrationsParams,
-    ResponseResultWithData,
     Team,
 } from '../types';
 import { AppExpandLevels, AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SubscriptionCreateForm } from '../constant';
@@ -39,6 +38,10 @@ export async function subscriptionAddCall(call: AppCallRequest): Promise<string>
     const values: AppCallValues | undefined = call.values;
     const i18nObj = configureI18n(call.context);
     const apiKey = getOpsGenieAPIKey(call);
+
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     const teamId: string = values?.[SubscriptionCreateForm.TEAM_NAME].value;
     const channelId: string = values?.[SubscriptionCreateForm.CHANNEL_ID].value;

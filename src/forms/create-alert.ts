@@ -14,6 +14,10 @@ export async function createAlertCall(call: AppCallRequest): Promise<string> {
     const apiKey = getOpsGenieAPIKey(call);
     const i18nObj = configureI18n(call.context);
 
+    if (!values) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('general.validation-form.values-not-found'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     const message: string = values?.[AlertCreateForm.ALERT_MESSAGE];
     const priority: string = values?.[AlertCreateForm.ALERT_PRIORITY]?.value || option_alert_priority_p3;
     const teamName: string = values?.[AlertCreateForm.TEAM_NAME];

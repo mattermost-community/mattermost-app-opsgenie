@@ -11,6 +11,9 @@
       "genie-action-invalid": "\"OpsGenie falló\": ¡Acción no permitida!",
       "genie-team-invalid": "\"OpsGenie falló\": ¡Usuario con email [ {{ email }} ] no tiene acceso al equipo [ {{ team }} ]!",
       "genie-alert-not-found": "\"OpsGenie failed\": ¡Alerta con tinyId [{{ tinyId }}] no encontrada!"
+    },
+    "validation-form": {
+      "values-not-found": "El objeto de valores esta vacío"
     }
   },
   "api": {
