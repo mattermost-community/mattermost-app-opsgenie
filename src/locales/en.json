@@ -160,6 +160,7 @@
 	},
 	"forms": {
 		"error": "OpsGenie failed: ",
+		"error-validation-form": "The form is invalid",
 		"exception-ack": "You already have acknowledged {{ url }}",
 		"response-ack": "You have acknowledged {{ url }}",
 		"message-ack": "You have acknowledged #{{ alert }}",

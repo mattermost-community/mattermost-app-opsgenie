@@ -23,6 +23,7 @@ import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 import { Exception } from '../utils/exception';
 import { h6 } from '../utils/markdown';
 import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { AppFormValidator } from '../utils/validator';
 
 export async function closeAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
@@ -113,6 +114,11 @@ export async function closeAlertForm(call: AppCallAction<AppContextAction>): Pro
             },
         },
     };
+
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     return form;
 }
 

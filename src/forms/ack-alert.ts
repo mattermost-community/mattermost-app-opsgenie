@@ -22,6 +22,7 @@ import { MattermostClient } from '../clients/mattermost';
 import manifest from '../manifest.json';
 import { h6 } from '../utils/markdown';
 import { ExtendRequired, canUserInteractWithAlert, getOpsGenieAPIKey } from '../utils/user-mapping';
+import { bodyPostUpdateValidator } from '../utils/validator';
 
 export async function ackAlertCall(call: AppCallRequest): Promise<string> {
     const username: string | undefined = call.context.acting_user?.username;
@@ -119,7 +120,7 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
     };
 
     // ACKNOWLEDGED_ALERT_BUTTON_EVENT
-    return {
+    const form = {
         message: '',
         id: postId,
         props: {
@@ -230,4 +231,10 @@ export const bodyPostUpdate = (call: AppCallAction<AppContextAction>, acknowledg
             ],
         },
     };
+
+    if (!bodyPostUpdateValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
+    return form;
 };

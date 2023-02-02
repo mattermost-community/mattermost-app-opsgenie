@@ -14,6 +14,7 @@ import { Exception } from '../utils/exception';
 import { configureI18n } from '../utils/translations';
 import { isUserSystemAdmin, tryPromise } from '../utils/utils';
 import { ExtendRequired } from '../utils/user-mapping';
+import { AppFormValidator } from '../utils/validator';
 
 export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm> {
     const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
@@ -46,6 +47,10 @@ export async function opsGenieConfigForm(call: AppCallRequest): Promise<AppForm>
             },
         },
     };
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     return form;
 }
 
