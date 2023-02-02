@@ -4,10 +4,12 @@ import {
     AppForm,
     Oauth2App,
 } from '../types';
-import { AppFieldTypes, OpsGenieIcon, Routes, SettingsForm } from '../constant';
+import { AppFieldTypes, ExceptionType, OpsGenieIcon, Routes, SettingsForm } from '../constant';
 import { KVStoreClient, KVStoreOptions } from '../clients/kvstore';
 import { configureI18n } from '../utils/translations';
 import { ExtendRequired } from '../utils/user-mapping';
+import { AppFormValidator } from '../utils/validator';
+import { Exception } from '../utils/exception';
 
 export async function settingsForm(call: AppCallRequest): Promise<AppForm> {
     const oauth2: Oauth2App = call.context.oauth2 as Oauth2App;
@@ -36,6 +38,10 @@ export async function settingsForm(call: AppCallRequest): Promise<AppForm> {
             },
         },
     };
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     return form;
 }
 

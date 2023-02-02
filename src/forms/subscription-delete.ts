@@ -6,6 +6,8 @@ import { getIntegrationsList, isUserSystemAdmin, tryPromise } from '../utils/uti
 import { Exception } from '../utils/exception';
 import { ExtendRequired, allowMemberAction, getOpsGenieAPIKey } from '../utils/user-mapping';
 
+import { AppFormValidator } from '../utils/validator';
+
 import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionDeleteCall(call: AppCallRequest): Promise<string> {
@@ -77,6 +79,9 @@ export async function subscriptionDeleteFormCall(call: AppCallRequest): Promise<
             },
         ],
     };
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error-validation-form'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     return form;
 }

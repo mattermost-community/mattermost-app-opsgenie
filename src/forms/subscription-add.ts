@@ -28,6 +28,8 @@ import { ExtendRequired, getOpsGenieAPIKey } from '../utils/user-mapping';
 
 import { MattermostClient, MattermostOptions } from '../clients/mattermost';
 
+import { AppFormValidator } from '../utils/validator';
+
 import { getAllTeamsCall } from './list-team';
 
 export async function subscriptionAddCall(call: AppCallRequest): Promise<string> {
@@ -153,6 +155,10 @@ export async function subscriptionAddFormCall(call: AppCallRequest): Promise<App
             },
         ],
     };
+
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error-validation-form'), call.context.mattermost_site_url, call.context.app_path);
+    }
 
     return form;
 }
