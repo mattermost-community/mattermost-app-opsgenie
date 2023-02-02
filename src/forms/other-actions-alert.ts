@@ -23,25 +23,26 @@ import { OtherActionsFunction } from '../types/functions';
 import { ExtendRequired } from '../utils/user-mapping';
 
 import { Exception } from '../utils/exception';
-import { AppFormValidator } from '../utils/validator';
+import { AppFormFieldValidator, AppFormValidator } from '../utils/validator';
 
 import { takeOwnershipAlertCall } from './take-ownership-alert';
 
 async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
+    const fieldsObject = AppFormFieldValidator.parse({
+        type: AppFieldTypes.TEXT,
+        subtype: AppFieldSubTypes.TEXTAREA,
+        name: NoteModalForm.NOTE_MESSAGE,
+        modal_label: i18nObj.__('forms.actions.display-note'),
+        is_required: true,
+        max_length: 250,
+    });
 
     const form: AppForm = {
         title: i18nObj.__('forms.actions.title-note', { alert: call.state.alert.tinyId }),
         icon: OpsGenieIcon,
         fields: [
-            {
-                type: AppFieldTypes.TEXT,
-                subtype: AppFieldSubTypes.TEXTAREA,
-                name: NoteModalForm.NOTE_MESSAGE,
-                modal_label: i18nObj.__('forms.actions.display-note'),
-                is_required: true,
-                max_length: 250,
-            },
+            fieldsObject,
         ],
         submit: {
             path: Routes.App.CallPathNoteToAlertAction,
@@ -53,7 +54,7 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
     };
 
     if (!AppFormValidator.safeParse(form).success) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error-validation-form'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     return form;
@@ -61,18 +62,19 @@ async function showModalNoteToAlert(call: AppCallAction<AppContextAction>): Prom
 
 async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
+    const fieldsObject = AppFormFieldValidator.parse({
+        type: AppFieldTypes.USER,
+        name: ActionsEvents.USER_SELECT_EVENT,
+        modal_label: i18nObj.__('forms.actions.name-list-user'),
+        is_required: true,
+        position: 2,
+    });
 
     const form: AppForm = {
         title: i18nObj.__('forms.actions.title-list-user'),
         icon: OpsGenieIcon,
         fields: [
-            {
-                type: AppFieldTypes.USER,
-                name: ActionsEvents.USER_SELECT_EVENT,
-                modal_label: i18nObj.__('forms.actions.name-list-user'),
-                is_required: true,
-                position: 2,
-            },
+            fieldsObject,
         ],
         submit: {
             path: Routes.App.CallPathAssignAlertAction,
@@ -82,23 +84,29 @@ async function showPostOfListUsers(call: AppCallAction<AppContextAction>): Promi
             state: call.state,
         },
     };
+
+    if (!AppFormValidator.safeParse(form).success) {
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error-validation-form'), call.context.mattermost_site_url, call.context.app_path);
+    }
+
     return form;
 }
 
 async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<AppForm> {
     const i18nObj = configureI18n(call.context);
+    const fieldsObject = AppFormFieldValidator.parse({
+        type: AppFieldTypes.STATIC_SELECT,
+        name: ActionsEvents.TIME_SELECT_EVENT,
+        modal_label: i18nObj.__('forms.actions.name-snooze'),
+        is_required: true,
+        options: options_alert_time,
+    });
 
     const form: AppForm = {
         title: i18nObj.__('forms.actions.title-snooze'),
         icon: OpsGenieIcon,
         fields: [
-            {
-                type: AppFieldTypes.STATIC_SELECT,
-                name: ActionsEvents.TIME_SELECT_EVENT,
-                modal_label: i18nObj.__('forms.actions.name-snooze'),
-                is_required: true,
-                options: options_alert_time,
-            },
+            fieldsObject,
         ],
         submit: {
             path: Routes.App.CallPathSnoozeAlertAction,
@@ -109,7 +117,7 @@ async function showPostOfTimes(call: AppCallAction<AppContextAction>): Promise<A
         },
     };
     if (!AppFormValidator.safeParse(form).success) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error-validation-form'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     return form;

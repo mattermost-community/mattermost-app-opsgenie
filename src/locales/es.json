@@ -156,6 +156,7 @@
   },
   "forms": {
     "error": "OpsGenie falló: ",
+    "error-validation-form": "El formulario es invalido",
     "exception-ack": "Ya has reconocido {{ url }}",
     "response-ack": "Has reconocido {{ url }}",
     "message-ack": "Has reconocido #{{ alert }}",

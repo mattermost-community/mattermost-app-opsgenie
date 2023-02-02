@@ -157,7 +157,7 @@ export async function subscriptionAddFormCall(call: AppCallRequest): Promise<App
     };
 
     if (!AppFormValidator.safeParse(form).success) {
-        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error'), call.context.mattermost_site_url, call.context.app_path);
+        throw new Exception(ExceptionType.MARKDOWN, i18nObj.__('forms.error-validation-form'), call.context.mattermost_site_url, call.context.app_path);
     }
 
     return form;
