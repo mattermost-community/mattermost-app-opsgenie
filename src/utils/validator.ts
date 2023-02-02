@@ -159,7 +159,7 @@ export const AppFormValidator = z.object({
     title: z.string(),
     header: z.string().optional(),
     icon: z.string(),
-    fields: z.array(z.any()).optional(),
+    fields: z.array(AppFormFieldValidator).optional(),
     submit: z.object({
         path: z.string(),
         expand: z.any().optional(),
