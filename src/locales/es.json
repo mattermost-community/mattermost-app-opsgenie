@@ -1,0 +1,238 @@
+{
+  "general": {
+    "validation-user": {
+      "system-admin": "Error: Este comando esta únicamente disponible a usuarios Mattermost System Admin",
+      "not-provided": "El usuario no fue provisto",
+      "api-key-not-found": "\"OpsGenie falló\": ¡API Key no encontrada!",
+      "user-not-found": "\"OpsGenie failed\": ¡No se encontró el email del usuario!",
+      "oauth2-not-found": "\"Error\": No se encontró la configuración de accesso",
+      "genie-user": "\"OpsGenie falló\": ¡Usuario no encontrado con email [{{ email }}]!",
+      "genie-user-verified": "\"OpsGenie falló\": ¡Usuario con correo [{{ email }}] no ha sido verificado!",
+      "genie-action-invalid": "\"OpsGenie falló\": ¡Acción no permitida!",
+      "genie-team-invalid": "\"OpsGenie falló\": ¡Usuario con email [ {{ email }} ] no tiene acceso al equipo [ {{ team }} ]!",
+      "genie-alert-not-found": "\"OpsGenie failed\": ¡Alerta con tinyId [{{ tinyId }}] no encontrada!"
+    },
+    "validation-form": {
+      "values-not-found": "El objeto de valores esta vacío"
+    }
+  },
+  "api": {
+    "list-alert": {
+      "message": "Lista de alertas: se encontraron {{ alerts }} alertas no confirmadas de {{ openalert }} alertas abiertas. [Total: {{ length }}]",
+      "detail": "Ver detalles",
+      "error-close-alert": "Error inesperado: {{ error }}",
+      "message-add-note": "Se agregará una nota para #{{ alert }}",
+      "message-assign": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
+      "message-assign-response": "La solicitud de asignación de propiedad se procesará para #{{ alert }}",
+      "message-alert-snoozed": "La alerta {{ alert }} se pospondrá {{ timeAmount }}",
+      "list-item": "- #{{ tinyId }}: \"{{ message }}\" - Estado: {{ status }} - {{ link }}"
+    },
+    "configure": {
+      "error-response": "No se puede abrir el formulario de configuración: {{ message }}",
+      "success-response": "Successfully updated OpsGenie configuration",
+      "follow-response": "Siga esta {{ url }} para conectar Mattermost a su cuenta de OpsGenie."
+    },
+    "help": {
+      "title": "Complemento Mattermost OpsGenie - Ayuda con el comando Slash",
+      "command-help": "Inicie la sintaxis de ayuda de la línea de comandos del complemento OpsGenie, consulte la [documentación]({{ url }}).",
+      "command-configure": "Configurar OpsGenie.",
+      "command-settings": "Mostrar la configuración de la app de OpsGenie",
+      "command-add-command": "{{ command }} {{ add }} [Nombre del equipo] [Canal Mattermost]",
+      "command-add-description": "Agregar suscripción del equipo al canal.",
+      "command-delete-command": "{{ command }} {{ delete }} [ID de suscripción]",
+      "command-delete-description": "Eliminar suscripción de canal.",
+      "command-list-description": "Lista de suscripciones abiertas.",
+      "command-create-command": "{{ command }} {{ create }} [Mensaje de alerta] [Nombre del equipo] [Prioridad]",
+      "command-create-description": "Cree una alerta con el mensaje para los respondedores especificados.",
+      "command-note-command": "{{ command }} {{ note }} [Mensaje de nota] [Alerta TinyId]",
+      "command-note-description": "Agregue [nota] a las alertas con ID [tinyID tinyID2..].",
+      "command-snooze-command": "{{ command }} {{ snooze }} [Alerta TinyID] [Cantidad de tiempo [m/h/d]]",
+      "command-snooze-decription": "Posponer las alertas con ID [tinyID tinyID2..] durante el tiempo especificado.",
+      "command-ack-command": "{{ command }} {{ ack }} [Alerta TinyID]",
+      "command-ack-description": "Reconocer las alertas con ID [tinyID tinyID2..].",
+      "command-unack-command": "{{ command }} {{ unack }} [Alerta TinyID]",
+      "command-unack-description": "Anular el reconocimiento de las alertas con ID [tinyID tinyID2..]",
+      "command-assign-command": "{{ command }} {{ assign }} [Alerta TinyID] [Usuario más importante]",
+      "command-assign-description": "Asigne alertas con ID [tinyID tinyID2..] a [usuario].",
+      "command-close-command": "{{ command }} {{ close }} [Alerta TinyID] [Usuario más importante]",
+      "command-close-description": "Cierra las alertas, incidencias, notificaciones masivas con IDs [tinyID tinyID2..].",
+      "command-own-command": "{{ command }} {{ own }} [Alerta TinyID]",
+      "command-own-description": "Tomar posesión de las alertas con ID [tinyID tinyID2..].",
+      "command-priority-command": "{{ command }} {{ priority }} [Alerta TinyID] [Prioridad]",
+      "command-priority-description": "Actualizar la prioridad de la alerta con [tinyID].",
+			"command-list-alert-command": "{{ command }} {{ list }}",
+      "command-alert-decription": "Lista de alertas.",
+      "command-team-description": "Listar equipos."
+    },
+    "install": {
+      "command": "Para terminar de configurar la aplicación Opsgenie, lea la sección [Inicio rápido]({{ url }}#inicio rápido) del LÉAME"
+    },
+    "subcription": {
+      "message-created": "Se creará la suscripción",
+      "message-delete": "Se eliminará la suscripción.",
+      "message-list": "Lista de suscripciones: se encontraron {{ integrations }} suscripciones abiertas.",
+      "detail-list": "- Nombre del equipo \"{{ name }}\" - Nombre del canal \"{{ channelName }}\""
+    },
+    "team": {
+      "message": "Lista de equipos: {{ length }} equipos coincidentes encontrados."
+    },
+    "webhook": {
+      "message": "Nueva alerta creada:",
+      "title": "[#{{ text }}]({{ url }})",
+      "title-closed": "[#{{ text }} [RESUELTA]]({{ ur l}})",
+      "error": "Webhook de error: {{ message }}",
+      "title-priority": "Prioridad",
+      "title-team": "Equipos enrutados",
+      "name-acknowledged": "Admitido",
+      "name-close": "Cerrar",
+      "name-other": "Otras acciones...",
+      "message-note": "{{ username }} nota añadida \"{{ note }}\" alertar {{ url }} \" {{ message }}\"",
+      "message-notify": "{{ username }} alerta cerrada {{ url }} \"{{ message }}\"",
+      "message-notify-ack": "{{username }} alerta reconocida {{ url }} \"{{ message }}\"",
+      "message-notify-unack": "{{ username }} alerta no reconocida {{ url }} \"{{ message }}\"",
+      "message-snooze": "{{ username }} alerta pospuesta {{ url }} \"{{ message }}\" hasta que {{ date }}",
+      "message-snooze-alert": "Posponer caducó para la alerta { url }} \"{{ message }}\"",
+      "message-assign": "{{ username }} propiedad asignada de la alerta {{ url) } a {{ fullName }} \" {{ message }}\"",
+      "message-update": "{{ username }} cambió la prioridad de la alerta {{ url }} \"{{ message }}\" de {{ oldPriority }} a {{ priority }}",
+      "extra-options": {
+        "add-note": "Añadir nota a alerta",
+        "assign": "Asignar alerta",
+        "snooze": "Silenciar alerta",
+        "take-ownership": "Tomar alerta"
+      }
+    }
+  },
+  "binding": {
+    "binding": {
+      "command-help": "Mostrar la ayuda de OpsGenie",
+      "command-configure": "Configurar la cuenta de administrador de OpsGenie",
+      "command-configure-title": "Configuración OpsGenie",
+      "command-settings": "Mostrar la configuración de la app de OpsGenie",
+      "command-login": "Conecte su cuenta de OpsGenie",
+      "command-login-title": "Cuenta de Ingreso",
+      "command-account-description": "Conecte su cuenta de OpsGenie",
+      "command-logout-title": "Cierre de sesión de la cuenta",
+      "command-subcription-description": "Equipos de suscripción de OpsGenie al canal Mattermost",
+      "command-add-description": "Agregar una suscripción de equipo a un canal",
+      "command-add-title": "Agregar una suscripción de equipo a un canal",
+      "name-team": "Nombre del equipo",
+      "name-channel": "Canal",
+      "command-delete-description": "Dar de baja al equipo del canal",
+      "command-delete-title": "Dar de baja al equipo del canal",
+      "label-delete": "Suscripción a eliminar",
+      "command-delete-value": "- Nombre de equipo \"{{ name }}\" - Canal \"{{ channelName }}\"",
+      "command-delete-no-subscriptions": "No hay subscripciones",
+      "command-delete-no-found": "La subscripción no se encontró",
+      "command-list-description": "Lista de equipos suscritos a los canales",
+      "command-list-title": "Lista de equipos suscritos a los canales",
+      "command-alert-description": "Alerta de configuración en OpsGenie",
+      "command-create-description": "Crear alerta en OpsGenie",
+      "command-create-title": "Crear alerta",
+      "label-alert": "Mensaje de alerta",
+      "label-team": "Nombre del equipo",
+      "label-priority": "Prioridad",
+      "command-note-description": "Agregar nota a alerta en OpsGenie",
+      "command-note-title": "Agregar nota a alerta",
+      "label-note": "Mensaje de nota",
+      "label-tiny": "Identificación minúscula",
+      "command-close-description": "Alerta de cierre en OpsGenie",
+      "command-close-title": "Cerrar Alerta",
+      "command-ack-description": "Confirmar alerta en OpsGenie",
+      "command-ack-title": "Reconocer las alertas",
+      "command-unack-description": "Alerta de anulación de reconocimiento en OpsGenie",
+      "command-unack-title": "Desconocer las alertas",
+      "command-snooze-description": "Alerta de repetición en OpsGenie",
+      "command-snooze-title": "Posponer las alertas",
+      "label-time": "'Cantidad de tiempo",
+      "command-assign-desctiption": "Asignar alerta en OpsGenie",
+      "command-assign-title": "Asigna las alertas",
+      "label-user": "Usuario",
+      "command-own-description": "Tomar alerta de propiedad en OpsGenie",
+      "command-own-title": "Tomar posesión de las alertas",
+      "command-priority-description": "Actualizar prioridad de alerta en OpsGenie",
+      "command-priority-title": "Actualizar la prioridad de la alerta",
+      "command-teams": "Maneja tus equipos de OpsGenie",
+      "command-list-all-description": "Mostrar información de OpsGenie",
+      "command-list-all-title": "Listar equipos",
+      "description-alert": "Lista de alertas"
+    }
+  },
+  "forms": {
+    "error": "OpsGenie falló: ",
+    "error-validation-form": "El formulario es invalido",
+    "exception-ack": "Ya has reconocido {{ url }}",
+    "response-ack": "Has reconocido {{ url }}",
+    "message-ack": "Has reconocido #{{ alert }}",
+    "error-ack": "Error inesperado: {{ message }}",
+    "mattermost-error": "La actualización de la publicación de Mattermost falló",
+    "acknowledged": "Admitido",
+    "unacknowledged": "No reconocido",
+    "name-close": "Cerrar",
+    "name-other-action": "Otras acciones...",
+    "message-note": "Acción ejecutada a través del complemento Mattermost",
+    "response-assign-alert": "Asigna alertas {{ url }} propiedad de {{ email }} será procesado",
+    "close-alert": {
+      "ask-close-alert-title": "Cerrar alerta #{{ alert }}",
+      "ask-close-alert-header": "La alerta {{ url }} cambiará a resuelta, ¿estas seguro que deseas continuar?",
+      "error-close-alert": "Ya has cerrado {{ url }}",
+      "response-close-alert": "Alerta {{ url }} esta cerrada",
+      "exception-close-alert": "Has cerrado #{{ alert }}",
+			"not-props-found": "No se encontraron propiedades del post a modificar"
+    },
+    "configure-admin": {
+      "title": "Configurar OpsGenie",
+      "header": "Configure la aplicación OpsGenie con la siguiente información.",
+      "label": "Clave API",
+      "description": "Integración de API Clave de API de OpsGenie",
+      "exception": "Clave API incorrecta: ",
+      "system-admin": "Error: Este comando únicamente esta habilidato a usuarios Mattertmost System Admin"
+    },
+    "settings": {
+      "title": "Display OpsGenie app settings",
+      "header": "Configure your OpsGenie app",
+      "allow-user-mapping-field-label": "Vincular usuarios por dirección de correo electrónico",
+      "allow-user-mapping-field-description": "Permitir que los usuarios de Mattermost actualicen las alertas en OpsGenie si su correo electrónico en Mattermost coincide con su correo electrónico en OpsGenie",
+      "success": "¡Configuración de OpsGenie actualizada!"
+    },
+    "create-alert": {
+      "message": "Nueva alerta \"{{ message }}\" se creará",
+      "response": "Note will be added for {{ url }}"
+    },
+    "create-snooze": {
+      "response": "Alerta {{ url }} será pospuesta por {{ time }}"
+    },
+    "actions": {
+      "title-note": "Añadir nota a la alerta [{{ alert }}]",
+      "label-note": "Agregar",
+      "display-note": "Nota",
+      "placeholder-note": "Tu nota aquí...",
+      "title-list-user": "Elija un usuario para asignarle la alerta",
+      "name-list-user": "Elige un usuario",
+      "name-close": "Cerrar",
+      "title-snooze": "Durante cuánto tiempo desea posponer las notificaciones de esta alerta",
+      "name-snooze": "Elija el tiempo de repetición",
+      "exception-owner": "Ya eres propietario de la alerta {{ alert }}",
+      "response-owner": "La solicitud de toma de propiedad se procesará para {{ alert }}"
+    },
+    "priority": {
+      "exception": "La prioridad {{ url }} de la alerta ya está {{ priority }}",
+      "response": "Prioridad {{ url }} actualizada a {{ priority }}"
+    },
+    "subcription-add": {
+      "exception": "El equipo [{{ name }}] ya está asociado con el canal [{{ channelName }}]"
+    },
+    "ownership": {
+      "exception": "La solicitud de toma de propiedad se procesará para {{ url }}",
+      "response": "La solicitud de toma de propiedad se procesará para {{ url }}"
+    },
+    "unack": {
+      "response-unack": "Te has desentendido {{ url }}",
+      "response-ack": "Te has desentendido #{{ alert }}",
+      "exception-unack": "La solicitud de no reconocimiento será procesada para {{ url }}",
+      "exception-ack": "No has reconocido la alerta #{{ alert }}"
+    }
+  },
+   "bindings-descriptions": {
+      "bindings": "Administrar la App de OpsGenie"
+   }
+}
